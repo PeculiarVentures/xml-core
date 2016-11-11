@@ -1,0 +1,32 @@
+{
+  "name": "xmljs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "src/index.ts",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "ts-loader": "^1.0.0",
+    "xmldom-alpha": "^0.1.21",
+    "xpath.js": "^1.0.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeculiarVentures/xmljs.git"
+  },
+  "keywords": [
+    "xml"
+  ],
+  "author": "microshine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PeculiarVentures/xmljs/issues"
+  },
+  "homepage": "https://github.com/PeculiarVentures/xmljs#readme"
+}
