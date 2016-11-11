@@ -51,6 +51,8 @@ export enum XE {
     PARAM_REQUIRED,
     CONVERTER_UNSUPPORTED,
     ELEMENT_MALFORMED,
+    ELEMENT_MISSING,
+    ATTRIBUTE_MISSING,
     CRYPTOGRAPHIC,
     CRYPTOGRAPHIC_NO_MODULE,
     CRYPTOGRAPHIC_UNKNOWN_TRANSFORM,
@@ -72,6 +74,8 @@ xes[XE.METHOD_NOT_SUPPORTED] = "Method is not supported";
 xes[XE.PARAM_REQUIRED] = "Required parameter is missing '%1'";
 xes[XE.CONVERTER_UNSUPPORTED] = "Converter is not supported";
 xes[XE.ELEMENT_MALFORMED] = "Malformed element '%1'";
+xes[XE.ELEMENT_MISSING] = "Element '%1' is missing in '%2'";
+xes[XE.ATTRIBUTE_MISSING] = "Attribute '%1' is missing in '%2'";
 xes[XE.CRYPTOGRAPHIC] = "Cryptographic error: %1";
 xes[XE.CRYPTOGRAPHIC_NO_MODULE] = "WebCrypto module is not found";
 xes[XE.CRYPTOGRAPHIC_UNKNOWN_TRANSFORM] = "Unknown transform %1";

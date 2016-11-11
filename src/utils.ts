@@ -1,35 +1,10 @@
 import { XmlNodeType, APPLICATION_XML } from "./xml";
 
-export const DEFAULT_ROOT_NAME = "xml_root";
-
 export function IsEqualsEmptyStrings(s1: string, s2: string): boolean {
     // If values is null or undefined, set valute to ""
     let _s1 = (s1) ? s1 : "";
     let _s2 = (s2) ? s2 : "";
     return _s1 === _s2;
-}
-
-/**
- * Creates new instance of XmlDocument with given name of root element
- * @param  {string} root Name of root element
- * @param  {string} namespaceUri
- * @param  {string} prefix
- * @returns Document
- */
-export function CreateDocument(root: string = DEFAULT_ROOT_NAME, namespaceUri: string = "", prefix: string = ""): Document {
-    let name_prefix = "",
-        ns_prefix = "",
-        namespace_uri = "";
-    if (prefix) {
-        name_prefix = prefix + ":";
-        ns_prefix = ":" + prefix;
-    }
-    if (namespaceUri) {
-        namespace_uri = ` xmlns${ns_prefix}="${namespaceUri}"`;
-    }
-    let name = `${name_prefix}${root}`;
-    let doc = new DOMParser().parseFromString(`<${name}${namespace_uri}></${name}>`, APPLICATION_XML);
-    return doc;
 }
 
 /**
@@ -62,18 +37,6 @@ export function FindFirst(doc: Node, xpath: string): Node {
     let nodes: Node[] = <Node[]>select(doc, xpath);
     if (nodes.length === 0) throw `could not find xpath ${xpath}`;
     return nodes[0];
-}
-
-export function FindChildren(node: Node, localName: string, nameSpace?: string): Node[] {
-    node = (<Document>node).documentElement || node;
-    let res: Node[] = [];
-    for (let i = 0; i < node.childNodes.length; i++) {
-        let child = node.childNodes[i];
-        if (child.localName === localName && (child.namespaceURI === nameSpace || !nameSpace)) {
-            res.push(child);
-        }
-    }
-    return res;
 }
 
 function attrEqualsExplicitly(attr: Attr, localName: string, nameSpace?: string): boolean {

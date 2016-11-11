@@ -1,5 +1,5 @@
 import { XmlError, XE } from "./error";
-import { CreateDocument, SelectSingleNode } from "./utils";
+import { SelectSingleNode } from "./utils";
 import { XmlNodeType, DEFAULT_PREFIX, DEFAULT_NAMESPACE_URI } from "./xml";
 import { XmlObject } from "./xml_object";
 import { Collection } from "./collection";
@@ -9,10 +9,16 @@ export const MIN = 0;
 
 export abstract class XmlCollection<I extends XmlObject> extends Collection<I> implements IXmlSerializable {
 
+    protected element: Element | null = null;
+    protected prefix = DEFAULT_PREFIX;
+    protected namespaceUri = DEFAULT_NAMESPACE_URI;
+    protected abstract name: string;
+
     // Public properties
 
-    prefix = DEFAULT_PREFIX;
-    namespaceUri = DEFAULT_NAMESPACE_URI;
+    get Element(): Element {
+        return this.element;
+    }
 
     get Prefix(): string {
         return this.prefix;
@@ -42,7 +48,6 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
     }
 
     // Protetced methods
-    protected abstract GetXmlObjectName(): string;
 
     protected GetPrefix(): string {
         return this.Prefix ? this.Prefix + ":" : "";
@@ -75,8 +80,12 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
             throw new XmlError(XE.PARAM_REQUIRED, "element");
         }
 
-        if (!((element.localName === this.GetXmlObjectName()) && (element.namespaceURI === this.NamespaceURI)))
-            throw new XmlError(XE.ELEMENT_MALFORMED, this.GetXmlObjectName());
+        if (!((element.localName === this.name) && (element.namespaceURI === this.NamespaceURI)))
+            throw new XmlError(XE.ELEMENT_MALFORMED, this.name);
+
+        this.namespaceUri = element.namespaceURI;
+        this.prefix = element.prefix;
+        this.element = element;
 
         this.Clear();
         let xmlNodeList = element.childNodes;
@@ -92,7 +101,7 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
         }
         catch (e) { console.error(e); }
         if (!(this.MinOccurs <= this.Count && this.Count <= this.MaxOccurs))
-            throw new XmlError(XE.CRYPTOGRAPHIC, `${this.GetXmlObjectName()} has wrong items number '${this.Count}', should be [${this.MinOccurs},${this.MaxOccurs === MAX ? "unbounded" : this.MaxOccurs}]`);
+            throw new XmlError(XE.CRYPTOGRAPHIC, `${this.name} has wrong items number '${this.Count}', should be [${this.MinOccurs},${this.MaxOccurs === MAX ? "unbounded" : this.MaxOccurs}]`);
     }
 
     /**
@@ -111,20 +120,22 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
             }
         }
         if (!(this.MinOccurs <= appendedCount && appendedCount <= this.MaxOccurs))
-            throw new XmlError(XE.CRYPTOGRAPHIC, `${this.GetXmlObjectName()} has wrong items number '${appendedCount}', should be [${this.MinOccurs},${this.MaxOccurs === MAX ? "unbounded" : this.MaxOccurs}]`);
+            throw new XmlError(XE.CRYPTOGRAPHIC, `${this.name} has wrong items number '${appendedCount}', should be [${this.MinOccurs},${this.MaxOccurs === MAX ? "unbounded" : this.MaxOccurs}]`);
 
         return element;
     }
 
     protected CreateDocument() {
-        return CreateDocument(
-            this.GetXmlObjectName(),
+        return XmlObject.CreateDocument(
+            this.name,
             this.NamespaceURI,
             this.Prefix);
     }
 
     protected CreateElement(document: Document) {
-        return document.createElementNS(this.NamespaceURI, this.GetPrefix() + this.GetXmlObjectName());
+        const xn = document.createElementNS(this.NamespaceURI, this.GetPrefix() + this.name);
+        document.importNode(xn, true);
+        return xn;
     }
 
     /**

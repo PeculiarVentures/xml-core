@@ -1,4 +1,4 @@
-export class Collection<I> implements IterableIterator<I> {
+export class Collection<I> {
 
     protected items: Array<I> = new Array();
 
