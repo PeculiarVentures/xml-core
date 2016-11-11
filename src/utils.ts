@@ -1,4 +1,4 @@
-import { XmlNodeType, APPLICATION_XML } from "./xml";
+import { XmlNodeType } from "./xml";
 
 export function IsEqualsEmptyStrings(s1: string, s2: string): boolean {
     // If values is null or undefined, set valute to ""

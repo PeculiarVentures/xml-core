@@ -1,5 +1,4 @@
 import { XmlError, XE } from "./error";
-import { SelectSingleNode } from "./utils";
 import { XmlNodeType, DEFAULT_PREFIX, DEFAULT_NAMESPACE_URI } from "./xml";
 import { XmlObject } from "./xml_object";
 import { Collection } from "./collection";
@@ -16,7 +15,7 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
 
     // Public properties
 
-    get Element(): Element {
+    get Element() {
         return this.element;
     }
 
@@ -84,7 +83,7 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
             throw new XmlError(XE.ELEMENT_MALFORMED, this.name);
 
         this.namespaceUri = element.namespaceURI;
-        this.prefix = element.prefix;
+        this.prefix = element.prefix || "";
         this.element = element;
 
         this.Clear();

@@ -4,6 +4,11 @@
         "target": "es5",
         "outDir": "lib",
         "noImplicitAny": true,
-        "sourceMap": false
+        "sourceMap": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "strictNullChecks": true,
+        "pretty": true,
+        "noImplicitReturns": true
     }
 }

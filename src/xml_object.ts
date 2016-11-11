@@ -1,4 +1,4 @@
-import { XmlNodeType, DEFAULT_PREFIX, DEFAULT_NAMESPACE_URI } from "./xml";
+import { XmlNodeType, DEFAULT_PREFIX } from "./xml";
 import { XmlError, XE } from "./error";
 import { SelectSingleNode } from "./utils";
 import { APPLICATION_XML } from "./xml";
@@ -12,7 +12,7 @@ export abstract class XmlObject implements IXmlSerializable {
     protected namespaceUri = DEFAULT_PREFIX;
     protected abstract name: string;
 
-    get Element(): Element {
+    get Element() {
         return this.element;
     }
 
@@ -46,7 +46,7 @@ export abstract class XmlObject implements IXmlSerializable {
             throw new XmlError(XE.ELEMENT_MALFORMED, this.name);
 
         this.namespaceUri = element.namespaceURI;
-        this.prefix = element.prefix;
+        this.prefix = element.prefix || "";
         this.element = element;
 
     }
@@ -164,7 +164,6 @@ export abstract class XmlObject implements IXmlSerializable {
 
     static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null {
         node = (<Document>node).documentElement || node;
-        let res: Element[] = [];
         for (let i = 0; i < node.childNodes.length; i++) {
             let child = node.childNodes[i];
             if (child.nodeType === XmlNodeType.Element && child.localName === localName && (child.namespaceURI === nameSpace || !nameSpace)) {
@@ -174,7 +173,6 @@ export abstract class XmlObject implements IXmlSerializable {
         return null;
     }
     static GetChild(node: Element, localName: string, nameSpace?: string, required = true): Element | null {
-        let res: Element[] = [];
         for (let i = 0; i < node.childNodes.length; i++) {
             let child = node.childNodes[i];
             if (child.nodeType === XmlNodeType.Element && child.localName === localName && (child.namespaceURI === nameSpace || !nameSpace)) {
@@ -186,6 +184,8 @@ export abstract class XmlObject implements IXmlSerializable {
         return null;
     }
     protected GetChild(localName: string, required = true): Element | null {
+        if (!this.element)
+            throw new XmlError(XE.NULL_PARAM, this.name);
         return XmlObject.GetChild(this.element, localName, this.namespaceUri, required);
     }
 
