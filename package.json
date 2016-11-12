@@ -14,7 +14,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "build": "npm run build:es5",
+    "build:es5": "tsc --module commonjs --target es5",
+    "build:es2015": "tsc --module commonjs --target es2015",
+    "install": "npm run build"
   },
   "repository": {
     "type": "git",
