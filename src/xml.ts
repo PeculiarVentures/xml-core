@@ -1,5 +1,3 @@
-import { SelectSingleNode } from "./utils";
-
 export const APPLICATION_XML = "application/xml";
 export const DEFAULT_PREFIX = "";
 export const DEFAULT_NAMESPACE_URI = "";
