@@ -30,9 +30,9 @@ interface XmlNamespace {
     namespace: string | null;
 }
 
-declare namespace XmlJs {
+declare const select: SelectNodes;
 
-    const select: SelectNodes;
+declare namespace XmlJs {
 
     export class Collection<I> {
         protected items: Array<I>;

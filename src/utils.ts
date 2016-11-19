@@ -8,14 +8,16 @@ export function IsEqualsEmptyStrings(s1: string, s2: string): boolean {
 }
 
 let _w: any;
-if (typeof self === "undefined")
+if (typeof self === "undefined") {
     _w = global;
+    _w.XMLSerializer = require("xmldom-alpha").XMLSerializer;
+    _w.DOMParser = require("xmldom-alpha").DOMParser;
+    _w.DOMImplementation = require("xmldom-alpha").DOMImplementation;
+    _w.document = new DOMImplementation().createDocument("http://www.w3.org/1999/xhtml", "html", null!);
+}
 else
     _w = self;
-_w.XMLSerializer = XMLSerializer || require("xmldom-alpha").XMLSerializer;
-_w.DOMParser = DOMParser || require("xmldom-alpha").DOMParser;
-_w.DOMImplementation = DOMImplementation || require("xmldom-alpha").DOMImplementation;
-_w.document = document || new DOMImplementation().createDocument("http://www.w3.org/1999/xhtml", "html", null!);
+
 
 function SelectNodesEx(node: Node, xpath: string): Node[] {
     let doc: Document = node.ownerDocument == null ? node as Document : node.ownerDocument;
@@ -28,7 +30,8 @@ function SelectNodesEx(node: Node, xpath: string): Node[] {
     return ns;
 }
 
-export const select: SelectNodes = (typeof module === "undefined") ? SelectNodesEx : require("xpath.js");
+declare const select: SelectNodes;
+_w.select = (typeof module === "undefined") ? SelectNodesEx : require("xpath.js");
 
 /**
  * Returns signle Node from given Node
