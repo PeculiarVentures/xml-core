@@ -12,7 +12,18 @@
         "pretty": true,
         "noImplicitReturns": true
     },
-    "exclude": [
-        "index.d.ts"
+    "files": [
+        "src/types/index.d.ts",
+        "src/types/xpath.d.ts",
+        "src/collection.ts",
+        "src/common.ts",
+        "src/convert.ts",
+        "src/error.ts",
+        "src/namespace_manager.ts",
+        "src/utils.ts",
+        "src/xml.ts",
+        "src/xml_object.ts",
+        "src/xml_collection.ts",
+        "src/index.ts"
     ]
 }
