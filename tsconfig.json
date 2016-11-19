@@ -3,6 +3,7 @@
         "module": "commonjs",
         "target": "es5",
         "outDir": "lib",
+        "rootDir": "src",
         "noImplicitAny": true,
         "sourceMap": false,
         "noUnusedLocals": true,
