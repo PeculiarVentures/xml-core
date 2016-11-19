@@ -8,6 +8,7 @@
     "test": "test"
   },
   "dependencies": {
+    "@types/node": "*",
     "ts-loader": "^1.0.0",
     "xmldom-alpha": "^0.1.21",
     "xpath.js": "^1.0.6"
