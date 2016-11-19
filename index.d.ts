@@ -20,7 +20,6 @@ interface AssocArray<T> {
     [index: string]: T;
 }
 
-declare const select: SelectNodes;
 
 declare type XmlBufferEncoding = string | "utf8" | "binary" | "hex" | "base64" | "base64url";
 
@@ -32,6 +31,8 @@ interface XmlNamespace {
 }
 
 declare namespace XmlJs {
+
+    const select: SelectNodes;
 
     export class Collection<I> {
         protected items: Array<I>;

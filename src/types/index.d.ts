@@ -18,8 +18,6 @@ interface AssocArray<T> {
     [index: string]: T;
 }
 
-declare const select: SelectNodes;
-
 declare type XmlBufferEncoding = string | "utf8" | "binary" | "hex" | "base64" | "base64url";
 
 declare type ISelectResult = Array<Node> | Node | boolean | number | string;

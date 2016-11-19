@@ -16,7 +16,6 @@
         "src/types/index.d.ts",
         "src/types/xpath.d.ts",
         "src/collection.ts",
-        "src/common.ts",
         "src/convert.ts",
         "src/error.ts",
         "src/namespace_manager.ts",
