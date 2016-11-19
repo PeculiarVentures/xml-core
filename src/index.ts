@@ -1,6 +1,3 @@
-/// <reference path="types/index.d.ts" />
-/// <reference path="types/xpath.d.ts" />
-
 export * from "./common";
 export * from "./collection";
 export * from "./utils";
