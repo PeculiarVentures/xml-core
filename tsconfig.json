@@ -11,5 +11,8 @@
         "strictNullChecks": true,
         "pretty": true,
         "noImplicitReturns": true
-    }
+    },
+    "exclude": [
+        "index.d.ts"
+    ]
 }
