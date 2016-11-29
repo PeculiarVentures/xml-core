@@ -156,10 +156,10 @@ export abstract class XmlObject implements IXmlSerializable {
         return res;
     }
 
-    GetChildren(localName: string) {
+    GetChildren(localName: string, nameSpace?: string) {
         if (!this.element)
             throw new XmlError(XE.NULL_PARAM, this.name);
-        return XmlObject.GetChildren(this.element, localName, this.NamespaceURI);
+        return XmlObject.GetChildren(this.element, localName, nameSpace || this.NamespaceURI);
     }
 
     static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null {

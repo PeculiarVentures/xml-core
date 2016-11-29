@@ -255,7 +255,7 @@ declare namespace XmlJs {
          */
         static CreateDocument(root?: string, namespaceUri?: string, prefix?: string): Document;
         static GetChildren(node: Node, localName: string, nameSpace?: string): Element[];
-        GetChildren(localName: string): Element[];
+        GetChildren(localName: string, nameSpace?: string): Element[];
         static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null;
         static GetChild(node: Element, localName: string, nameSpace?: string, required?: boolean): Element | null;
         protected GetChild(localName: string, required?: boolean): Element | null;
