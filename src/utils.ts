@@ -31,7 +31,7 @@ function SelectNodesEx(node: Node, xpath: string): Node[] {
 }
 
 declare const select: SelectNodes;
-_w.select = (typeof module === "undefined") ? SelectNodesEx : require("xpath.js");
+_w.select = (typeof self !== "undefined") ? SelectNodesEx : require("xpath.js");
 
 /**
  * Returns signle Node from given Node
