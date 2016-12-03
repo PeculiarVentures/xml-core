@@ -1,16 +1,20 @@
-import { XmlNodeType, DEFAULT_PREFIX } from "./xml";
+import { XmlNodeType } from "./xml";
 import { XmlError, XE } from "./error";
 import { SelectSingleNode } from "./utils";
 import { APPLICATION_XML } from "./xml";
 
 const DEFAULT_ROOT_NAME = "xml_root";
 
+
 export abstract class XmlObject implements IXmlSerializable {
 
+    protected static attributes: AssocArray<XmlAttributeType<any>>;
+    protected static prefix: string | null;
+    protected static namespaceUri: string | null;
+    protected static localName: string;
+
     protected element: Element | null = null;
-    protected prefix = DEFAULT_PREFIX;
-    protected namespaceUri = DEFAULT_PREFIX;
-    protected abstract name: string;
+    protected prefix = this.GetStatic().prefix;
 
     get Element() {
         return this.element;
@@ -23,32 +27,61 @@ export abstract class XmlObject implements IXmlSerializable {
         this.prefix = value;
     }
 
-    get NamespaceURI() {
-        return this.namespaceUri;
+    get LocalName(): string {
+        return this.GetStatic().localName;
+    }
+    get NamespaceURI(): string | null {
+        return this.GetStatic().namespaceUri;
     }
 
-    HasChanged(): boolean {
-        return true;
+    protected GetStatic(): any {
+        return this.constructor;
     }
 
     protected GetPrefix(): string {
         return (this.Prefix) ? this.prefix + ":" : "";
     }
 
-    abstract GetXml(): Element;
+    HasChanged() {
+        return !!this.element;
+    }
+
+    GetXml(): Element {
+        let el = this.CreateElement();
+
+        const localName: string = this.GetStatic().localName;
+
+        // Add attributes
+        for (let key in this.GetStatic().attributes) {
+            let attr: XmlAttributeType<any> = this.GetStatic().attributes[key];
+            let value = (attr.converter) ? attr.converter.get((this as any)[key]) : (this as any)[key];
+            if (attr.required && (value === null || value === void 0))
+                throw new XmlError(XE.ATTRIBUTE_MISSING, attr.name, localName);
+
+            // attr value
+            if (attr.defaultValue !== (this as any)[key])
+                if (!attr.namespaceUri)
+                    el.setAttribute(attr.name!, value);
+                else
+                    el.setAttributeNS(attr.namespaceUri, attr.name!, value);
+        }
+        // Cache compiled elements
+        this.element = el;
+        return el;
+    }
 
     LoadXml(element: Element) {
         if (element == null) {
             throw new XmlError(XE.PARAM_REQUIRED, "element");
         }
 
-        if (!((element.localName === this.name) && (element.namespaceURI === this.NamespaceURI)))
-            throw new XmlError(XE.ELEMENT_MALFORMED, this.name);
+        const localName: string = this.GetStatic().localName;
 
-        this.namespaceUri = element.namespaceURI;
+        if (!((element.localName === localName) && (element.namespaceURI === this.NamespaceURI)))
+            throw new XmlError(XE.ELEMENT_MALFORMED, localName);
+
         this.prefix = element.prefix || "";
         this.element = element;
-
     }
 
     toString(): string {
@@ -65,7 +98,7 @@ export abstract class XmlObject implements IXmlSerializable {
     }
     GetElement(name: string, required: boolean = true) {
         if (!this.element)
-            throw new XmlError(XE.NULL_PARAM, this.name);
+            throw new XmlError(XE.NULL_PARAM, this.LocalName);
         return XmlObject.GetElement(this.element, name, required);
     }
 
@@ -81,7 +114,7 @@ export abstract class XmlObject implements IXmlSerializable {
     }
     protected GetAttribute(name: string, defaultValue: string | null, required: boolean = true) {
         if (!this.element)
-            throw new XmlError(XE.NULL_PARAM, this.name);
+            throw new XmlError(XE.NULL_PARAM, this.LocalName);
         return XmlObject.GetAttribute(this.element, name, defaultValue, required);
     }
 
@@ -108,15 +141,23 @@ export abstract class XmlObject implements IXmlSerializable {
         return xel as Element;
     }
 
-    protected CreateElement(document: Document) {
-        const xn = document.createElementNS(this.NamespaceURI, this.GetPrefix() + this.name);
-        document.importNode(xn, true);
+    protected CreateElement(document?: Document, localName?: string, namespaceUri?: string, prefix?: string) {
+        if (!document)
+            document = this.CreateDocument();
+        if (!localName)
+            localName = this.LocalName;
+        if (!namespaceUri)
+            namespaceUri = this.NamespaceURI!;
+        if (prefix === void 0)
+            prefix = this.prefix;
+        const xn = document!.createElementNS(this.NamespaceURI, (prefix ? `${prefix}:` : "") + this.LocalName);
+        document!.importNode(xn, true);
         return xn;
     }
 
     protected CreateDocument() {
         return XmlObject.CreateDocument(
-            this.name,
+            this.LocalName,
             this.NamespaceURI,
             this.Prefix);
     }
@@ -128,7 +169,7 @@ export abstract class XmlObject implements IXmlSerializable {
      * @param  {string} prefix
      * @returns Document
      */
-    static CreateDocument(root: string = DEFAULT_ROOT_NAME, namespaceUri: string = "", prefix: string = ""): Document {
+    static CreateDocument(root: string = DEFAULT_ROOT_NAME, namespaceUri: string | null = null , prefix: string = ""): Document {
         let name_prefix = "",
             ns_prefix = "",
             namespace_uri = "";
@@ -158,8 +199,8 @@ export abstract class XmlObject implements IXmlSerializable {
 
     GetChildren(localName: string, nameSpace?: string) {
         if (!this.element)
-            throw new XmlError(XE.NULL_PARAM, this.name);
-        return XmlObject.GetChildren(this.element, localName, nameSpace || this.NamespaceURI);
+            throw new XmlError(XE.NULL_PARAM, this.LocalName);
+        return XmlObject.GetChildren(this.element, localName, nameSpace || this.NamespaceURI || undefined);
     }
 
     static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null {
@@ -185,13 +226,13 @@ export abstract class XmlObject implements IXmlSerializable {
     }
     protected GetChild(localName: string, required = true): Element | null {
         if (!this.element)
-            throw new XmlError(XE.NULL_PARAM, this.name);
-        return XmlObject.GetChild(this.element, localName, this.namespaceUri, required);
+            throw new XmlError(XE.NULL_PARAM, this.LocalName);
+        return XmlObject.GetChild(this.element, localName, this.NamespaceURI || undefined, required);
     }
 
     GetFirstChild(localName: string, namespace?: string) {
         if (!this.element)
-            throw new XmlError(XE.NULL_PARAM, this.name);
+            throw new XmlError(XE.NULL_PARAM, this.LocalName);
         return XmlObject.GetFirstChild(this.element, localName, namespace);
     }
 

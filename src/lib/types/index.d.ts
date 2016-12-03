@@ -26,3 +26,22 @@ interface XmlNamespace {
     prefix: string | null;
     namespace: string | null;
 }
+
+interface XmlAttributeType<T> {
+    name?: string;
+    required?: boolean;
+    defaultValue?: T;
+    namespaceUri?: string | null;
+    converter?: IConverter<T>; 
+}
+
+interface XmlElementType {
+    localName: string;
+    namespaceUri?: string | null;
+    prefix?: string | null; 
+} 
+
+interface IConverter<T> {
+    set: (value: string) => T;
+    get: (value: T) => string | undefined;
+}

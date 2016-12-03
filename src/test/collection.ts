@@ -1,6 +1,5 @@
-"use strict";
-const Collection = require("../lib/index").Collection;
-const assert = require("assert");
+import { Collection } from "../lib/index";
+import * as assert from "assert";
 
 describe("Collection", () => {
 
@@ -98,16 +97,16 @@ describe("Collection", () => {
         assert.equal(col.Some(item => item < 5), true);
         assert.equal(col.Some(item => item > 5), false);
     });
-   
+
     it("IsEmpty", () => {
         const col = new Collection();
         assert.equal(col.IsEmpty(), true);
         col.Add(1);
         assert.equal(col.IsEmpty(), false);
     });
-    
+
     it("Pop", () => {
-        const col = new Collection([1,2]);
+        const col = new Collection([1, 2]);
         assert.equal(col.Count, 2);
         assert.equal(col.Pop(), 2);
         assert.equal(col.Count, 1);

@@ -2,7 +2,7 @@
   "name": "xmljs",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "build/lib/index.js",
   "types": "index.d.ts",
   "directories": {
     "test": "test"
@@ -13,6 +13,7 @@
     "xpath.js": "^1.0.6"
   },
   "devDependencies": {
+    "@types/mocha": "^2.2.33",
     "ts-loader": "^1.0.0"
   },
   "scripts": {

@@ -1,14 +1,12 @@
-"use strict";
-const XmlError = require("../lib/index").XmlError;
-const XE = require("../lib/index").XE;
-const assert = require("assert");
+import { XmlError, XE } from "../lib/index";
+import * as assert from "assert";
 
 describe("Error", () => {
 
     it("Throw error", () => {
         assert.throws(() => {
-            throw new XmlError(XE.NONE)
-        })
+            throw new XmlError(XE.NONE);
+        });
     });
 
     it("Error params", () => {
