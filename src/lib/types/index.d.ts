@@ -30,23 +30,23 @@ interface XmlNamespace {
 interface XmlAttributeType<T> {
     localName?: string;
     required?: boolean;
-    defaultValue?: T;
-    namespaceUri?: string | null;
+    defaultValue?: T | null;
+    namespaceURI?: string | null;
     converter?: IConverter<T>; 
 }
 
 interface XmlElementType {
     localName: string;
-    namespaceUri?: string | null;
+    namespaceURI?: string | null;
     prefix?: string | null; 
 } 
 
 interface XmlChildElementType<T> {
     localName?: string;
-    namespaceUri?: string | null;
+    namespaceURI?: string | null;
     prefix?: string | null;
     required?: boolean;
-    defaultValue?: T; 
+    defaultValue?: T | null; 
     converter?: IConverter<T>;
     parser?: any;
 } 

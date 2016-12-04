@@ -18,11 +18,11 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
         }
         else {
             if (!params.localName)
-                params.localName = propertyKey as string;
+                params.localName = keyName;
 
             t.elements[keyName] = {
                 localName: params.localName,
-                namespaceUri: params.namespaceUri || null,
+                namespaceURI: params.namespaceURI || null,
                 required: params.required || false,
                 prefix: params.prefix || null,
                 defaultValue: params.defaultValue,
@@ -32,13 +32,12 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
         }
 
 
-        Object.defineProperty(target, propertyKey as string, {
-            set: (v: any) => {
-                // Add attribute description
+        Object.defineProperty(target, keyName, {
+            set: function (v: any) {
                 this.element = null;
                 value = v;
             },
-            get: () => {
+            get: function () {
                 return value;
             }
         });
@@ -50,12 +49,12 @@ export function XmlElement(params: XmlElementType) {
         const t = target as any;
 
         t.localName = params.localName;
-        t.namespaceUri = params.namespaceUri || null;
+        t.namespaceURI = params.namespaceURI || null;
         t.prefix = params.prefix || null;
     };
 }
 
-export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false, namespaceUri: null }) {
+export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false, namespaceURI: null }) {
     return (target: Object, propertyKey: string | symbol) => {
         const t = target.constructor as any;
 
@@ -68,12 +67,11 @@ export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false,
         t.attributes[propertyKey] = params;
 
         Object.defineProperty(target, propertyKey as string, {
-            set: (v: any) => {
-
+            set: function (v: any) {
                 this.element = null;
                 value = v;
             },
-            get: () => {
+            get: function () {
                 return value;
             }
         });

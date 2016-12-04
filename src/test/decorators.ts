@@ -6,6 +6,20 @@ import * as assert from "assert";
 
 describe("Decorators", () => {
 
+    it("malformed", () => {
+
+        @XmlElement({ localName: "test" })
+        class XmlTest extends XmlObject {
+        }
+
+        const doc = XmlObject.Parse(`<wronName/>`);
+
+        let test = new XmlTest();
+        assert.throws(() => {
+            test.LoadXml(doc.documentElement);
+        }, XmlError);
+    });
+
     context("Element", () => {
 
         context("GetXml", () => {
@@ -20,7 +34,7 @@ describe("Decorators", () => {
             });
 
             it("namespace", () => {
-                @XmlElement({ localName: "test", namespaceUri: "http://some.com" })
+                @XmlElement({ localName: "test", namespaceURI: "http://some.com" })
                 class Test extends XmlObject {
                 }
 
@@ -30,7 +44,7 @@ describe("Decorators", () => {
             });
 
             it("prefix with namespace", () => {
-                @XmlElement({ localName: "test", prefix: "sm", namespaceUri: "http://some.com" })
+                @XmlElement({ localName: "test", prefix: "sm", namespaceURI: "http://some.com" })
                 class Test extends XmlObject {
                 }
 
@@ -94,7 +108,7 @@ describe("Decorators", () => {
                 it("namespace", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
-                        @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceUri: "http://some.com" })
+                        @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceURI: "http://some.com" })
                         Child: string;
                     }
 
@@ -108,7 +122,7 @@ describe("Decorators", () => {
                 it("prefix", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
-                        @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceUri: "http://some.com", prefix: "px" })
+                        @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceURI: "http://some.com", prefix: "px" })
                         Child: string;
                     }
 
@@ -133,7 +147,7 @@ describe("Decorators", () => {
                     @XmlChildElement({ localName: "text", defaultValue: 5, converter: XmlNumberConverter })
                     public Value: number;
                 }
-                @XmlElement({ localName: "child2", namespaceUri: "http://number.com" })
+                @XmlElement({ localName: "child2", namespaceURI: "http://number.com" })
                 class Child2 extends XmlBase {
                     @XmlChildElement({ localName: "text", defaultValue: new Uint8Array([1, 0, 1]), converter: XmlBase64Converter })
                     public Value: Uint8Array;
@@ -169,6 +183,194 @@ describe("Decorators", () => {
 
             });
         });
+
+        context("LoadXml", () => {
+
+            context("simple", () => {
+
+                it("value", () => {
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ localName: "value", defaultValue: "" })
+                        public Value: string;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test><value>123</value></test>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Value, "123");
+
+                });
+
+                it("required with error", () => {
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ localName: "value", defaultValue: "", required: true })
+                        public Value: string;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test/>`);
+
+                    let test = new XmlTest();
+
+                    assert.throws(() => {
+                        test.LoadXml(doc.documentElement);
+                    }, XmlError);
+
+                });
+
+                it("required", () => {
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ localName: "value", defaultValue: "", required: true })
+                        public Value: string;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test><value>123</value></test>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Value, "123");
+
+                });
+
+                it("converter", () => {
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ localName: "value", defaultValue: null, converter: XmlBase64Converter })
+                        public Value: Uint8Array | null;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test><value>AQAB</value></test>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Value instanceof Uint8Array, true);
+                    assert.equal(test.Value!.length, 3);
+
+                });
+
+                it("namespace", () => {
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ localName: "value", defaultValue: "", namespaceURI: "http://some.com" })
+                        public Value: string;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test xmlns:p="http://some.com"><p:value>Text</p:value></test>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Value, "Text");
+                });
+
+            });
+
+            context("child", () => {
+
+                it("simple", () => {
+                    @XmlElement({ localName: "value" })
+                    class XmlChild extends XmlObject {
+
+                        @XmlAttribute({ localName: "id", defaultValue: "" })
+                        public Id: string;
+
+                    }
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ required: true, parser: XmlChild })
+                        public Value: XmlChild;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test><value id="123"/></test>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Value.Id, "123");
+                });
+
+                it("required", () => {
+                    @XmlElement({ localName: "value" })
+                    class XmlChild extends XmlObject {
+
+                        @XmlAttribute({ localName: "id", defaultValue: "" })
+                        public Id: string;
+
+                    }
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ required: true, parser: XmlChild })
+                        public Value: XmlChild;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test></test>`);
+
+                    let test = new XmlTest();
+                    assert.throws(() => {
+                        test.LoadXml(doc.documentElement);
+                    }, XmlError);
+
+                });
+
+                it("namespace", () => {
+                    @XmlElement({ localName: "value", namespaceURI: "http://some.com" })
+                    class XmlChild extends XmlObject {
+
+                        @XmlAttribute({ localName: "id", defaultValue: "" })
+                        public Id: string;
+
+                    }
+
+                    @XmlElement({ localName: "test" })
+                    class XmlTest extends XmlObject {
+
+                        @XmlChildElement({ required: true, parser: XmlChild })
+                        public Value: XmlChild;
+
+                    }
+
+                    const doc = XmlObject.Parse(`<test xmlns:p="http://some.com"><p:value id="123"/></test>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Value.Id, "123");
+                    assert.equal(test.Value.Prefix, "p");
+                    assert.equal(test.Value.NamespaceURI, "http://some.com");
+
+                });
+
+            });
+
+        });
+
     });
 
     context("Attribute", () => {
@@ -237,6 +439,117 @@ describe("Decorators", () => {
                 test.ConvertB64 = undefined; // remove value
                 test.Id = "123";
                 assert.equal(test.toString(), `<test Id="123" required="some"/>`);
+            });
+
+        });
+
+        context("LoadXml", () => {
+
+            it("simple", () => {
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+
+                    @XmlAttribute({ localName: "id", defaultValue: "" })
+                    public Id: string;
+
+                }
+
+                const doc = XmlObject.Parse(`<test id="123"/>`);
+
+                let test = new XmlTest();
+                test.LoadXml(doc.documentElement);
+
+                assert.equal(test.Id, "123");
+
+            });
+
+            it("required with error", () => {
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+
+                    @XmlAttribute({ localName: "id", required: true })
+                    public Id: string;
+
+                }
+
+                const doc = XmlObject.Parse(`<test/>`);
+
+                let test = new XmlTest();
+
+                assert.throws(() => {
+                    test.LoadXml(doc.documentElement);
+                }, XmlError);
+
+            });
+
+            it("required", () => {
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+
+                    @XmlAttribute({ localName: "id", required: true })
+                    public Id: string;
+
+                }
+
+                const doc = XmlObject.Parse(`<test id="123"/>`);
+
+                let test = new XmlTest();
+                test.LoadXml(doc.documentElement);
+
+                assert.equal(test.Id, "123");
+            });
+
+            it("namespace", () => {
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+
+                    @XmlAttribute({ localName: "id", defaultValue: "", required: true, namespaceURI: "http://some.com" })
+                    public Id: string;
+
+                }
+
+                {
+                    // correct
+                    const doc = XmlObject.Parse(`<test xmlns:s="http://some.com" s:id="123"/>`);
+
+                    let test = new XmlTest();
+                    test.LoadXml(doc.documentElement);
+
+                    assert.equal(test.Id, "123");
+                }
+
+                {
+                    // error
+                    const doc = XmlObject.Parse(`<test xmlns:s="http://other.com" s:id="123"/>`);
+
+                    let test = new XmlTest();
+                    assert.throws(() => {
+                        test.LoadXml(doc.documentElement);
+                    }, XmlError);
+                }
+            });
+
+            it("converter", () => {
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+
+                    @XmlAttribute({ localName: "value", defaultValue: null, converter: XmlBase64Converter })
+                    public Value: Uint8Array | null;
+
+                }
+
+                const doc = XmlObject.Parse(`<test value="AQAB"/>`);
+
+                let test = new XmlTest();
+                test.LoadXml(doc.documentElement);
+
+                assert.equal(test.Value instanceof Uint8Array, true);
+                assert.equal(test.Value!.length, 3);
             });
 
         });

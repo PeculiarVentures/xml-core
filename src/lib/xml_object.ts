@@ -11,7 +11,7 @@ export abstract class XmlObject implements IXmlSerializable {
     protected static attributes: AssocArray<XmlAttributeType<any>>;
     protected static elements: AssocArray<XmlChildElementType<any>>;
     protected static prefix: string | null;
-    protected static namespaceUri: string | null;
+    protected static namespaceURI: string | null;
     protected static localName: string;
 
     protected element: Element | null = null;
@@ -32,7 +32,7 @@ export abstract class XmlObject implements IXmlSerializable {
         return this.GetStatic().localName;
     }
     get NamespaceURI(): string | null {
-        return this.GetStatic().namespaceUri;
+        return this.GetStatic().namespaceURI;
     }
 
     protected GetStatic(): any {
@@ -44,7 +44,17 @@ export abstract class XmlObject implements IXmlSerializable {
     }
 
     HasChanged() {
-        return !!this.element;
+        const self = this.GetStatic();
+        // Check changed elements
+        for (let key in self.elements) {
+            const item: XmlChildElementType<any> = self.elements[key];
+            const value = (this as any)[key];
+
+            if (!(value === null || value === void 0) && item.parser && value.HasChanged())
+                return true;
+
+        }
+        return !this.element;
     }
 
 
@@ -53,6 +63,9 @@ export abstract class XmlObject implements IXmlSerializable {
     }
 
     GetXml(): Element {
+        if (!this.HasChanged())
+            return this.element!;
+
         let doc = this.CreateDocument();
         let el = this.CreateElement();
 
@@ -67,10 +80,10 @@ export abstract class XmlObject implements IXmlSerializable {
 
             // attr value
             if (attr.defaultValue !== (this as any)[key] || attr.required)
-                if (!attr.namespaceUri)
+                if (!attr.namespaceURI)
                     el.setAttribute(attr.localName!, value);
                 else
-                    el.setAttributeNS(attr.namespaceUri, attr.localName!, value);
+                    el.setAttributeNS(attr.namespaceURI, attr.localName!, value);
         }
 
         // Add elements
@@ -90,10 +103,10 @@ export abstract class XmlObject implements IXmlSerializable {
                 if (item.required && (value === null || value === void 0))
                     throw new XmlError(XE.ELEMENT_MISSING, item.localName, localName);
                 if ((this as any)[key] !== item.defaultValue || item.required) {
-                    if (!item.namespaceUri)
+                    if (!item.namespaceURI)
                         node = doc.createElement(`${item.prefix ? item.prefix + ":" : ""}${item.localName}`);
                     else {
-                        node = doc.createElementNS(item.namespaceUri, `${item.prefix ? item.prefix + ":" : ""}${item.localName}`);
+                        node = doc.createElementNS(item.namespaceURI, `${item.prefix ? item.prefix + ":" : ""}${item.localName}`);
                     }
                     node.textContent = value;
                 }
@@ -103,6 +116,7 @@ export abstract class XmlObject implements IXmlSerializable {
                 el.appendChild(node);
         }
 
+        // Set custom
         this.OnGetXml(el);
 
         // Cache compiled elements
@@ -118,11 +132,84 @@ export abstract class XmlObject implements IXmlSerializable {
             throw new XmlError(XE.PARAM_REQUIRED, "element");
         }
 
-        const localName: string = this.GetStatic().localName;
+        const self = this.GetStatic() as any;
+        const localName: string = self.localName;
 
-        if (!((element.localName === localName) && (element.namespaceURI === this.NamespaceURI)))
+        // tslint:disable-next-line:triple-equals
+        if (!((element.localName === localName) && (element.namespaceURI == this.NamespaceURI)))
             throw new XmlError(XE.ELEMENT_MALFORMED, localName);
 
+        // Get attributes
+        for (let key in self.attributes) {
+            let item: XmlAttributeType<any> = self.attributes[key];
+
+            let hasAttribute: () => boolean;
+            let getAttribute: () => string | null;
+            if (item.namespaceURI) {
+                hasAttribute = element.hasAttributeNS.bind(element, item.namespaceURI, item.localName);
+                getAttribute = element.getAttributeNS.bind(element, item.namespaceURI, item.localName);
+            }
+            else {
+                hasAttribute = element.hasAttribute.bind(element, item.localName);
+                getAttribute = element.getAttribute.bind(element, item.localName);
+            }
+
+            if (item.required && !hasAttribute())
+                throw new XmlError(XE.ATTRIBUTE_MISSING, item.localName, localName);
+
+            if (!hasAttribute())
+                (this as any)[key] = item.defaultValue;
+            else {
+                let value = item.converter ? item.converter.set(getAttribute() !) : getAttribute() !;
+                (this as any)[key] = value;
+            }
+        }
+
+        // Get element
+        for (let key in self.elements) {
+            const item: XmlChildElementType<any> = self.elements[key];
+
+            // Get element by localName
+            let foundElement: Element | null = null;
+            for (let i = 0; i < element.childNodes.length; i++) {
+                const node = element.childNodes.item(i);
+                if (node.nodeType !== XmlNodeType.Element)
+                    continue;
+                const el = node as Element;
+                const checker = item.parser ? item.parser : item;
+                if (el.localName === checker.localName &&
+                    // tslint:disable-next-line:triple-equals
+                    el.namespaceURI == checker.namespaceURI) {
+                    foundElement = el;
+                    break;
+                }
+            }
+
+            // required
+            if (item.required && !foundElement)
+                throw new XmlError(XE.ELEMENT_MISSING, item.parser ? item.parser.localName : item.localName, localName);
+
+            if (!item.parser) {
+
+                // simple element
+                if (!foundElement)
+                    (this as any)[key] = item.defaultValue;
+                else {
+                    let value = item.converter ? item.converter.set(foundElement.textContent!) : foundElement.textContent;
+                    (this as any)[key] = value;
+                }
+            }
+            else {
+                // element
+                if (foundElement) {
+                    const value = new item.parser() as IXmlSerializable;
+                    (this as any)[key] = value;
+                    value.LoadXml(foundElement);
+                }
+            }
+        }
+
+        // Get custom
         this.OnLoadXml(element);
 
         this.prefix = element.prefix || "";
@@ -132,6 +219,10 @@ export abstract class XmlObject implements IXmlSerializable {
     toString(): string {
         let xml = this.GetXml();
         return new XMLSerializer().serializeToString(xml);
+    }
+
+    static Parse(xmlstring: string) {
+        return new DOMParser().parseFromString(xmlstring, APPLICATION_XML);
     }
 
     static GetElement(element: Element, name: string, required: boolean = true) {
