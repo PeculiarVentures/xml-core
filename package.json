@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@types/node": "*",
+    "@types/mocha": "^2.2.33",
     "xmldom-alpha": "^0.1.21",
     "xpath.js": "^1.0.6"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.33",
     "ts-loader": "^1.0.0"
   },
   "scripts": {
