@@ -618,6 +618,50 @@ describe("Decorators", () => {
                 assert.equal(test.toString(), `<test><transform><Value>Hello</Value></transform></test>`);
 
             });
+
+            it("no root occurs", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                    constructor(value?: string) {
+                        super();
+                        if (value)
+                            this.Value = value;
+                    }
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ minOccurs: 1, maxOccurs: 4, parser: XmlTransforms, noRoot: true })
+                    Transforms: XmlTransforms;
+                }
+
+                let test = new XmlTest();
+
+                test.Transforms = new XmlTransforms();
+
+                assert.throws(() => {
+                    test.toString();
+                }, XmlError);
+
+                test.Transforms.Add(new XmlTransform("1"));
+                test.Transforms.Add(new XmlTransform("2"));
+                test.Transforms.Add(new XmlTransform("3"));
+                test.Transforms.Add(new XmlTransform("4"));
+                assert.equal(test.toString(), `<test><transform><Value>4</Value></transform><transform><Value>4</Value></transform><transform><Value>4</Value></transform><tr
+ansform><Value>4</Value></transform></test>`);
+
+                test.Transforms.Add(new XmlTransform("4"));
+                assert.throws(() => {
+                    test.toString();
+                }, XmlError);
+            });
         });
 
         context("LoadXml", () => {

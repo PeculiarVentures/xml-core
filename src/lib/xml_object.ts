@@ -114,12 +114,18 @@ export abstract class XmlObject implements IXmlSerializable {
             }
 
             if (node)
-                if (item.noRoot)
+                if (item.noRoot) {
+                    let els: Element[] = [];
+                    // no root
                     for (let i = 0; i < node.childNodes.length; i++) {
                         const colNode = node.childNodes.item(i);
                         if (colNode.nodeType === XmlNodeType.Element)
-                            el.appendChild(colNode);
+                            els.push(colNode as Element);
                     }
+                    if (els.length < item.minOccurs || els.length > item.maxOccurs)
+                        throw new XmlError(XE.COLLECTION_LIMIT, item.parser.parser.localName, self.localName);
+                    els.forEach(e => el.appendChild(e));
+                }
                 else
                     el.appendChild(node);
         }
