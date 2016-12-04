@@ -126,8 +126,11 @@ export abstract class XmlObject implements IXmlSerializable {
                         throw new XmlError(XE.COLLECTION_LIMIT, item.parser.parser.localName, self.localName);
                     els.forEach(e => el.appendChild(e));
                 }
-                else
+                else {
+                    if (node.childNodes.length < item.minOccurs || node.childNodes.length > item.maxOccurs)
+                        throw new XmlError(XE.COLLECTION_LIMIT, item.parser.parser.localName, self.localName);
                     el.appendChild(node);
+                }
         }
 
         // Set custom
