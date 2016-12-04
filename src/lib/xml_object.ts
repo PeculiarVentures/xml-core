@@ -47,6 +47,11 @@ export abstract class XmlObject implements IXmlSerializable {
         return !!this.element;
     }
 
+
+    protected OnGetXml(element: Element) {
+
+    }
+
     GetXml(): Element {
         let doc = this.CreateDocument();
         let el = this.CreateElement();
@@ -98,9 +103,14 @@ export abstract class XmlObject implements IXmlSerializable {
                 el.appendChild(node);
         }
 
+        this.OnGetXml(el);
+
         // Cache compiled elements
         this.element = el;
         return el;
+    }
+
+    protected OnLoadXml(element: Element) {
     }
 
     LoadXml(element: Element) {
@@ -112,6 +122,8 @@ export abstract class XmlObject implements IXmlSerializable {
 
         if (!((element.localName === localName) && (element.namespaceURI === this.NamespaceURI)))
             throw new XmlError(XE.ELEMENT_MALFORMED, localName);
+
+        this.OnLoadXml(element);
 
         this.prefix = element.prefix || "";
         this.element = element;
