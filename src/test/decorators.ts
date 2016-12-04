@@ -1,4 +1,4 @@
-import { XmlAttribute, XmlElement, XmlObject, XmlError, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
+import { XmlAttribute, XmlElement, XmlChildElement, XmlObject, XmlError, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");
@@ -48,6 +48,126 @@ describe("Decorators", () => {
 
                 assert.equal(test.toString(), `<sm:test xmlns:sm=""/>`);
             });
+
+            context("simple child", () => {
+
+                it("default value", () => {
+                    @XmlElement({ localName: "test" })
+                    class Test extends XmlObject {
+                        @XmlChildElement({ defaultValue: "" })
+                        Child: string;
+                    }
+
+                    const test = new Test();
+
+                    assert.equal(test.toString(), `<test/>`);
+                    test.Child = "Hello";
+                    assert.equal(test.toString(), `<test><Child>Hello</Child></test>`);
+                });
+
+                it("default value and required", () => {
+                    @XmlElement({ localName: "test" })
+                    class Test extends XmlObject {
+                        @XmlChildElement({ defaultValue: "1", required: true })
+                        Child: string;
+                    }
+
+                    const test = new Test();
+
+                    assert.equal(test.toString(), `<test><Child>1</Child></test>`);
+                });
+
+                it("changed name", () => {
+                    @XmlElement({ localName: "test" })
+                    class Test extends XmlObject {
+                        @XmlChildElement({ localName: "ch", defaultValue: "1" })
+                        Child: string;
+                    }
+
+                    const test = new Test();
+
+                    assert.equal(test.toString(), `<test/>`);
+                    test.Child = "Hello";
+                    assert.equal(test.toString(), `<test><ch>Hello</ch></test>`);
+                });
+
+                it("namespace", () => {
+                    @XmlElement({ localName: "test" })
+                    class Test extends XmlObject {
+                        @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceUri: "http://some.com" })
+                        Child: string;
+                    }
+
+                    const test = new Test();
+
+                    assert.equal(test.toString(), `<test/>`);
+                    test.Child = "Hello";
+                    assert.equal(test.toString(), `<test><ch xmlns="http://some.com">Hello</ch></test>`);
+                });
+
+                it("prefix", () => {
+                    @XmlElement({ localName: "test" })
+                    class Test extends XmlObject {
+                        @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceUri: "http://some.com", prefix: "px" })
+                        Child: string;
+                    }
+
+                    const test = new Test();
+
+                    assert.equal(test.toString(), `<test/>`);
+                    test.Child = "Hello";
+                    assert.equal(test.toString(), `<test><px:ch xmlns:px="http://some.com">Hello</px:ch></test>`);
+                });
+            });
+
+            context("Child", () => {
+
+                @XmlElement({ localName: "base" })
+                class XmlBase extends XmlObject {
+                    @XmlAttribute({ localName: "id", defaultValue: "" })
+                    Id: string;
+                }
+
+                @XmlElement({ localName: "child1" })
+                class Child1 extends XmlBase {
+                    @XmlChildElement({ localName: "text", defaultValue: 5, converter: XmlNumberConverter })
+                    public Value: number;
+                }
+                @XmlElement({ localName: "child2", namespaceUri: "http://number.com" })
+                class Child2 extends XmlBase {
+                    @XmlChildElement({ localName: "text", defaultValue: new Uint8Array([1, 0, 1]), converter: XmlBase64Converter })
+                    public Value: Uint8Array;
+                }
+
+                @XmlElement({ localName: "root" })
+                class Root extends XmlBase {
+                    @XmlChildElement({ localName: "name", required: true })
+                    public Name: string;
+
+                    @XmlChildElement({ parser: Child1 })
+                    public ChildOptional: Child1;
+                    @XmlChildElement({ parser: Child2, required: true })
+                    public ChildRequired: Child2;
+                }
+
+                it("default", () => {
+                    let root = new Root();
+                    assert.throws(() => root.toString(), XmlError);
+                    root.Name = "MyName";
+
+                    root.ChildRequired = new Child2();
+
+                    assert.equal(root.toString(), `<root><name>MyName</name><child2 xmlns="http://number.com"/></root>`);
+
+                    root.ChildOptional = new Child1();
+                    root.ChildOptional.Id = "10";
+                    root.ChildOptional.Value = 12;
+                    root.ChildRequired.Value = new Uint8Array([1, 1, 1]);
+
+                    assert.equal(root.toString(), `<root id="10"><name>MyName</name><child1 id="10"><text>12</text></child1><child2 id="10" xmlns="http://number.com"><text>AQEB</text></child2></root>`);
+                });
+
+            });
         });
     });
 
@@ -62,16 +182,16 @@ describe("Decorators", () => {
                 @XmlAttribute()
                 public Id?: string;
 
-                @XmlAttribute({ name: "num", defaultValue: 0, converter: XmlNumberConverter })
+                @XmlAttribute({ localName: "num", defaultValue: 0, converter: XmlNumberConverter })
                 public ConvertNumber?: number;
 
-                @XmlAttribute({ name: "b64", converter: XmlBase64Converter })
+                @XmlAttribute({ localName: "b64", converter: XmlBase64Converter })
                 public ConvertB64?: Uint8Array;
 
                 @XmlAttribute({ defaultValue: "none" })
                 public Attr1?: string;
 
-                @XmlAttribute({ required: true, name: "required" })
+                @XmlAttribute({ required: true, localName: "required" })
                 public Required: string;
             }
 

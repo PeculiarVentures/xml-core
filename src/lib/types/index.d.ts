@@ -28,7 +28,7 @@ interface XmlNamespace {
 }
 
 interface XmlAttributeType<T> {
-    name?: string;
+    localName?: string;
     required?: boolean;
     defaultValue?: T;
     namespaceUri?: string | null;
@@ -39,6 +39,16 @@ interface XmlElementType {
     localName: string;
     namespaceUri?: string | null;
     prefix?: string | null; 
+} 
+
+interface XmlChildElementType<T> {
+    localName?: string;
+    namespaceUri?: string | null;
+    prefix?: string | null;
+    required?: boolean;
+    defaultValue?: T; 
+    converter?: IConverter<T>;
+    parser?: any;
 } 
 
 interface IConverter<T> {

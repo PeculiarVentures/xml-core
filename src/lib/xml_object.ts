@@ -9,6 +9,7 @@ const DEFAULT_ROOT_NAME = "xml_root";
 export abstract class XmlObject implements IXmlSerializable {
 
     protected static attributes: AssocArray<XmlAttributeType<any>>;
+    protected static elements: AssocArray<XmlChildElementType<any>>;
     protected static prefix: string | null;
     protected static namespaceUri: string | null;
     protected static localName: string;
@@ -47,6 +48,7 @@ export abstract class XmlObject implements IXmlSerializable {
     }
 
     GetXml(): Element {
+        let doc = this.CreateDocument();
         let el = this.CreateElement();
 
         const localName: string = this.GetStatic().localName;
@@ -56,15 +58,46 @@ export abstract class XmlObject implements IXmlSerializable {
             let attr: XmlAttributeType<any> = this.GetStatic().attributes[key];
             let value = (attr.converter) ? attr.converter.get((this as any)[key]) : (this as any)[key];
             if (attr.required && (value === null || value === void 0))
-                throw new XmlError(XE.ATTRIBUTE_MISSING, attr.name, localName);
+                throw new XmlError(XE.ATTRIBUTE_MISSING, attr.localName, localName);
 
             // attr value
-            if (attr.defaultValue !== (this as any)[key])
+            if (attr.defaultValue !== (this as any)[key] || attr.required)
                 if (!attr.namespaceUri)
-                    el.setAttribute(attr.name!, value);
+                    el.setAttribute(attr.localName!, value);
                 else
-                    el.setAttributeNS(attr.namespaceUri, attr.name!, value);
+                    el.setAttributeNS(attr.namespaceUri, attr.localName!, value);
         }
+
+        // Add elements
+        for (let key in this.GetStatic().elements) {
+            let item = this.GetStatic().elements[key];
+            let node: Element | null = null;
+
+            if (item.parser) {
+                if (item.required && !(this as any)[key])
+                    throw new XmlError(XE.ELEMENT_MISSING, item.parser.localName, localName);
+
+                if ((this as any)[key])
+                    node = (this as any)[key].GetXml();
+            }
+            else {
+                let value = (item.converter) ? item.converter.get((this as any)[key]) : (this as any)[key];
+                if (item.required && (value === null || value === void 0))
+                    throw new XmlError(XE.ELEMENT_MISSING, item.localName, localName);
+                if ((this as any)[key] !== item.defaultValue || item.required) {
+                    if (!item.namespaceUri)
+                        node = doc.createElement(`${item.prefix ? item.prefix + ":" : ""}${item.localName}`);
+                    else {
+                        node = doc.createElementNS(item.namespaceUri, `${item.prefix ? item.prefix + ":" : ""}${item.localName}`);
+                    }
+                    node.textContent = value;
+                }
+            }
+
+            if (node)
+                el.appendChild(node);
+        }
+
         // Cache compiled elements
         this.element = el;
         return el;
@@ -169,7 +202,7 @@ export abstract class XmlObject implements IXmlSerializable {
      * @param  {string} prefix
      * @returns Document
      */
-    static CreateDocument(root: string = DEFAULT_ROOT_NAME, namespaceUri: string | null = null , prefix: string = ""): Document {
+    static CreateDocument(root: string = DEFAULT_ROOT_NAME, namespaceUri: string | null = null, prefix: string = ""): Document {
         let name_prefix = "",
             ns_prefix = "",
             namespace_uri = "";
