@@ -737,4 +737,36 @@ describe("Decorators", () => {
 
     });
 
+    it("extends", () => {
+
+        @XmlElement({
+            localName: "first",
+            namespaceURI: "http://some.com",
+            prefix: "p",
+        })
+        class XmlFirst extends XmlObject {
+
+            @XmlAttribute()
+            public Id: string;
+
+        }
+
+        @XmlElement({
+            localName: "second",
+        })
+        class XmlSecond extends XmlFirst {
+        }
+
+        let first = new XmlFirst();
+        first.Id = "1";
+        assert.equal(first.toString(), `<p:first Id="1" xmlns:p="http://some.com"/>`);
+
+        let second = new XmlSecond();
+        second.Id = "2";
+        assert.equal(second.toString(), `<p:second Id="2" xmlns:p="http://some.com"/>`);
+        assert.equal((XmlFirst as any).prefix, (XmlSecond as any).prefix)
+        assert.equal((XmlFirst as any).namespaceURI, (XmlSecond as any).namespaceURI)
+
+    });
+
 });

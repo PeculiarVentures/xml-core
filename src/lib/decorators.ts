@@ -57,10 +57,10 @@ export function XmlElement(params: XmlElementType) {
         if (!params.localName)
             throw new XmlError(XE.DECORATOR_NULL_PARAM, "XmlElementCollection", "localName");
 
-        t.localName = params.localName;
-        t.namespaceURI = params.namespaceURI || null;
-        t.prefix = params.prefix || null;
-        t.parser = params.parser;
+        t.localName = params.localName || t.localName;
+        t.namespaceURI = params.namespaceURI || t.namespaceURI || null;
+        t.prefix = params.prefix || t.prefix || null;
+        t.parser = params.parser || t.parser;
     };
 }
 
