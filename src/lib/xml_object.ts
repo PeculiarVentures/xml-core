@@ -66,14 +66,15 @@ export abstract class XmlObject implements IXmlSerializable {
         if (!this.HasChanged())
             return this.element!;
 
-        let doc = this.CreateDocument();
-        let el = this.CreateElement();
+        const doc = this.CreateDocument();
+        const el = this.CreateElement();
+        const self = this.GetStatic();
 
-        const localName: string = this.GetStatic().localName;
+        const localName: string = self.localName;
 
         // Add attributes
-        for (let key in this.GetStatic().attributes) {
-            let attr: XmlAttributeType<any> = this.GetStatic().attributes[key];
+        for (let key in self.attributes) {
+            let attr: XmlAttributeType<any> = self.attributes[key];
             let value = (attr.converter) ? attr.converter.get((this as any)[key]) : (this as any)[key];
             if (attr.required && (value === null || value === void 0))
                 throw new XmlError(XE.ATTRIBUTE_MISSING, attr.localName, localName);
@@ -87,8 +88,8 @@ export abstract class XmlObject implements IXmlSerializable {
         }
 
         // Add elements
-        for (let key in this.GetStatic().elements) {
-            let item = this.GetStatic().elements[key];
+        for (let key in self.elements) {
+            let item = self.elements[key];
             let node: Element | null = null;
 
             if (item.parser) {
@@ -113,7 +114,14 @@ export abstract class XmlObject implements IXmlSerializable {
             }
 
             if (node)
-                el.appendChild(node);
+                if (item.noRoot)
+                    for (let i = 0; i < node.childNodes.length; i++) {
+                        const colNode = node.childNodes.item(i);
+                        if (colNode.nodeType === XmlNodeType.Element)
+                            el.appendChild(colNode);
+                    }
+                else
+                    el.appendChild(node);
         }
 
         // Set custom
@@ -168,6 +176,17 @@ export abstract class XmlObject implements IXmlSerializable {
         // Get element
         for (let key in self.elements) {
             const item: XmlChildElementType<any> = self.elements[key];
+
+            // noRoot
+            if (item.noRoot) {
+                const col = new item.parser();
+                col.OnLoadXml(element);
+
+                if (col.Count < item.minOccurs || col.Count > item.maxOccurs)
+                    throw new XmlError(XE.COLLECTION_LIMIT, item.parser.parser.localName, self.localName);
+                (this as any)[key] = col;
+                continue;
+            }
 
             // Get element by localName
             let foundElement: Element | null = null;

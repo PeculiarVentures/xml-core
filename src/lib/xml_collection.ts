@@ -1,34 +1,10 @@
-import { XmlError, XE } from "./error";
-import { XmlNodeType, DEFAULT_PREFIX, DEFAULT_NAMESPACE_URI } from "./xml";
 import { XmlObject } from "./xml_object";
 import { Collection } from "./collection";
+import { XmlNodeType } from "./xml";
 
-export const MAX = Number.MAX_VALUE;
-export const MIN = 0;
+export abstract class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
 
-export abstract class XmlCollection<I extends XmlObject> extends Collection<I> implements IXmlSerializable {
-
-    protected element: Element | null = null;
-    protected prefix = DEFAULT_PREFIX;
-    protected namespaceUri = DEFAULT_NAMESPACE_URI;
-    protected abstract name: string;
-
-    // Public properties
-
-    get Element() {
-        return this.element;
-    }
-
-    get Prefix(): string {
-        return this.prefix;
-    }
-    set Prefix(value: string) {
-        this.prefix = value;
-    }
-
-    get NamespaceURI() {
-        return this.namespaceUri;
-    }
+    public static parser: any;
 
     /**
      * The maximum number of elements
@@ -40,120 +16,91 @@ export abstract class XmlCollection<I extends XmlObject> extends Collection<I> i
      */
     MinOccurs: number;
 
-    constructor(minOccurs: number = MIN, maxOccurs: number = MAX) {
-        super();
-        this.MinOccurs = minOccurs;
-        this.MaxOccurs = maxOccurs;
-    }
-
-    // Protetced methods
-
-    protected GetPrefix(): string {
-        return this.Prefix ? this.Prefix + ":" : "";
-    }
-
-    protected abstract OnLoadChildElement(element: Element): any;
-
-    // Public methods
-    /**
-     * Check to see if something has changed in this instance and needs to be serialized
-     * @returnsFlag indicating if a member needs serialization</returns>
-     */
-    public HasChanged(): boolean {
-        let retVal = false;
-
-        if (this.Count > 0) {
-            retVal = true;
-        }
-
-        return retVal;
-    }
-
-
-    /**
-     * Load state from an XML element
-     * @param {Element} element XML element containing new state
-     */
-    public LoadXml(element: Element): void {
-        if (element == null) {
-            throw new XmlError(XE.PARAM_REQUIRED, "element");
-        }
-
-        if (!((element.localName === this.name) && (element.namespaceURI === this.NamespaceURI)))
-            throw new XmlError(XE.ELEMENT_MALFORMED, this.name);
-
-        this.namespaceUri = element.namespaceURI;
-        this.prefix = element.prefix || "";
-        this.element = element;
-
-        this.Clear();
-        let xmlNodeList = element.childNodes;
-        try {
-            for (let i = 0; i < xmlNodeList.length; i++) {
-                let node = xmlNodeList.item(i) as Element;
-                if (node.nodeType !== XmlNodeType.Element)
-                    continue;
-                let item = this.OnLoadChildElement(node);
-                if (item)
-                    this.Add(item);
-            }
-        }
-        catch (e) { console.error(e); }
-        if (!(this.MinOccurs <= this.Count && this.Count <= this.MaxOccurs))
-            throw new XmlError(XE.CRYPTOGRAPHIC, `${this.name} has wrong items number '${this.Count}', should be [${this.MinOccurs},${this.MaxOccurs === MAX ? "unbounded" : this.MaxOccurs}]`);
-    }
-
-    /**
-     * Returns the XML representation of the this object
-     * @returns XML element containing the state of this object
-     */
-    public GetXml(): Element {
-        let document = this.CreateDocument();
-        let element = this.CreateElement(document);
-
-        let appendedCount = 0;
+    protected OnGetXml(element: Element) {
         for (let item of this.GetIterator()) {
-            if (item.HasChanged()) {
-                element.appendChild(document.importNode(item.GetXml(), true));
-                appendedCount++;
-            }
+            const el = item.GetXml();
+            element.appendChild(el);
         }
-        if (!(this.MinOccurs <= appendedCount && appendedCount <= this.MaxOccurs))
-            throw new XmlError(XE.CRYPTOGRAPHIC, `${this.name} has wrong items number '${appendedCount}', should be [${this.MinOccurs},${this.MaxOccurs === MAX ? "unbounded" : this.MaxOccurs}]`);
-
-        return element;
     }
 
-    protected CreateDocument() {
-        return XmlObject.CreateDocument(
-            this.name,
-            this.NamespaceURI,
-            this.Prefix);
-    }
+    protected OnLoadXml(element: Element) {
+        const self = this.GetStatic();
+        for (let i = 0; i < element.childNodes.length; i++) {
+            const node = element.childNodes.item(i);
+            if (node.nodeType !== XmlNodeType.Element &&
+                node.localName === self.parser.localName &&
+                // tslint:disable-next-line:triple-equals
+                node.namespaceURI == self.namespaceURI)
+                break;
+            const el = node as Element;
 
-    protected CreateElement(document: Document) {
-        const xn = document.createElementNS(this.NamespaceURI, this.GetPrefix() + this.name);
-        document.importNode(xn, true);
-        return xn;
-    }
-
-    /**
-     * Returns Element by tag name and default namespace uri.
-     * If element is required and not founded, throws exception
-     * @param  {Element} element
-     * @param  {string} name
-     * @param  {boolean=true} required
-     */
-    protected GetElement(element: Element, name: string, required: boolean = true) {
-        let xmlNodeList = element.getElementsByTagNameNS(this.NamespaceURI, name);
-        if (required && xmlNodeList.length === 0) {
-            throw new XmlError(XE.CRYPTOGRAPHIC, `${name} missing`);
+            let item = new self.parser() as IXmlSerializable;
+            item.LoadXml(el);
+            this.Add(item as any);
         }
-        return xmlNodeList[0] || null;
     }
 
-    toString(): string {
-        let xml = this.GetXml();
-        return new XMLSerializer().serializeToString(xml);
+    // Collection
+    protected items: Array<I> = new Array();
+
+    public get Count() {
+        return this.items.length;
     }
+
+    public Item(index: number): I | null {
+        return this.items[index] || null;
+    }
+
+    public Add(item: I) {
+        this.items.push(item);
+        this.element = null;
+    }
+
+    public Pop() {
+        this.element = null;
+        return this.items.pop();
+    }
+
+    public RemoveAt(index: number) {
+        this.items = this.items.filter((item, _index) => _index !== index);
+        this.element = null;
+    }
+
+    public Clear() {
+        this.items = new Array();
+        this.element = null;
+    }
+
+    public GetIterator() {
+        return this.items;
+    }
+
+    public ForEach(cb: (item: I, index: number, array: Array<I>) => void) {
+        this.GetIterator().forEach(cb);
+    }
+
+    public Map<U>(cb: (item: I, index: number, array: Array<I>) => U) {
+        return new Collection(this.GetIterator().map<U>(cb));
+    }
+
+    public Filter(cb: (item: I, index: number, array: Array<I>) => boolean) {
+        return new Collection(this.GetIterator().filter(cb));
+    }
+
+    public Sort(cb: (a: I, b: I) => number) {
+        return new Collection(this.GetIterator().sort(cb));
+    }
+
+    public Every(cb: (value: I, index: number, array: I[]) => boolean) {
+        return this.GetIterator().every(cb);
+    }
+
+    public Some(cb: (value: I, index: number, array: I[]) => boolean) {
+        return this.GetIterator().some(cb);
+    }
+
+    IsEmpty() {
+        return this.Count === 0;
+    }
+
 }

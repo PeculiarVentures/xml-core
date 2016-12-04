@@ -1,4 +1,7 @@
 /// <reference path="./types/index.d.ts" />
+import { XmlError, XE } from "./error";
+
+const MAX = 1e9;
 
 export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
     return (target: Object, propertyKey: string | symbol) => {
@@ -14,6 +17,9 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
             t.elements[keyName] = {
                 parser: params.parser,
                 required: params.required || false,
+                maxOccurs: params.maxOccurs || MAX,
+                minOccurs: params.minOccurs === void 0 ? 0 : params.minOccurs,
+                noRoot: params.noRoot || false,
             };
         }
         else {
@@ -48,9 +54,13 @@ export function XmlElement(params: XmlElementType) {
     return <TFunction extends Function>(target: TFunction) => {
         const t = target as any;
 
+        if (!params.localName)
+            throw new XmlError(XE.DECORATOR_NULL_PARAM, "XmlElementCollection", "localName");
+
         t.localName = params.localName;
         t.namespaceURI = params.namespaceURI || null;
         t.prefix = params.prefix || null;
+        t.parser = params.parser;
     };
 }
 

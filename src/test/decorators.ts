@@ -1,4 +1,4 @@
-import { XmlAttribute, XmlElement, XmlChildElement, XmlObject, XmlError, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
+import { XmlAttribute, XmlElement, XmlChildElement, XmlObject, XmlCollection, XmlError, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");
@@ -550,6 +550,187 @@ describe("Decorators", () => {
 
                 assert.equal(test.Value instanceof Uint8Array, true);
                 assert.equal(test.Value!.length, 3);
+            });
+
+        });
+
+    });
+
+    context("Collection", () => {
+
+        context("GetXml", () => {
+
+            it("simple", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ minOccurs: 1, parser: XmlTransforms })
+                    Transforms: XmlTransforms;
+                }
+
+                let test = new XmlTest();
+
+                test.Transforms = new XmlTransforms();
+                let t = new XmlTransform();
+                t.Value = "Hello";
+                test.Transforms.Add(t);
+
+                assert.equal(test.toString(), `<test><transforms><transform><Value>Hello</Value></transform></transforms></test>`);
+
+            });
+            it("no root", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ minOccurs: 1, parser: XmlTransforms, noRoot: true })
+                    Transforms: XmlTransforms;
+                }
+
+                let test = new XmlTest();
+
+                test.Transforms = new XmlTransforms();
+                let t = new XmlTransform();
+                t.Value = "Hello";
+                test.Transforms.Add(t);
+
+                assert.equal(test.toString(), `<test><transform><Value>Hello</Value></transform></test>`);
+
+            });
+        });
+
+        context("LoadXml", () => {
+
+            it("simple", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ minOccurs: 1, parser: XmlTransforms })
+                    Transforms: XmlTransforms;
+                }
+
+                let doc = XmlObject.Parse("<test><transforms><transform><Value>Hello</Value></transform></transforms></test>");
+                let test = new XmlTest();
+                test.LoadXml(doc.documentElement);
+
+                assert.equal(test.Transforms.Count, 1);
+                assert.equal(test.Transforms.Item(0) !.Value, "Hello");
+
+            });
+
+            it("no root", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ minOccurs: 1, parser: XmlTransforms, noRoot: true })
+                    Transforms: XmlTransforms;
+                }
+
+                let doc = XmlObject.Parse("<test><transform><Value>Hello</Value></transform></test>");
+                let test = new XmlTest();
+                test.LoadXml(doc.documentElement);
+
+                assert.equal(test.Transforms.Count, 1);
+                assert.equal(test.Transforms.Item(0) !.Value, "Hello");
+
+            });
+
+            it("wrong min occurs", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ minOccurs: 2, parser: XmlTransforms, noRoot: true })
+                    Transforms: XmlTransforms;
+                }
+
+                let doc = XmlObject.Parse("<test><transform><Value>Hello</Value></transform></test>");
+                let test = new XmlTest();
+
+                assert.throws(() => {
+                    test.LoadXml(doc.documentElement);
+                }, XmlError);
+
+            });
+            it("wrong max occurs", () => {
+
+                @XmlElement({ localName: "transform" })
+                class XmlTransform extends XmlObject {
+                    @XmlChildElement({ defaultValue: "" })
+                    public Value: string;
+                }
+
+                @XmlElement({ localName: "transforms", parser: XmlTransform })
+                class XmlTransforms extends XmlCollection<XmlTransform> {
+
+                }
+
+                @XmlElement({ localName: "test" })
+                class XmlTest extends XmlObject {
+                    @XmlChildElement({ maxOccurs: 1, parser: XmlTransforms, noRoot: true })
+                    Transforms: XmlTransforms;
+                }
+
+                let doc = XmlObject.Parse("<test><transform><Value>Hello</Value></transform><transform><Value>Hello</Value></transform></test>");
+                let test = new XmlTest();
+
+                assert.throws(() => {
+                    test.LoadXml(doc.documentElement);
+                }, XmlError);
+
             });
 
         });

@@ -1,4 +1,4 @@
-export class Collection<I> {
+export class Collection<I> implements ICollection<I> {
 
     protected items: Array<I> = new Array();
 

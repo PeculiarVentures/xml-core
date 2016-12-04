@@ -46,6 +46,8 @@ export enum XE {
     NONE,
     NULL_REFERENCE,
     NULL_PARAM,
+    DECORATOR_NULL_PARAM,
+    COLLECTION_LIMIT,
     METHOD_NOT_IMPLEMENTED,
     METHOD_NOT_SUPPORTED,
     PARAM_REQUIRED,
@@ -69,6 +71,8 @@ const xes: IXmlError = {};
 xes[XE.NONE] = "No decription";
 xes[XE.NULL_REFERENCE] = "Null reference";
 xes[XE.NULL_PARAM] = "'%1' has empty '%2' object";
+xes[XE.DECORATOR_NULL_PARAM] = "Decorator '%1' has empty '%2' parameter";
+xes[XE.COLLECTION_LIMIT] = "Collection of '%1' in element '%2' has wrong amount of items";
 xes[XE.METHOD_NOT_IMPLEMENTED] = "Method is not implemented";
 xes[XE.METHOD_NOT_SUPPORTED] = "Method is not supported";
 xes[XE.PARAM_REQUIRED] = "Required parameter is missing '%1'";
