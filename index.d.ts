@@ -2,7 +2,6 @@ declare type SelectNodes = (node: Node, xpath: string) => Node[];
 
 interface IXmlSerializable {
 
-    Prefix: string;
     /**
      * Writes object to XML node
      * @returns Node
@@ -382,8 +381,8 @@ declare namespace XmlJs {
         GetElement(name: string, required?: boolean): Element;
         static GetAttribute(element: Element, attrName: string, defaultValue: string | null, required?: boolean): string | null;
         protected GetAttribute(name: string, defaultValue: string | null, required?: boolean): string | null;
-        protected GetElementById(document: Document, idValue: string): Element | null;
-        protected GetElementById(element: Element, idValue: string): Element | null;
+        static GetElementById(document: Document, idValue: string): Element | null;
+        static GetElementById(element: Element, idValue: string): Element | null;
         protected CreateElement(document?: Document, localName?: string, namespaceUri?: string, prefix?: string): Element;
         protected CreateDocument(): Document;
         static CreateDocument(root?: string, namespaceUri?: string | null, prefix?: string): Document;
