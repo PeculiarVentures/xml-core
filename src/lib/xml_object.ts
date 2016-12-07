@@ -124,7 +124,7 @@ export abstract class XmlObject implements IXmlSerializable {
                     }
                     if (els.length < item.minOccurs || els.length > item.maxOccurs)
                         throw new XmlError(XE.COLLECTION_LIMIT, item.parser.parser.localName, self.localName);
-                    els.forEach(e => el.appendChild(e));
+                    els.forEach(e => el.appendChild(e.cloneNode(true)));
                 }
                 else {
                     if (node.childNodes.length < item.minOccurs || node.childNodes.length > item.maxOccurs)
@@ -282,9 +282,9 @@ export abstract class XmlObject implements IXmlSerializable {
         return XmlObject.GetAttribute(this.element, name, defaultValue, required);
     }
 
-    protected GetElementById(document: Document, idValue: string): Element | null;
-    protected GetElementById(element: Element, idValue: string): Element | null;
-    protected GetElementById(node: Node, idValue: string) {
+    static GetElementById(document: Document, idValue: string): Element | null;
+    static GetElementById(element: Element, idValue: string): Element | null;
+    static GetElementById(node: Node, idValue: string) {
         if ((node == null) || (idValue == null))
             return null;
 
