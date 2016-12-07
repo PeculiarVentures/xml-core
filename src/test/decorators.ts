@@ -178,7 +178,7 @@ describe("Decorators", () => {
                     root.ChildOptional.Value = 12;
                     root.ChildRequired.Value = new Uint8Array([1, 1, 1]);
 
-                    assert.equal(root.toString(), `<root id="10"><name>MyName</name><child1 id="10"><text>12</text></child1><child2 id="10" xmlns="http://number.com"><text>AQEB</text></child2></root>`);
+                    assert.equal(root.toString(), `<root><name>MyName</name><child1 id="10"><text>12</text></child1><child2 xmlns="http://number.com"><text>AQEB</text></child2></root>`);
                 });
 
             });
@@ -654,7 +654,7 @@ describe("Decorators", () => {
                 test.Transforms.Add(new XmlTransform("2"));
                 test.Transforms.Add(new XmlTransform("3"));
                 test.Transforms.Add(new XmlTransform("4"));
-                assert.equal(test.toString(), `<test><transform><Value>4</Value></transform><transform><Value>4</Value></transform><transform><Value>4</Value></transform><transform><Value>4</Value></transform></test>`);
+                assert.equal(test.toString(), `<test><transform><Value>1</Value></transform><transform><Value>2</Value></transform><transform><Value>3</Value></transform><transform><Value>4</Value></transform></test>`);
 
                 test.Transforms.Add(new XmlTransform("4"));
                 assert.throws(() => {
@@ -697,7 +697,7 @@ describe("Decorators", () => {
                 test.Transforms.Add(new XmlTransform("2"));
                 test.Transforms.Add(new XmlTransform("3"));
                 test.Transforms.Add(new XmlTransform("4"));
-                assert.equal(test.toString(), `<test><transforms><transform><Value>4</Value></transform><transform><Value>4</Value></transform><transform><Value>4</Value></transform><transform><Value>4</Value></transform></transforms></test>`);
+                assert.equal(test.toString(), `<test><transforms><transform><Value>1</Value></transform><transform><Value>2</Value></transform><transform><Value>3</Value></transform><transform><Value>4</Value></transform></transforms></test>`);
 
                 test.Transforms.Add(new XmlTransform("4"));
                 assert.throws(() => {

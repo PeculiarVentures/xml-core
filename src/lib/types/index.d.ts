@@ -23,7 +23,6 @@ interface ICollection<I> {
 
 interface IXmlSerializable {
 
-    Prefix: string;
     /**
      * Writes object to XML node
      * @returns Node
