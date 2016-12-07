@@ -12,7 +12,6 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
         t.elements[propertyKey] = params;
 
         const keyName = propertyKey as string;
-        let value: any;
         if (params.parser) {
             t.elements[keyName] = {
                 parser: params.parser,
@@ -34,18 +33,18 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
                 defaultValue: params.defaultValue,
                 converter: params.converter,
             };
-            value = params.defaultValue;
         }
-
 
         Object.defineProperty(target, keyName, {
             set: function (v: any) {
                 this.element = null;
-                value = v;
+                this[`_${keyName}`] = v;
             },
             get: function () {
-                return value;
-            }
+                if (!params.parser && this[`_${keyName}`] === void 0)
+                    return params.defaultValue;
+                return this[`_${keyName}`];
+            },
         });
     };
 }
@@ -71,19 +70,22 @@ export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false,
         if (!params.localName)
             params.localName = propertyKey as string;
 
-        let value: any = params.defaultValue;
         if (!t.attributes)
             t.attributes = {};
         t.attributes[propertyKey] = params;
 
-        Object.defineProperty(target, propertyKey as string, {
+        const opt = {
             set: function (v: any) {
                 this.element = null;
-                value = v;
+                this[`_${propertyKey}`] = v;
             },
             get: function () {
-                return value;
+                if (this[`_${propertyKey}`] === void 0)
+                    return params.defaultValue;
+                return this[`_${propertyKey}`];
             }
-        });
+        }
+
+        Object.defineProperty(target, propertyKey as string, opt);
     };
 };
