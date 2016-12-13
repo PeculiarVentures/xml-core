@@ -2,7 +2,7 @@ import { XmlObject } from "./xml_object";
 import { Collection } from "./collection";
 import { XmlNodeType } from "./xml";
 
-export abstract class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
+export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
 
     public static parser: any;
 
@@ -27,11 +27,12 @@ export abstract class XmlCollection<I extends XmlObject> extends XmlObject imple
         const self = this.GetStatic();
         for (let i = 0; i < element.childNodes.length; i++) {
             const node = element.childNodes.item(i);
-            if (node.nodeType !== XmlNodeType.Element &&
+            if (!(node.nodeType === XmlNodeType.Element &&
                 node.localName === self.parser.localName &&
                 // tslint:disable-next-line:triple-equals
-                node.namespaceURI == self.namespaceURI)
-                break;
+                node.namespaceURI == self.namespaceURI))
+                // Ignore wrong elements
+                continue;
             const el = node as Element;
 
             let item = new self.parser() as IXmlSerializable;

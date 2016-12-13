@@ -1,4 +1,4 @@
-import { XmlAttribute, XmlElement, XmlChildElement, XmlObject, XmlCollection, XmlError, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
+import { XmlAttribute, XmlElement, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");
@@ -17,7 +17,7 @@ describe("Decorators", () => {
         let test = new XmlTest();
         assert.throws(() => {
             test.LoadXml(doc.documentElement);
-        }, XmlError);
+        });
     });
 
     context("Element", () => {
@@ -166,7 +166,7 @@ describe("Decorators", () => {
 
                 it("default", () => {
                     let root = new Root();
-                    assert.throws(() => root.toString(), XmlError);
+                    assert.throws(() => root.toString());
                     root.Name = "MyName";
 
                     root.ChildRequired = new Child2();
@@ -223,7 +223,7 @@ describe("Decorators", () => {
 
                     assert.throws(() => {
                         test.LoadXml(doc.documentElement);
-                    }, XmlError);
+                    });
 
                 });
 
@@ -335,7 +335,7 @@ describe("Decorators", () => {
                     let test = new XmlTest();
                     assert.throws(() => {
                         test.LoadXml(doc.documentElement);
-                    }, XmlError);
+                    });
 
                 });
 
@@ -402,7 +402,7 @@ describe("Decorators", () => {
             it("with required empty attribute", () => {
                 assert.throws(() => {
                     test.toString();
-                }, XmlError);
+                });
 
             });
 
@@ -480,7 +480,7 @@ describe("Decorators", () => {
 
                 assert.throws(() => {
                     test.LoadXml(doc.documentElement);
-                }, XmlError);
+                });
 
             });
 
@@ -529,7 +529,7 @@ describe("Decorators", () => {
                     let test = new XmlTest();
                     assert.throws(() => {
                         test.LoadXml(doc.documentElement);
-                    }, XmlError);
+                    });
                 }
             });
 
@@ -648,7 +648,7 @@ describe("Decorators", () => {
 
                 assert.throws(() => {
                     test.toString();
-                }, XmlError);
+                });
 
                 test.Transforms.Add(new XmlTransform("1"));
                 test.Transforms.Add(new XmlTransform("2"));
@@ -659,7 +659,7 @@ describe("Decorators", () => {
                 test.Transforms.Add(new XmlTransform("4"));
                 assert.throws(() => {
                     test.toString();
-                }, XmlError);
+                });
             });
 
             it("occurs", () => {
@@ -691,7 +691,7 @@ describe("Decorators", () => {
 
                 assert.throws(() => {
                     test.toString();
-                }, XmlError);
+                });
 
                 test.Transforms.Add(new XmlTransform("1"));
                 test.Transforms.Add(new XmlTransform("2"));
@@ -702,7 +702,7 @@ describe("Decorators", () => {
                 test.Transforms.Add(new XmlTransform("4"));
                 assert.throws(() => {
                     test.toString();
-                }, XmlError);
+                });
             });
         });
 
@@ -788,7 +788,7 @@ describe("Decorators", () => {
 
                 assert.throws(() => {
                     test.LoadXml(doc.documentElement);
-                }, XmlError);
+                });
 
             });
             it("wrong max occurs", () => {
@@ -815,7 +815,7 @@ describe("Decorators", () => {
 
                 assert.throws(() => {
                     test.LoadXml(doc.documentElement);
-                }, XmlError);
+                });
 
             });
 
@@ -850,8 +850,8 @@ describe("Decorators", () => {
         let second = new XmlSecond();
         second.Id = "2";
         assert.equal(second.toString(), `<p:second Id="2" xmlns:p="http://some.com"/>`);
-        assert.equal((XmlFirst as any).prefix, (XmlSecond as any).prefix)
-        assert.equal((XmlFirst as any).namespaceURI, (XmlSecond as any).namespaceURI)
+        assert.equal((XmlFirst as any).prefix, (XmlSecond as any).prefix);
+        assert.equal((XmlFirst as any).namespaceURI, (XmlSecond as any).namespaceURI);
 
     });
 

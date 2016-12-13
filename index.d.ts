@@ -333,7 +333,7 @@ declare namespace XmlJs {
         XmlDeclaration = 17,
     }
 
-    export abstract class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
+    export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
         static parser: any;
         MaxOccurs: number;
         MinOccurs: number;
@@ -356,7 +356,7 @@ declare namespace XmlJs {
         IsEmpty(): boolean;
     }
 
-    export abstract class XmlObject implements IXmlSerializable {
+    export class XmlObject implements IXmlSerializable {
         protected static attributes: AssocArray<XmlAttributeType<any>>;
         protected static elements: AssocArray<XmlChildElementType<any>>;
         protected static prefix: string | null;

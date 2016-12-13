@@ -117,7 +117,7 @@ function _SelectNamespaces(node: Node, selectedNodes: AssocArray<string> = {}) {
         if (el.namespaceURI && el.namespaceURI !== "http://www.w3.org/XML/1998/namespace" && !selectedNodes[el.prefix || ""])
             selectedNodes[el.prefix ? el.prefix : ""] = node.namespaceURI!;
         if (node.nodeType === XmlNodeType.Element)
-            _SelectNamespaces(node.parentElement, selectedNodes);
+            _SelectNamespaces(node.parentElement!, selectedNodes);
     }
 }
 

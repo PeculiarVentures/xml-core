@@ -27,12 +27,13 @@ function padNum(num: number, size: number): string {
     return s;
 }
 
-export class XmlError extends Error {
+export class XmlError implements Error {
     stack: any;
     code: number;
+    name: string;
+    message: string;
     protected readonly prefix = "XMLJS";
     constructor(code: XE, ...args: any[]) {
-        super();
         this.code = code;
         this.name = (this.constructor as any).name;
         arguments[0] = xes[code];
