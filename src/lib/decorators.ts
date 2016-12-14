@@ -1,19 +1,48 @@
 /// <reference path="./types/index.d.ts" />
-import { XmlError, XE } from "./error";
+
+import * as CONST from "./const";
 
 const MAX = 1e9;
 
+function assign(target: any, ...sources: any[]) {
+    let res = arguments[0];
+    for (let i = 1; i < arguments.length; i++) {
+        let obj = arguments[i];
+        for (let prop in obj) {
+            res[prop] = obj[prop];
+        }
+    }
+    return res;
+}
+
+export function XmlElement(params: XmlElementType) {
+    return <TFunction extends Function>(target: TFunction) => {
+        const t = target as XmlSchema;
+
+        t.localName = params.localName || (t as any).name;
+        t.namespaceURI = params.namespaceURI || t.namespaceURI || null;
+        t.prefix = params.prefix || t.prefix || null;
+        t.parser = params.parser || t.parser;
+        if (t.target !== t )
+            t.items = assign({}, t.items);
+        t.target = target;
+    };
+}
+
 export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
     return (target: Object, propertyKey: string | symbol) => {
-        const t = target.constructor as any;
+        const t = target.constructor as XmlSchema;
+        const key = propertyKey as string;
 
-        if (!t.elements)
-            t.elements = {};
-        t.elements[propertyKey] = params;
+        if (!t.items)
+            t.items = {};
 
-        const keyName = propertyKey as string;
+        if (t.target !== t)
+            t.items = assign({}, t.items);
+        t.target = target;
+
         if (params.parser) {
-            t.elements[keyName] = {
+            t.items![key] = {
                 parser: params.parser,
                 required: params.required || false,
                 maxOccurs: params.maxOccurs || MAX,
@@ -22,11 +51,7 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
             };
         }
         else {
-            if (!params.localName)
-                params.localName = keyName;
-
-            t.elements[keyName] = {
-                localName: params.localName,
+            t.items![key] = {
                 namespaceURI: params.namespaceURI || null,
                 required: params.required || false,
                 prefix: params.prefix || null,
@@ -34,58 +59,60 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
                 converter: params.converter,
             };
         }
-
-        Object.defineProperty(target, keyName, {
-            set: function (v: any) {
-                this.element = null;
-                this[`_${keyName}`] = v;
-            },
-            get: function () {
-                if (!params.parser && this[`_${keyName}`] === void 0)
-                    return params.defaultValue;
-                return this[`_${keyName}`];
-            },
-        });
-    };
-}
-
-export function XmlElement(params: XmlElementType) {
-    return <TFunction extends Function>(target: TFunction) => {
-        const t = target as any;
-
         if (!params.localName)
-            throw new XmlError(XE.DECORATOR_NULL_PARAM, "XmlElementCollection", "localName");
+            params.localName = params.parser ? (params.parser as any).localName : key;
+        t.items![key].localName = params.localName;
+        t.items![key].type = CONST.ELEMENT;
 
-        t.localName = params.localName || t.localName;
-        t.namespaceURI = params.namespaceURI || t.namespaceURI || null;
-        t.prefix = params.prefix || t.prefix || null;
-        t.parser = params.parser || t.parser;
+        defineProperty(target, key, params);
     };
 }
 
 export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false, namespaceURI: null }) {
     return (target: Object, propertyKey: string | symbol) => {
-        const t = target.constructor as any;
+        const t = target.constructor as XmlSchema;
+        const key = propertyKey as string;
 
         if (!params.localName)
             params.localName = propertyKey as string;
 
-        if (!t.attributes)
-            t.attributes = {};
-        t.attributes[propertyKey] = params;
+        if (!t.items)
+            t.items = {};
 
-        const opt = {
-            set: function (v: any) {
-                this.element = null;
-                this[`_${propertyKey}`] = v;
-            },
-            get: function () {
-                if (this[`_${propertyKey}`] === void 0)
-                    return params.defaultValue;
-                return this[`_${propertyKey}`];
-            }
-        }
+        if (t.target !== t)
+            t.items = assign({}, t.items);
+        t.target = target;
 
-        Object.defineProperty(target, propertyKey as string, opt);
+        t.items![propertyKey] = params;
+        t.items![propertyKey].type = CONST.ATTRIBUTE;
+
+        defineProperty(target, key, params);
     };
 };
+
+function defineProperty(target: any, key: string, params: any) {
+    const _key = `_${key}`;
+
+    const opt = {
+        set: function (v: any) {
+            if (this[_key] !== v) {
+                this.element = null;
+                this[_key] = v;
+            }
+        },
+        get: function () {
+            return this[_key];
+        }
+    };
+
+    let defaultValue = params.defaultValue;
+    if (params.parser) {
+        defaultValue = new params.parser();
+        defaultValue.localName = params.localName;
+    }
+
+    // private property
+    Object.defineProperty(target, _key, { writable: true, value: defaultValue, enumerable: false });
+    // public property
+    Object.defineProperty(target, key, opt);
+}

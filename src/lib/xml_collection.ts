@@ -1,3 +1,4 @@
+import { XmlError, XE } from "./error";
 import { XmlObject } from "./xml_object";
 import { Collection } from "./collection";
 import { XmlNodeType } from "./xml";
@@ -16,26 +17,37 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
      */
     MinOccurs: number;
 
+    HasChanged() {
+        let res = super.HasChanged();
+
+        let changed = this.Some(item => item.HasChanged());
+
+        return res || changed;
+    }
+
     protected OnGetXml(element: Element) {
         for (let item of this.GetIterator()) {
             const el = item.GetXml();
-            element.appendChild(el);
+            if (el)
+                element.appendChild(el);
         }
     }
 
     protected OnLoadXml(element: Element) {
         const self = this.GetStatic();
+        if (!self.parser)
+            throw new XmlError(XE.XML_EXCEPTION, `${self.localName} doesn't have required 'parser' in @XmlElement`);
         for (let i = 0; i < element.childNodes.length; i++) {
             const node = element.childNodes.item(i);
             if (!(node.nodeType === XmlNodeType.Element &&
-                node.localName === self.parser.localName &&
+                node.localName === (self.parser as any).localName &&
                 // tslint:disable-next-line:triple-equals
                 node.namespaceURI == self.namespaceURI))
                 // Ignore wrong elements
                 continue;
             const el = node as Element;
 
-            let item = new self.parser() as IXmlSerializable;
+            let item = new self.parser();
             item.LoadXml(el);
             this.Add(item as any);
         }

@@ -25,15 +25,20 @@ interface IXmlSerializable {
 
     /**
      * Writes object to XML node
+     * - if class was initialized and it has no one change, GetXml returns null
      * @returns Node
      */
-    GetXml(): Node;
+    GetXml(): Node | null;
     /**
      * Reads XML from string
      * @param  {Node} node
      * @returns void
      */
     LoadXml(node: Node): void;
+}
+
+interface IXmlSerializableConstructor {
+    new (): IXmlSerializable
 }
 
 /**
@@ -67,37 +72,48 @@ interface XmlNamespace {
     namespace: string | null;
 }
 
-interface XmlAttributeType<T> {
+interface XmlSchemaItemBase {
     /**
-     * Local name of attribute
+     * Local name of item
      * 
      * @type {string}
-     * @memberOf XmlAttributeType
+     * @memberOf XmlSchemaItemBase
      */
     localName?: string;
-    /**
-     * Determine where attribute is required
-     * 
-     * @type {boolean}
-     * @memberOf XmlAttributeType
-     */
-    required?: boolean;
-    /**
-     * Default value for attribute
-     * 
-     * @type {(T |)}
-     * @memberOf XmlAttributeType
-     */
-    defaultValue?: T | null;
     /**
      * Namespace URI of attribute
      * 
      * @type {(string |)}
-     * @memberOf XmlAttributeType
+     * @memberOf XmlSchemaItemBase
      */
     namespaceURI?: string | null;
+
     /**
-     * Custom converter for attribute value
+     * Default prefix for Xml element 
+     * 
+     * @type {(string |)}
+     * @memberOf XmlSchemaItemBase
+     */
+    prefix?: string | null;
+}
+
+interface XmlSchemaItem<T> extends XmlSchemaItemBase {
+    /**
+     * Default value for item
+     * 
+     * @type {(T |)}
+     * @memberOf XmlSchemaItem
+     */
+    defaultValue?: T | null;
+    /**
+     * Determine where item is required
+     * 
+     * @type {boolean}
+     * @memberOf XmlSchemaItem
+     */
+    required?: boolean;
+    /**
+     * Custom converter for item value
      * 
      * @type {IConverter<T>}
      * @memberOf XmlAttributeType
@@ -105,7 +121,20 @@ interface XmlAttributeType<T> {
     converter?: IConverter<T>;
 }
 
-interface XmlElementType {
+interface XmlSchemaItemParser {
+    /**
+     * Xml parser for item
+     * 
+     * @type {*}
+     * @memberOf XmlSchemaItemParser
+     */
+    parser?: IXmlSerializableConstructor;
+}
+
+interface XmlAttributeType<T> extends XmlSchemaItem<T> {
+}
+
+interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
     /**
      * Local name for Xml element
      * 
@@ -120,72 +149,9 @@ interface XmlElementType {
      * @memberOf XmlElementType
      */
     namespaceURI?: string | null;
-    /**
-     * Default prefix for Xml element 
-     * 
-     * @type {(string |)}
-     * @memberOf XmlElementType
-     */
-    prefix?: string | null;
-    /**
-     * Xml parser for XmlCollection
-     * 
-     * @type {*}
-     * @memberOf XmlElementType
-     */
-    parser?: any;
 }
 
-interface XmlChildElementType<T> {
-    /**
-     * local name for simple elements
-     * 
-     * @type {string}
-     * @memberOf XmlChildElementType
-     */
-    localName?: string;
-    /**
-     * NamespaceURI for simple elements
-     * 
-     * @type {(string |)}
-     * @memberOf XmlChildElementType
-     */
-    namespaceURI?: string | null;
-    /**
-     * Default prefix value for elements 
-     * 
-     * @type {(string |)}
-     * @memberOf XmlChildElementType
-     */
-    prefix?: string | null;
-    /**
-     * Determine where element is required
-     * 
-     * @type {boolean}
-     * @memberOf XmlChildElementType
-     */
-    required?: boolean;
-    /**
-     * Default value for simple element text content
-     * 
-     * @type {(T |)}
-     * @memberOf XmlChildElementType
-     */
-    defaultValue?: T | null;
-    /**
-     * Custom converter for simple elements with text content 
-     * 
-     * @type {IConverter<T>}
-     * @memberOf XmlChildElementType
-     */
-    converter?: IConverter<T>;
-    /**
-     * Static class of XmlObject 
-     * 
-     * @type {*}
-     * @memberOf XmlChildElementType
-     */
-    parser?: any;
+interface XmlChildElementType<T> extends XmlSchemaItem<T>, XmlSchemaItemParser {
     /**
      * max occurs of items in collection
      * 
@@ -208,6 +174,15 @@ interface XmlChildElementType<T> {
      */
     noRoot?: boolean;
 }
+
+type XmlSchema = {
+    localName?: string;
+    namespaceURI?: string | null;
+    prefix?: string | null;
+    parser?: IXmlSerializableConstructor;
+    items?: { [key: string]: (XmlChildElementType<any> | XmlAttributeType<any>) & { type?: string } };
+    target?: any; 
+};
 
 interface IConverter<T> {
     /**

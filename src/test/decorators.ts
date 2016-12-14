@@ -23,43 +23,61 @@ describe("Decorators", () => {
     context("Element", () => {
 
         context("GetXml", () => {
+
             it("simple", () => {
+                // Need some changes for changing element to null, otherwise empty answer 
                 @XmlElement({ localName: "test" })
                 class Test extends XmlObject {
+
+                    @XmlAttribute({ localName: "id" })
+                    Id: string;
+
                 }
 
                 const test = new Test();
 
-                assert.equal(test.toString(), "<test/>");
+                assert.equal(test.toString(), "");
+
+                test.Id = "123";
+                assert.equal(test.toString(), `<test id="123"/>`);
             });
 
             it("namespace", () => {
                 @XmlElement({ localName: "test", namespaceURI: "http://some.com" })
                 class Test extends XmlObject {
+                    @XmlAttribute({ localName: "id", defaultValue: "1" })
+                    Id: string = "test";
                 }
 
                 const test = new Test();
 
+                assert.equal(test.toString(), `<test id="test" xmlns="http://some.com"/>`);
+                test.Id = "1";
                 assert.equal(test.toString(), `<test xmlns="http://some.com"/>`);
             });
 
             it("prefix with namespace", () => {
                 @XmlElement({ localName: "test", prefix: "sm", namespaceURI: "http://some.com" })
                 class Test extends XmlObject {
+                    @XmlAttribute({ localName: "id" })
+                    Id: string = "test";
                 }
 
                 const test = new Test();
 
-                assert.equal(test.toString(), `<sm:test xmlns:sm="http://some.com"/>`);
+                assert.equal(test.toString(), `<sm:test id="test" xmlns:sm="http://some.com"/>`);
             });
 
             it("prefix without namespace", () => {
                 @XmlElement({ localName: "test", prefix: "sm" })
                 class Test extends XmlObject {
+                    @XmlAttribute({ localName: "id", defaultValue: "" })
+                    Id: string = "test";
                 }
 
                 const test = new Test();
 
+                test.Id = "";
                 assert.equal(test.toString(), `<sm:test xmlns:sm=""/>`);
             });
 
@@ -74,7 +92,6 @@ describe("Decorators", () => {
 
                     const test = new Test();
 
-                    assert.equal(test.toString(), `<test/>`);
                     test.Child = "Hello";
                     assert.equal(test.toString(), `<test><Child>Hello</Child></test>`);
                 });
@@ -82,8 +99,8 @@ describe("Decorators", () => {
                 it("default value and required", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
-                        @XmlChildElement({ defaultValue: "1", required: true })
-                        Child: string;
+                        @XmlChildElement({ required: true })
+                        Child: string = "1";
                     }
 
                     const test = new Test();
@@ -100,7 +117,6 @@ describe("Decorators", () => {
 
                     const test = new Test();
 
-                    assert.equal(test.toString(), `<test/>`);
                     test.Child = "Hello";
                     assert.equal(test.toString(), `<test><ch>Hello</ch></test>`);
                 });
@@ -114,7 +130,6 @@ describe("Decorators", () => {
 
                     const test = new Test();
 
-                    assert.equal(test.toString(), `<test/>`);
                     test.Child = "Hello";
                     assert.equal(test.toString(), `<test><ch xmlns="http://some.com">Hello</ch></test>`);
                 });
@@ -128,7 +143,6 @@ describe("Decorators", () => {
 
                     const test = new Test();
 
-                    assert.equal(test.toString(), `<test/>`);
                     test.Child = "Hello";
                     assert.equal(test.toString(), `<test><px:ch xmlns:px="http://some.com">Hello</px:ch></test>`);
                 });
@@ -149,7 +163,7 @@ describe("Decorators", () => {
                 }
                 @XmlElement({ localName: "child2", namespaceURI: "http://number.com" })
                 class Child2 extends XmlBase {
-                    @XmlChildElement({ localName: "text", defaultValue: new Uint8Array([1, 0, 1]), converter: XmlBase64Converter })
+                    @XmlChildElement({ localName: "text", defaultValue: new Uint8Array([1, 0, 1]), converter: XmlBase64Converter, required: true })
                     public Value: Uint8Array;
                 }
 
@@ -166,12 +180,11 @@ describe("Decorators", () => {
 
                 it("default", () => {
                     let root = new Root();
-                    assert.throws(() => root.toString());
                     root.Name = "MyName";
 
                     root.ChildRequired = new Child2();
 
-                    assert.equal(root.toString(), `<root><name>MyName</name><child2 xmlns="http://number.com"/></root>`);
+                    assert.equal(root.toString(), `<root><name>MyName</name><child1/><child2 xmlns="http://number.com"><text>AQAB</text></child2></root>`);
 
                     root.ChildOptional = new Child1();
                     root.ChildOptional.Id = "10";
@@ -400,9 +413,8 @@ describe("Decorators", () => {
             let test = new Test();
 
             it("with required empty attribute", () => {
-                assert.throws(() => {
-                    test.toString();
-                });
+
+                assert.equal(test.toString(), "");
 
             });
 
@@ -589,6 +601,7 @@ describe("Decorators", () => {
                 assert.equal(test.toString(), `<test><transforms><transform><Value>Hello</Value></transform></transforms></test>`);
 
             });
+
             it("no root", () => {
 
                 @XmlElement({ localName: "transform" })
@@ -704,6 +717,7 @@ describe("Decorators", () => {
                     test.toString();
                 });
             });
+
         });
 
         context("LoadXml", () => {

@@ -6,7 +6,7 @@ interface IXmlSerializable {
      * Writes object to XML node
      * @returns Node
      */
-    GetXml(): Node;
+    GetXml(hard?: boolean): Node;
     /**
      * Reads XML from string
      * @param  {Node} node
