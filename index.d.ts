@@ -1,12 +1,34 @@
-declare type SelectNodes = (node: Node, xpath: string) => Node[];
+/**
+ * Base interface for collections
+ * 
+ * @interface ICollection
+ * @template I
+ */
+interface ICollection<I> {
+    readonly Count: number;
+    Item(index: number): I | null;
+    Add(item: I): void;
+    Pop(): I | undefined;
+    RemoveAt(index: number): void;
+    Clear(): void;
+    GetIterator(): I[];
+    ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
+    Map<U>(cb: (item: I, index: number, array: Array<I>) => U): ICollection<U>;
+    Filter(cb: (item: I, index: number, array: Array<I>) => boolean): ICollection<I>;
+    Sort(cb: (a: I, b: I) => number): ICollection<I>;
+    Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
+    Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
+    IsEmpty(): boolean;
+}
 
 interface IXmlSerializable {
 
     /**
      * Writes object to XML node
+     * - if class was initialized and it has no one change, GetXml returns null
      * @returns Node
      */
-    GetXml(hard?: boolean): Node;
+    GetXml(): Node | null;
     /**
      * Reads XML from string
      * @param  {Node} node
@@ -15,6 +37,16 @@ interface IXmlSerializable {
     LoadXml(node: Node | string): void;
 }
 
+interface IXmlSerializableConstructor {
+    new (): IXmlSerializable
+}
+
+/**
+ * Base type for associated arrays
+ * 
+ * @interface AssocArray
+ * @template T
+ */
 interface AssocArray<T> {
     [index: string]: T;
 }
@@ -23,206 +55,153 @@ declare type XmlBufferEncoding = string | "utf8" | "binary" | "hex" | "base64" |
 
 declare type ISelectResult = Array<Node> | Node | boolean | number | string;
 
-declare const select: SelectNodes;
+interface XmlNamespace {
+    /**
+     * Prefix
+     * 
+     * @type {(string |)}
+     * @memberOf XmlNamespace
+     */
+    prefix: string | null;
+    /**
+     * Namespace URI
+     * 
+     * @type {(string |)}
+     * @memberOf XmlNamespace
+     */
+    namespace: string | null;
+}
+
+interface XmlSchemaItemBase {
+    /**
+     * Local name of item
+     * 
+     * @type {string}
+     * @memberOf XmlSchemaItemBase
+     */
+    localName?: string;
+    /**
+     * Namespace URI of attribute
+     * 
+     * @type {(string |)}
+     * @memberOf XmlSchemaItemBase
+     */
+    namespaceURI?: string | null;
+
+    /**
+     * Default prefix for Xml element 
+     * 
+     * @type {(string |)}
+     * @memberOf XmlSchemaItemBase
+     */
+    prefix?: string | null;
+}
+
+interface XmlSchemaItem<T> extends XmlSchemaItemBase {
+    /**
+     * Default value for item
+     * 
+     * @type {(T |)}
+     * @memberOf XmlSchemaItem
+     */
+    defaultValue?: T | null;
+    /**
+     * Determine where item is required
+     * 
+     * @type {boolean}
+     * @memberOf XmlSchemaItem
+     */
+    required?: boolean;
+    /**
+     * Custom converter for item value
+     * 
+     * @type {IConverter<T>}
+     * @memberOf XmlAttributeType
+     */
+    converter?: IConverter<T>;
+}
+
+interface XmlSchemaItemParser {
+    /**
+     * Xml parser for item
+     * 
+     * @type {*}
+     * @memberOf XmlSchemaItemParser
+     */
+    parser?: IXmlSerializableConstructor;
+}
+
+interface XmlAttributeType<T> extends XmlSchemaItem<T> {
+}
+
+interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
+    /**
+     * Local name for Xml element
+     * 
+     * @type {string}
+     * @memberOf XmlElementType
+     */
+    localName: string;
+    /**
+     * Namespace URI fro Xml element
+     * 
+     * @type {(string |)}
+     * @memberOf XmlElementType
+     */
+    namespaceURI?: string | null;
+}
+
+interface XmlChildElementType<T> extends XmlSchemaItem<T>, XmlSchemaItemParser {
+    /**
+     * max occurs of items in collection
+     * 
+     * @type {number}
+     * @memberOf XmlChildElementType
+     */
+    maxOccurs?: number;
+    /**
+     * min occurs of items in collection
+     * 
+     * @type {number}
+     * @memberOf XmlChildElementType
+     */
+    minOccurs?: number;
+    /**
+     * Don't add root element of XmlCollection to compiled element
+     * 
+     * @type {boolean}
+     * @memberOf XmlChildElementType
+     */
+    noRoot?: boolean;
+}
+
+type XmlSchema = {
+    localName?: string;
+    namespaceURI?: string | null;
+    prefix?: string | null;
+    parser?: IXmlSerializableConstructor;
+    items?: { [key: string]: (XmlChildElementType<any> | XmlAttributeType<any>) & { type?: string } };
+    target?: any;
+};
+
+interface IConverter<T> {
+    /**
+     * Converts value from Xml element to Object
+     * 
+     * @memberOf IConverter
+     */
+    set: (value: string) => T;
+    /**
+     * Converts value from Object to Xmml element
+     * 
+     * @memberOf IConverter
+     */
+    get: (value: T) => string | undefined;
+}
 
 declare namespace XmlJs {
 
-    /**
-     * Base interface for collections
-     * 
-     * @interface ICollection
-     * @template I
-     */
-    interface ICollection<I> {
-        readonly Count: number;
-        Item(index: number): I | null;
-        Add(item: I): void;
-        Pop(): I | undefined;
-        RemoveAt(index: number): void;
-        Clear(): void;
-        GetIterator(): I[];
-        ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
-        Map<U>(cb: (item: I, index: number, array: Array<I>) => U): ICollection<U>;
-        Filter(cb: (item: I, index: number, array: Array<I>) => boolean): ICollection<I>;
-        Sort(cb: (a: I, b: I) => number): ICollection<I>;
-        Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
-        Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
-        IsEmpty(): boolean;
-    }
-
-    interface XmlNamespace {
-        /**
-         * Prefix
-         * 
-         * @type {(string |)}
-         * @memberOf XmlNamespace
-         */
-        prefix: string | null;
-        /**
-         * Namespace URI
-         * 
-         * @type {(string |)}
-         * @memberOf XmlNamespace
-         */
-        namespace: string | null;
-    }
-
-    interface XmlAttributeType<T> {
-        /**
-         * Local name of attribute
-         * 
-         * @type {string}
-         * @memberOf XmlAttributeType
-         */
-        localName?: string;
-        /**
-         * Determine where attribute is required
-         * 
-         * @type {boolean}
-         * @memberOf XmlAttributeType
-         */
-        required?: boolean;
-        /**
-         * Default value for attribute
-         * 
-         * @type {(T |)}
-         * @memberOf XmlAttributeType
-         */
-        defaultValue?: T | null;
-        /**
-         * Namespace URI of attribute
-         * 
-         * @type {(string |)}
-         * @memberOf XmlAttributeType
-         */
-        namespaceURI?: string | null;
-        /**
-         * Custom converter for attribute value
-         * 
-         * @type {IConverter<T>}
-         * @memberOf XmlAttributeType
-         */
-        converter?: IConverter<T>;
-    }
-
-    interface XmlElementType {
-        /**
-         * Local name for Xml element
-         * 
-         * @type {string}
-         * @memberOf XmlElementType
-         */
-        localName: string;
-        /**
-         * Namespace URI fro Xml element
-         * 
-         * @type {(string |)}
-         * @memberOf XmlElementType
-         */
-        namespaceURI?: string | null;
-        /**
-         * Default prefix for Xml element 
-         * 
-         * @type {(string |)}
-         * @memberOf XmlElementType
-         */
-        prefix?: string | null;
-        /**
-         * Xml parser for XmlCollection
-         * 
-         * @type {*}
-         * @memberOf XmlElementType
-         */
-        parser?: any;
-    }
-
-    interface XmlChildElementType<T> {
-        /**
-         * local name for simple elements
-         * 
-         * @type {string}
-         * @memberOf XmlChildElementType
-         */
-        localName?: string;
-        /**
-         * NamespaceURI for simple elements
-         * 
-         * @type {(string |)}
-         * @memberOf XmlChildElementType
-         */
-        namespaceURI?: string | null;
-        /**
-         * Default prefix value for elements 
-         * 
-         * @type {(string |)}
-         * @memberOf XmlChildElementType
-         */
-        prefix?: string | null;
-        /**
-         * Determine where element is required
-         * 
-         * @type {boolean}
-         * @memberOf XmlChildElementType
-         */
-        required?: boolean;
-        /**
-         * Default value for simple element text content
-         * 
-         * @type {(T |)}
-         * @memberOf XmlChildElementType
-         */
-        defaultValue?: T | null;
-        /**
-         * Custom converter for simple elements with text content 
-         * 
-         * @type {IConverter<T>}
-         * @memberOf XmlChildElementType
-         */
-        converter?: IConverter<T>;
-        /**
-         * Static class of XmlObject 
-         * 
-         * @type {*}
-         * @memberOf XmlChildElementType
-         */
-        parser?: any;
-        /**
-         * max occurs of items in collection
-         * 
-         * @type {number}
-         * @memberOf XmlChildElementType
-         */
-        maxOccurs?: number;
-        /**
-         * min occurs of items in collection
-         * 
-         * @type {number}
-         * @memberOf XmlChildElementType
-         */
-        minOccurs?: number;
-        /**
-         * Don't add root element of XmlCollection to compiled element
-         * 
-         * @type {boolean}
-         * @memberOf XmlChildElementType
-         */
-        noRoot?: boolean;
-    }
-
-    interface IConverter<T> {
-        /**
-         * Converts value from Xml element to Object
-         * 
-         * @memberOf IConverter
-         */
-        set: (value: string) => T;
-        /**
-         * Converts value from Object to Xmml element
-         * 
-         * @memberOf IConverter
-         */
-        get: (value: T) => string | undefined;
-    }
+    // collection
 
     export class Collection<I> implements ICollection<I> {
         protected items: Array<I>;
@@ -243,6 +222,8 @@ declare namespace XmlJs {
         IsEmpty(): boolean;
     }
 
+    // convert
+
     export class Convert {
         static ToString(buffer: BufferSource, enc?: XmlBufferEncoding): string;
         static FromString(str: string, enc?: XmlBufferEncoding): Uint8Array;
@@ -261,16 +242,24 @@ declare namespace XmlJs {
         static FromDateTime(dateTime: Date): string;
     }
 
+    // converters
+
     export const XmlBase64Converter: IConverter<Uint8Array>;
     export const XmlNumberConverter: IConverter<number>;
 
-    export function XmlChildElement<T>(params?: XmlChildElementType<T>): (target: Object, propertyKey: string | symbol) => void;
+    // decorators
+
     export function XmlElement(params: XmlElementType): <TFunction extends Function>(target: TFunction) => void;
+    export function XmlChildElement<T>(params?: XmlChildElementType<T>): (target: Object, propertyKey: string | symbol) => void;
     export function XmlAttribute<T>(params?: XmlAttributeType<T>): (target: Object, propertyKey: string | symbol) => void;
 
-    export class XmlError extends Error {
+    // error
+
+    export class XmlError implements Error {
         stack: any;
         code: number;
+        name: string;
+        message: string;
         protected readonly prefix: string;
         constructor(code: XE, ...args: any[]);
     }
@@ -295,23 +284,26 @@ declare namespace XmlJs {
         XML_EXCEPTION = 17,
     }
 
+    // namespace_manager
+
     export class NamespaceManager extends Collection<XmlNamespace> {
         Add(item: XmlNamespace): void;
         GetPrefix(prefix: string, start?: number): XmlNamespace | null;
         GetNamespace(namespaceUrl: string, start?: number): XmlNamespace | null;
     }
 
-    export function IsEqualsEmptyStrings(s1: string, s2: string): boolean;
+    // utils
+
+    type SelectNodes = (node: Node, xpath: string) => Node[];
+    export const Select: SelectNodes;
     export function SelectSingleNode(node: Node, path: string): Node | null;
-    export function FindAttr(node: Node, localName: string, nameSpace?: string): Attr | null;
-    export function FindFirst(doc: Node, xpath: string): Node;
-    export function EncodeSpecialCharactersInAttribute(attributeValue: string): string;
-    export function EncodeSpecialCharactersInText(text: string): string;
     export function SelectNamespaces(node: Element): AssocArray<string>;
 
-    export const APPLICATION_XML: string;
-    export const DEFAULT_PREFIX: string;
-    export const DEFAULT_NAMESPACE_URI: string;
+    // xml
+
+    export const APPLICATION_XML = "application/xml";
+    export const DEFAULT_PREFIX = "";
+    export const DEFAULT_NAMESPACE_URI = "";
     export enum XmlNodeType {
         None = 0,
         Element = 1,
@@ -333,10 +325,13 @@ declare namespace XmlJs {
         XmlDeclaration = 17,
     }
 
+    // xml_collection
+
     export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
         static parser: any;
         MaxOccurs: number;
         MinOccurs: number;
+        HasChanged(): boolean;
         protected OnGetXml(element: Element): void;
         protected OnLoadXml(element: Element): void;
         protected items: Array<I>;
@@ -356,25 +351,30 @@ declare namespace XmlJs {
         IsEmpty(): boolean;
     }
 
+    // xml_object
+
     export class XmlObject implements IXmlSerializable {
         protected static attributes: AssocArray<XmlAttributeType<any>>;
         protected static elements: AssocArray<XmlChildElementType<any>>;
         protected static prefix: string | null;
         protected static namespaceURI: string | null;
         protected static localName: string;
-        protected element: Element | null;
-        protected prefix: any;
-        readonly Element: Element | null;
-        Prefix: string;
+        protected element?: Element | null;
+        protected prefix: string | null;
+        protected localName: string | undefined;
+        readonly Element: Element | null | undefined;
+        Prefix: string | null;
         readonly LocalName: string;
         readonly NamespaceURI: string | null;
-        protected GetStatic(): any;
+        protected GetStatic(): XmlSchema;
         protected GetPrefix(): string;
         HasChanged(): boolean;
         protected OnGetXml(element: Element): void;
-        GetXml(): Element;
+        GetXml(hard?: boolean): Element | null;
         protected OnLoadXml(element: Element): void;
-        static LoadXml(param: string | Element): XmlObject;
+        static LoadXml<T extends XmlObject>(this: {
+            new (): T;
+        }, param: string | Element): T;
         LoadXml(param: string | Element): void;
         toString(): string;
         static Parse(xmlstring: string): Document;
@@ -384,9 +384,9 @@ declare namespace XmlJs {
         protected GetAttribute(name: string, defaultValue: string | null, required?: boolean): string | null;
         static GetElementById(document: Document, idValue: string): Element | null;
         static GetElementById(element: Element, idValue: string): Element | null;
-        protected CreateElement(document?: Document, localName?: string, namespaceUri?: string, prefix?: string): Element;
+        protected CreateElement(document?: Document, localName?: string, namespaceUri?: string | null, prefix?: string | null): Element;
         protected CreateDocument(): Document;
-        static CreateDocument(root?: string, namespaceUri?: string | null, prefix?: string): Document;
+        static CreateDocument(root?: string, namespaceUri?: string | null, prefix?: string | null): Document;
         static GetChildren(node: Node, localName: string, nameSpace?: string): Element[];
         GetChildren(localName: string, nameSpace?: string): Element[];
         static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null;
