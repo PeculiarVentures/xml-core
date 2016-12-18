@@ -1,6 +1,6 @@
 # xml-core
 
-`xml-core` is a set of classes that make it easier to work with XML within the browser.
+`xml-core` is a set of classes that make it easier to work with XML within the browser and node.
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/xmljs/master/LICENSE)
 
