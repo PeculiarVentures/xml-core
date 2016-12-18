@@ -1,3 +1,4 @@
+
 # xml-core
 
 `xml-core` is a set of classes that make it easier to work with XML within the browser and node.
@@ -8,6 +9,7 @@
 ## Introduction
 
 We wanted to be able to validate [XAdES](https://en.wikipedia.org/wiki/XAdES) in the browser, specifically so we could validate the signature on the [EU Trust List](https://github.com/PeculiarVentures/tl-create).
+
 
 This lead us to the creation od [XMLDSIGjs](https://github.com/PeculiarVentures/xmldsigjs) which allows us to validate XML and [XAdESjs](https://github.com/PeculiarVentures/xadesjs) which extends it and enables us to validate XAdES signatures.
 
