@@ -19,7 +19,7 @@ This lead us to the creation od [XMLDSIGjs](https://github.com/PeculiarVentures/
 
 We use `xml-core` to make the creation of these libraries easier, we hope you may find it valuable in your own projects also. 
 
-Fundementally `xml-core` provides a way to transform XML to JSON and JSON to XML and enforce a schema on the associated XML, this let's you work naturally with XML in Javascript.
+Fundementally `xml-core` provides a way to transform XML to JSON and JSON to XML, which enables you to enforce a schema on the associated XML. The goal of this is to let you work naturally with XML in Javascript.
 
 It is similar to [xmljs](https://www.npmjs.com/package/xmljs) but has a few differences -
 - Can convert the JSON back to XML,
