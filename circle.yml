@@ -9,7 +9,6 @@ dependencies:
 test:
   pre:
     - npm run build
-    - npm run test
 
 general:
   branches:
