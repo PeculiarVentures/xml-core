@@ -4,6 +4,7 @@
 `xml-core` is a set of classes that make it easier to work with XML within the browser and node.
 
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/xml-core/master/LICENSE) [![CircleCI](https://circleci.com/gh/PeculiarVentures/xml-core.svg?style=svg)](https://circleci.com/gh/PeculiarVentures/xml-core)
+[![Coverage Status](https://coveralls.io/repos/github/PeculiarVentures/xml-core/badge.svg?branch=master)](https://coveralls.io/github/PeculiarVentures/xml-core?branch=master)
 [![NPM version](https://badge.fury.io/js/xml-core.png)](http://badge.fury.io/js/xml-core)
 
 [![NPM](https://nodei.co/npm-dl/xml-core.png?months=2&height=2)](https://nodei.co/npm/xml-core/)
