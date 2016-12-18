@@ -1,7 +1,7 @@
 {
-  "name": "xmljs",
+  "name": "xml-core",
   "version": "1.0.0",
-  "description": "",
+  "description": "`xml-core` is a set of classes that make it easier to work with XML within the browser and node.",
   "main": "build/lib/index.js",
   "types": "index.d.ts",
   "directories": {
@@ -17,7 +17,7 @@
     "ts-loader": "^1.0.0"
   },
   "scripts": {
-    "test": "mocha test",
+    "test": "mocha build/test",
     "build": "npm run build:es5",
     "build:es5": "tsc",
     "build:es2015": "tsc --module commonjs --target es2015",
