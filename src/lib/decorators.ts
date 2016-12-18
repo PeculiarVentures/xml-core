@@ -23,7 +23,7 @@ export function XmlElement(params: XmlElementType) {
         t.namespaceURI = params.namespaceURI || t.namespaceURI || null;
         t.prefix = params.prefix || t.prefix || null;
         t.parser = params.parser || t.parser;
-        if (t.target !== t )
+        if (t.target !== t)
             t.items = assign({}, t.items);
         t.target = target;
     };
@@ -59,8 +59,9 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
                 converter: params.converter,
             };
         }
-        if (!params.localName)
-            params.localName = params.parser ? (params.parser as any).localName : key;
+        params.localName = params.localName || (params.parser && (params.parser as any).localName) || key;
+        t.items![key].namespaceURI = params.namespaceURI || (params.parser && (params.parser as any).namespaceURI) || null;
+        t.items![key].prefix = params.prefix || (params.parser && (params.parser as any).prefix) || null;
         t.items![key].localName = params.localName;
         t.items![key].type = CONST.ELEMENT;
 
@@ -101,18 +102,20 @@ function defineProperty(target: any, key: string, params: any) {
             }
         },
         get: function () {
+            if (this[_key] === void 0) {
+                let defaultValue = params.defaultValue;
+                if (params.parser) {
+                    defaultValue = new params.parser();
+                    defaultValue.localName = params.localName;
+                }
+                this[_key] = defaultValue;
+            }
             return this[_key];
         }
     };
 
-    let defaultValue = params.defaultValue;
-    if (params.parser) {
-        defaultValue = new params.parser();
-        defaultValue.localName = params.localName;
-    }
-
     // private property
-    Object.defineProperty(target, _key, { writable: true, value: defaultValue, enumerable: false });
+    Object.defineProperty(target, _key, { writable: true, enumerable: false });
     // public property
     Object.defineProperty(target, key, opt);
 }

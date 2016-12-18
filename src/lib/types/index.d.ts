@@ -34,7 +34,7 @@ interface IXmlSerializable {
      * @param  {Node} node
      * @returns void
      */
-    LoadXml(node: Node): void;
+    LoadXml(node: Node | string): void;
 }
 
 interface IXmlSerializableConstructor {

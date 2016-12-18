@@ -9,12 +9,12 @@
         "noUnusedLocals": true,
         "noUnusedParameters": false,
         "strictNullChecks": true,
-        "pretty": true,
         "noImplicitReturns": true,
         "experimentalDecorators": true,
         "removeComments": true
     },
     "exclude": [
-        "node_modules", "index.d.ts"
+        "node_modules",
+        "index.d.ts"
     ]
 }

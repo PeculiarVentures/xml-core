@@ -12,7 +12,7 @@ interface IXmlSerializable {
      * @param  {Node} node
      * @returns void
      */
-    LoadXml(node: Node): void;
+    LoadXml(node: Node | string): void;
 }
 
 interface AssocArray<T> {
@@ -374,7 +374,8 @@ declare namespace XmlJs {
         protected OnGetXml(element: Element): void;
         GetXml(): Element;
         protected OnLoadXml(element: Element): void;
-        LoadXml(element: Element): void;
+        static LoadXml(param: string | Element): XmlObject;
+        LoadXml(param: string | Element): void;
         toString(): string;
         static Parse(xmlstring: string): Document;
         static GetElement(element: Element, name: string, required?: boolean): Element;

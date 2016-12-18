@@ -28,7 +28,7 @@ export class XmlObject implements IXmlSerializable {
     protected element?: Element | null;
     protected prefix = this.GetStatic().prefix || null;
 
-    localName = this.GetStatic().localName;
+    protected localName = this.GetStatic().localName;
 
     get Element() {
         return this.element;
@@ -162,13 +162,27 @@ export class XmlObject implements IXmlSerializable {
     protected OnLoadXml(element: Element) {
     }
 
-    LoadXml(element: Element) {
+    static LoadXml<T extends XmlObject>(this: {new (): T}, param: string | Element) {
+        let xml = new this();
+        xml.LoadXml(param);
+        return xml;
+    }
+
+    LoadXml(param: string | Element) {
+        let element: Element;
+        if (typeof param === "string") {
+            const doc = XmlObject.Parse(param);
+            element = doc.documentElement;
+        }
+        else
+            element = param;
+
         if (!element) {
             throw new XmlError(XE.PARAM_REQUIRED, "element");
         }
 
         const self = this.GetStatic();
-        const localName = self.localName!;
+        const localName = this.localName!;
 
         // tslint:disable-next-line:triple-equals
         if (!((element.localName === localName) && (element.namespaceURI == this.NamespaceURI)))
@@ -204,7 +218,6 @@ export class XmlObject implements IXmlSerializable {
                 else {
                     // Get element
                     const schema: XmlChildElementType<any> = self.items[key];
-
                     // noRoot
                     if (schema.noRoot) {
                         if (!schema.parser)
@@ -216,7 +229,7 @@ export class XmlObject implements IXmlSerializable {
                         delete col.element; // reset cache status
 
                         if (col.Count < schema.minOccurs || col.Count > schema.maxOccurs)
-                            throw new XmlError(XE.COLLECTION_LIMIT, (schema.parser as any).localName, self.localName);
+                            throw new XmlError(XE.COLLECTION_LIMIT, (schema.parser as any).localName, localName);
                         (this as any)[key] = col;
                         continue;
                     }
@@ -228,10 +241,9 @@ export class XmlObject implements IXmlSerializable {
                         if (node.nodeType !== XmlNodeType.Element)
                             continue;
                         const el = node as Element;
-                        const checker = schema.parser ? schema.parser : schema;
-                        if (el.localName === checker.localName &&
+                        if (el.localName === schema.localName &&
                             // tslint:disable-next-line:triple-equals
-                            el.namespaceURI == checker.namespaceURI) {
+                            el.namespaceURI == schema.namespaceURI) {
                             foundElement = el;
                             break;
                         }
@@ -255,6 +267,7 @@ export class XmlObject implements IXmlSerializable {
                         // element
                         if (foundElement) {
                             const value = new schema.parser() as IXmlSerializable;
+                            (value as any).localName = schema.localName;
                             (this as any)[key] = value;
                             value.LoadXml(foundElement);
                         }
