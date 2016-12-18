@@ -16,7 +16,7 @@ Fundementally `xml-core` provides a way to transform XML to JSON and JSON to XML
 
 It is similar to [xmljs](https://www.npmjs.com/package/xmljs) but has a few differences -
 - Can convert the JSON back to XML
-- Uses [decorators](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.61eut6wa9) to acomplish this 
+- Uses [decorators](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.61eut6wa9) to make working in Javascript more natural 
 
 ## Install
 
