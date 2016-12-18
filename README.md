@@ -3,8 +3,8 @@
 
 `xml-core` is a set of classes that make it easier to work with XML within the browser and node.
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)(https://raw.githubusercontent.com/PeculiarVentures/xmljs/master/LICENSE)
-(https://circleci.com/gh/PeculiarVentures/xml-core.svg?style=svg)](https://circleci.com/gh/PeculiarVentures/xml-core)
+[![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/xml-core/master/LICENSE) [![CircleCI](https://circleci.com/gh/PeculiarVentures/xml-core.svg?style=svg)](https://circleci.com/gh/PeculiarVentures/xml-core)
+
 
 ## Introduction
 
