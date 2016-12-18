@@ -17,6 +17,7 @@
     "ts-loader": "^1.0.0"
   },
   "scripts": {
+    "pretest": "npm run build",
     "test": "mocha build/test",
     "build": "npm run build:es5",
     "build:es5": "tsc",
