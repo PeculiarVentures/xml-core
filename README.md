@@ -88,7 +88,7 @@ __Paramteres__
 | parser          | Sets parser as `XmlObject` for child element. Optional                          |
 | minOccurs       | Sets a min value for child element occurs. Default value is `0`                 |
 | maxOccurs       | Sets a max value for child element occurs. Default value is `MAX`               |
-| noRoot          | Determines if parser as `XmlCollection` must return it's childrent to parent element |
+| noRoot          | Determines if parser as `XmlCollection` must return it's children to parent element |
 
 __Example__
 
