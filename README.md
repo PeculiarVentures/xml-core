@@ -1,4 +1,4 @@
-# xml
+# xml-core
 
 `xml-core` is a set of classes that make it easier to work with XML within the browser.
 
