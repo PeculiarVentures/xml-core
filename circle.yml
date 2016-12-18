@@ -5,10 +5,11 @@ machine:
 dependencies:
   pre:
     - npm install -g typescript 
+    - npm install -g mocha 
 
 test:
   pre:
-    - npm run build
+    - npm test
 
 general:
   branches:
