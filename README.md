@@ -56,7 +56,7 @@ Class decorator which allows to describe schema for xml element
 __Paramteres__
 
 | Name | Description |
-|-----------------|---------------------------------------------------------------------------------| 
+|:----------------|:--------------------------------------------------------------------------------| 
 | localName       | Sets a local name for xml element. Default value is name of Class               |
 | namespaceURI    | Sets a namespace URI for xml element. Default value is `null`                   |
 | prefix          | Sets a prefix for xml element. Default value is `null`                          |
@@ -69,7 +69,7 @@ Property decorator which allows to describe schema for attribute of xml element
 __Paramteres__
 
 | Name | Description |
-|-----------------|---------------------------------------------------------------------------------| 
+|:----------------|:--------------------------------------------------------------------------------| 
 | localName       | Sets a local name for xml element. Default value is name of Property            |
 | namespaceURI    | Sets a namespace URI for xml element. Default value is `null`                   |
 | prefix          | Sets a prefix for attribute of xml element. Default value is `null`             |
@@ -85,7 +85,7 @@ Property decorator which allows to describe schema for child element of xml elem
 __Paramteres__
 
 | Name | Description |
-|-----------------|---------------------------------------------------------------------------------| 
+|:----------------|:--------------------------------------------------------------------------------| 
 | localName       | Sets local name for xml element. Default value is name of Class                 |
 | namespaceURI    | Sets namespace URI for xml element. Default value is `null`                     |
 | prefix          | Sets prefix for xml element. Default value is `null`                            |
@@ -96,6 +96,35 @@ __Paramteres__
 | minOccurs       | Sets a min value for child element occurs. Default value is `0`                 |
 | maxOccurs       | Sets a max value for child element occurs. Default value is `MAX`               |
 | noRoot          | Determines if parser as `XmlCollection` must return it's children to parent element |
+
+## XmlObject
+
+Base class for XML elements.
+
+### LoadXml
+
+Reads XML from string
+
+```typescript
+LoadXml(node: Node | string): void;
+static LoadXml(node: Node | string): this;
+```
+
+### GetXml
+
+Writes object to XML node
+
+```typescript
+GetXml(): Node | null;
+```
+
+### toString
+
+Writes object to string
+
+```
+toString(): string;
+```
 
 __Example__
 
@@ -117,7 +146,7 @@ Target XML [schema]()
 TypeScript implementation of XML schema
 
 ```typescript
-import { XmlBase64Converter } from "xml-core";
+import { XmlObject, XmlBase64Converter } from "xml-core";
 
 @XmlElement({
     localName: "Signature",
@@ -161,3 +190,18 @@ class Signature extends XmlObject {
 
 }
 ```
+
+__Using__
+
+```typescript
+const signature = new Signature();
+
+// Read XML
+signature.LoadXml(Signature.Parse('<ds:Signature Id="sigId">...</ds:signature>'));
+console.log("Id:", signature.Id); // Id: sigId
+
+// Write XML
+signature.Id = "newId";
+console.log(signature.toString()); // <ds:Signature Id="sigId">...</ds:signature>
+```
+
