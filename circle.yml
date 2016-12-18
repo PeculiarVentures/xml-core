@@ -5,7 +5,6 @@ machine:
 dependencies:
   pre:
     - npm install -g typescript 
-    - npm install -g mocha 
 
 test:
   pre:
