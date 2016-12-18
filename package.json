@@ -2,13 +2,14 @@
   "name": "xmljs",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "build/lib/index.js",
   "types": "index.d.ts",
   "directories": {
     "test": "test"
   },
   "dependencies": {
     "@types/node": "*",
+    "@types/mocha": "^2.2.33",
     "xmldom-alpha": "^0.1.21",
     "xpath.js": "^1.0.6"
   },

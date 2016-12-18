@@ -2,27 +2,19 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "outDir": "lib",
+        "outDir": "build",
         "rootDir": "src",
         "noImplicitAny": true,
         "sourceMap": false,
         "noUnusedLocals": true,
         "noUnusedParameters": false,
         "strictNullChecks": true,
-        "pretty": true,
-        "noImplicitReturns": true
+        "noImplicitReturns": true,
+        "experimentalDecorators": true,
+        "removeComments": true
     },
-    "files": [
-        "src/types/index.d.ts",
-        "src/types/xpath.d.ts",
-        "src/collection.ts",
-        "src/convert.ts",
-        "src/error.ts",
-        "src/namespace_manager.ts",
-        "src/utils.ts",
-        "src/xml.ts",
-        "src/xml_object.ts",
-        "src/xml_collection.ts",
-        "src/index.ts"
+    "exclude": [
+        "node_modules",
+        "index.d.ts"
     ]
 }

@@ -1,6 +1,5 @@
-"use strict";
-const Convert = require("../lib/index").Convert;
-const assert = require("assert");
+import { Convert } from "../lib/index";
+import * as assert from "assert";
 
 describe("Convert", () => {
 
@@ -22,12 +21,12 @@ describe("Convert", () => {
             Convert.FromString("Aw_=", "base64url"),
         ].forEach((buf, index) => {
             it(`Encoding ${enc} buf:${Convert.ToString(buf, enc)}`, () => {
-                const str = Convert.ToString(buf, enc)
+                const str = Convert.ToString(buf, enc);
                 assert.equal(typeof str, "string");
                 const newBuf = Convert.FromString(str, enc);
                 assert.equal(buf.every((c, i) => c === newBuf[i]), true);
             });
-        })
+        });
     });
 
-})
+});
