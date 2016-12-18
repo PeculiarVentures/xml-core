@@ -14,17 +14,30 @@
     "xpath.js": "^1.0.6"
   },
   "devDependencies": {
-    "ts-loader": "^1.0.0",
-     "mocha": "^3.0.2"
+    "live-server": "^1",
+    "mocha": "^3",
+    "npm-run-all": "^3",
+    "nyc": "^8",
+    "typescript": "^2",
+    "watch": "^0"
   },
   "scripts": {
+    "install": "npm run build",
     "pretest": "npm run build",
     "test": "mocha build/test",
     "build": "npm run build:es5",
     "build:es5": "tsc",
     "build:es2015": "tsc --module commonjs --target es2015",
     "build:source": "tsc --declaration --declarationDir types",
-    "install": "npm run build"
+    "sync": "git ac && git pull --rebase && git push",
+    "coverage": "nyc npm test",
+    "precoveragehtml": "npm run coverage",
+    "coveragehtml": "nyc report -r html",
+    "watch": "watch 'npm run coveragehtml' lib/ src/ test/",
+    "live": "live-server -q --port=4005 --ignorePattern='(js|css|png)$' coverage",
+    "predev": "if [ ! -f coverage/index.html ]; then mkdir coverage; cp .waiting.html coverage/index.html; fi",
+    "dev": "npm-run-all -p --silent watch live",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",

@@ -199,7 +199,7 @@ interface IConverter<T> {
     get: (value: T) => string | undefined;
 }
 
-declare namespace XmlJs {
+declare namespace XmlCore {
 
     // collection
 
@@ -397,6 +397,5 @@ declare namespace XmlJs {
 
 }
 
-declare module "xmljs" {
-    export = XmlJs
-}
+export = XmlCore;
+export as namespace XmlCore;

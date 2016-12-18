@@ -32,13 +32,13 @@ npm install xml-core
 ### ES5
 
 ```javascript
-var XmlJsCore = require("xmljs-core");
+var XmlCore = require("xml-core");
 ```
 
 ### ES2015
 
 ```javascript
-import XmlJsCore from "xmljs-core";
+import XmlCore from "xml-core";
 ```
 
 ## Decrators
@@ -113,7 +113,7 @@ Target XML [schema]()
 TypeScript implementation of XML schema
 
 ```typescript
-import { XmlBase64Converter } from "xmljs-core";
+import { XmlBase64Converter } from "xml-core";
 
 @XmlElement({
     localName: "Signature",
