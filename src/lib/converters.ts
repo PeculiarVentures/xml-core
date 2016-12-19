@@ -13,7 +13,9 @@ export const XmlBase64Converter: IConverter<Uint8Array> = {
 
 export const XmlNumberConverter: IConverter<number> = {
     get: (value: number) => {
-        return value.toString();
+        if (value)
+            return value.toString();
+        return void 0;
     },
     set: (value: string) => {
         return Number(value);
