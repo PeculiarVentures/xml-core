@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PeculiarVentures/xmljs.git"
+    "url": "git+https://github.com/PeculiarVentures/xml-core.git.git"
   },
   "keywords": [
     "xml"
@@ -44,7 +44,7 @@
   "author": "microshine",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PeculiarVentures/xmljs/issues"
+    "url": "https://github.com/PeculiarVentures/xml-core.git/issues"
   },
-  "homepage": "https://github.com/PeculiarVentures/xmljs#readme"
+  "homepage": "https://github.com/PeculiarVentures/xml-core.git#readme"
 }
