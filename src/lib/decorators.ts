@@ -91,6 +91,25 @@ export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false,
     };
 };
 
+export function XmlContent<T>(params: XmlContentType<T> = { required: false }) {
+    return (target: Object, propertyKey: string | symbol) => {
+        const t = target.constructor as XmlSchema;
+        const key = propertyKey as string;
+
+        if (!t.items)
+            t.items = {};
+
+        if (t.target !== t)
+            t.items = assign({}, t.items);
+        t.target = target;
+
+        t.items![propertyKey] = params;
+        t.items![propertyKey].type = CONST.CONTENT;
+
+        defineProperty(target, key, params);
+    };
+}
+
 function defineProperty(target: any, key: string, params: any) {
     const _key = `_${key}`;
 

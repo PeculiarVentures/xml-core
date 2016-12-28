@@ -93,6 +93,18 @@ __Paramteres__
 | maxOccurs       | Sets a max value for child element occurs. Default value is `MAX`               |
 | noRoot          | Determines if parser as `XmlCollection` must return it's children to parent element |
 
+### XmlContent
+
+Property decorator which allows to describe schema for content of xml element
+
+__Paramteres__
+
+| Name | Description |
+|-----------------|---------------------------------------------------------------------------------| 
+| defaultValue    | Sets a default value for content of xml element. Optional                       |
+| required        | Determines if content of xml element is required. Default value is `false`      |
+| converter       | Sets a specific converter for content of xml element. Default is simple text    |
+
 __Example__
 
 Target XML [schema]()

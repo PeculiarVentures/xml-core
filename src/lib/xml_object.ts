@@ -89,63 +89,78 @@ export class XmlObject implements IXmlSerializable {
         if (self.items) {
             for (let key in self.items) {
                 const _parser = (this as any)[key];
-                if (self.items[key].type === CONST.ATTRIBUTE) {
-                    let schema: XmlAttributeType<any> = self.items[key];
-                    let value = (schema.converter) ? schema.converter.get(_parser) : _parser;
-                    if (schema.required && (value === null || value === void 0))
-                        throw new XmlError(XE.ATTRIBUTE_MISSING, schema.localName, localName);
-
-                    // attr value
-                    if (schema.defaultValue !== _parser || schema.required)
-                        if (!schema.namespaceURI)
-                            el.setAttribute(schema.localName!, value);
-                        else
-                            el.setAttributeNS(schema.namespaceURI, schema.localName!, value);
-                }
-                else {
-                    // Add elements
-                    let schema = self.items[key] as XmlChildElementType<any>;
-                    let node: Element | null = null;
-
-                    if (schema.parser) {
-                        if ((schema.required && !_parser) ||
-                            (schema.minOccurs && !_parser.Count))
-                            throw new XmlError(XE.ELEMENT_MISSING, _parser.localName, localName);
-
-                        if (_parser)
-                            node = _parser.GetXml(_parser.element === void 0);
-                    }
-                    else {
+                const selfItem = self.items[key];
+                switch (selfItem.type) {
+                    case CONST.CONTENT: {
+                        let schema: XmlContentType<any> = selfItem;
                         let value = (schema.converter) ? schema.converter.get(_parser) : _parser;
-                        if (schema.required && value === void 0)
-                            throw new XmlError(XE.ELEMENT_MISSING, schema.localName, localName);
-                        if (_parser !== schema.defaultValue || schema.required) {
-                            if (!schema.namespaceURI)
-                                node = doc.createElement(`${schema.prefix ? schema.prefix + ":" : ""}${schema.localName}`);
-                            else {
-                                node = doc.createElementNS(schema.namespaceURI, `${schema.prefix ? schema.prefix + ":" : ""}${schema.localName}`);
-                            }
-                            node!.textContent = value;
-                        }
-                    }
+                        if (schema.required && (value === null || value === void 0))
+                            throw new XmlError(XE.CONTENT_MISSING, localName);
 
-                    if (node) {
-                        if (schema.noRoot) {
-                            let els: Element[] = [];
-                            // no root
-                            for (let i = 0; i < node.childNodes.length; i++) {
-                                const colNode = node.childNodes.item(i);
-                                if (colNode.nodeType === XmlNodeType.Element)
-                                    els.push(colNode as Element);
-                            }
-                            if (els.length < schema.minOccurs || els.length > schema.maxOccurs)
-                                throw new XmlError(XE.COLLECTION_LIMIT, _parser.localName, self.localName);
-                            els.forEach(e => el.appendChild(e.cloneNode(true)));
+                        if (schema.defaultValue !== _parser || schema.required)
+                            el.textContent = value;
+                        break;
+                    }
+                    case CONST.ATTRIBUTE: {
+                        let schema: XmlAttributeType<any> = selfItem;
+                        let value = (schema.converter) ? schema.converter.get(_parser) : _parser;
+                        if (schema.required && (value === null || value === void 0))
+                            throw new XmlError(XE.ATTRIBUTE_MISSING, schema.localName, localName);
+
+                        // attr value
+                        if (schema.defaultValue !== _parser || schema.required)
+                            if (!schema.namespaceURI)
+                                el.setAttribute(schema.localName!, value);
+                            else
+                                el.setAttributeNS(schema.namespaceURI, schema.localName!, value);
+                        break;
+                    }
+                    case CONST.ELEMENT: {
+                        // Add elements
+                        let schema = selfItem as XmlChildElementType<any>;
+                        let node: Element | null = null;
+
+                        if (schema.parser) {
+                            if ((schema.required && !_parser) ||
+                                (schema.minOccurs && !_parser.Count))
+                                throw new XmlError(XE.ELEMENT_MISSING, _parser.localName, localName);
+
+                            if (_parser)
+                                node = _parser.GetXml(_parser.element === void 0);
                         }
-                        else if (node.childNodes.length < schema.minOccurs || node.childNodes.length > schema.maxOccurs)
-                            throw new XmlError(XE.COLLECTION_LIMIT, _parser.localName, self.localName);
-                        else
-                            el.appendChild(node);
+                        else {
+                            let value = (schema.converter) ? schema.converter.get(_parser) : _parser;
+                            if (schema.required && value === void 0)
+                                throw new XmlError(XE.ELEMENT_MISSING, schema.localName, localName);
+                            if (_parser !== schema.defaultValue || schema.required) {
+                                if (!schema.namespaceURI)
+                                    node = doc.createElement(`${schema.prefix ? schema.prefix + ":" : ""}${schema.localName}`);
+                                else {
+                                    node = doc.createElementNS(schema.namespaceURI, `${schema.prefix ? schema.prefix + ":" : ""}${schema.localName}`);
+                                }
+                                node!.textContent = value;
+                            }
+                        }
+
+                        if (node) {
+                            if (schema.noRoot) {
+                                let els: Element[] = [];
+                                // no root
+                                for (let i = 0; i < node.childNodes.length; i++) {
+                                    const colNode = node.childNodes.item(i);
+                                    if (colNode.nodeType === XmlNodeType.Element)
+                                        els.push(colNode as Element);
+                                }
+                                if (els.length < schema.minOccurs || els.length > schema.maxOccurs)
+                                    throw new XmlError(XE.COLLECTION_LIMIT, _parser.localName, self.localName);
+                                els.forEach(e => el.appendChild(e.cloneNode(true)));
+                            }
+                            else if (node.childNodes.length < schema.minOccurs || node.childNodes.length > schema.maxOccurs)
+                                throw new XmlError(XE.COLLECTION_LIMIT, _parser.localName, self.localName);
+                            else
+                                el.appendChild(node);
+                        }
+                        break;
                     }
                 }
             }
@@ -162,7 +177,7 @@ export class XmlObject implements IXmlSerializable {
     protected OnLoadXml(element: Element) {
     }
 
-    static LoadXml<T extends XmlObject>(this: {new (): T}, param: string | Element) {
+    static LoadXml<T extends XmlObject>(this: { new (): T }, param: string | Element) {
         let xml = new this();
         xml.LoadXml(param);
         return xml;
@@ -191,86 +206,105 @@ export class XmlObject implements IXmlSerializable {
         // Get attributes
         if (self.items) {
             for (let key in self.items) {
-                if (self.items[key].type === CONST.ATTRIBUTE) {
-                    let schema: XmlAttributeType<any> = self.items[key];
+                let selfItem = self.items[key];
+                switch (selfItem.type) {
+                    case CONST.CONTENT: {
+                        let schema: XmlContentType<any> = selfItem;
 
-                    let hasAttribute: () => boolean;
-                    let getAttribute: () => string | null;
-                    if (schema.namespaceURI) {
-                        hasAttribute = element.hasAttributeNS.bind(element, schema.namespaceURI, schema.localName);
-                        getAttribute = element.getAttributeNS.bind(element, schema.namespaceURI, schema.localName);
-                    }
-                    else {
-                        hasAttribute = element.hasAttribute.bind(element, schema.localName);
-                        getAttribute = element.getAttribute.bind(element, schema.localName);
-                    }
+                        if (schema.required && !element.textContent)
+                            throw new XmlError(XE.CONTENT_MISSING, localName);
 
-                    if (schema.required && !hasAttribute())
-                        throw new XmlError(XE.ATTRIBUTE_MISSING, schema.localName, localName);
-
-                    if (!hasAttribute())
-                        (this as any)[key] = schema.defaultValue;
-                    else {
-                        let value = schema.converter ? schema.converter.set(getAttribute() !) : getAttribute() !;
-                        (this as any)[key] = value;
-                    }
-                }
-                else {
-                    // Get element
-                    const schema: XmlChildElementType<any> = self.items[key];
-                    // noRoot
-                    if (schema.noRoot) {
-                        if (!schema.parser)
-                            throw new XmlError(XE.XML_EXCEPTION, `Schema for '${schema.localName}' with flag noRoot must have 'parser'`);
-                        const col: XmlCollection<any> = new schema.parser() as any;
-                        if (!(col instanceof XmlCollection))
-                            throw new XmlError(XE.XML_EXCEPTION, `Schema for '${schema.localName}' with flag noRoot must have 'parser' like instance of XmlCollection`);
-                        (col as any).OnLoadXml(element); // protected member
-                        delete col.element; // reset cache status
-
-                        if (col.Count < schema.minOccurs || col.Count > schema.maxOccurs)
-                            throw new XmlError(XE.COLLECTION_LIMIT, (schema.parser as any).localName, localName);
-                        (this as any)[key] = col;
-                        continue;
-                    }
-
-                    // Get element by localName
-                    let foundElement: Element | null = null;
-                    for (let i = 0; i < element.childNodes.length; i++) {
-                        const node = element.childNodes.item(i);
-                        if (node.nodeType !== XmlNodeType.Element)
-                            continue;
-                        const el = node as Element;
-                        if (el.localName === schema.localName &&
-                            // tslint:disable-next-line:triple-equals
-                            el.namespaceURI == schema.namespaceURI) {
-                            foundElement = el;
-                            break;
-                        }
-                    }
-
-                    // required
-                    if (schema.required && !foundElement)
-                        throw new XmlError(XE.ELEMENT_MISSING, schema.parser ? (schema.parser as any).localName : schema.localName, localName);
-
-                    if (!schema.parser) {
-
-                        // simple element
-                        if (!foundElement)
+                        if (!element.textContent)
                             (this as any)[key] = schema.defaultValue;
                         else {
-                            let value = schema.converter ? schema.converter.set(foundElement.textContent!) : foundElement.textContent;
+                            let value = schema.converter ? schema.converter.set(element.textContent) : element.textContent;
                             (this as any)[key] = value;
                         }
+                        break;
                     }
-                    else {
-                        // element
-                        if (foundElement) {
-                            const value = new schema.parser() as IXmlSerializable;
-                            (value as any).localName = schema.localName;
-                            (this as any)[key] = value;
-                            value.LoadXml(foundElement);
+                    case CONST.ATTRIBUTE: {
+                        let schema: XmlAttributeType<any> = selfItem;
+
+                        let hasAttribute: () => boolean;
+                        let getAttribute: () => string | null;
+                        if (schema.namespaceURI) {
+                            hasAttribute = element.hasAttributeNS.bind(element, schema.namespaceURI, schema.localName);
+                            getAttribute = element.getAttributeNS.bind(element, schema.namespaceURI, schema.localName);
                         }
+                        else {
+                            hasAttribute = element.hasAttribute.bind(element, schema.localName);
+                            getAttribute = element.getAttribute.bind(element, schema.localName);
+                        }
+
+                        if (schema.required && !hasAttribute())
+                            throw new XmlError(XE.ATTRIBUTE_MISSING, schema.localName, localName);
+
+                        if (!hasAttribute())
+                            (this as any)[key] = schema.defaultValue;
+                        else {
+                            let value = schema.converter ? schema.converter.set(getAttribute() !) : getAttribute() !;
+                            (this as any)[key] = value;
+                        }
+                        break;
+                    }
+                    case CONST.ELEMENT: {
+                        // Get element
+                        const schema: XmlChildElementType<any> = selfItem;
+                        // noRoot
+                        if (schema.noRoot) {
+                            if (!schema.parser)
+                                throw new XmlError(XE.XML_EXCEPTION, `Schema for '${schema.localName}' with flag noRoot must have 'parser'`);
+                            const col: XmlCollection<any> = new schema.parser() as any;
+                            if (!(col instanceof XmlCollection))
+                                throw new XmlError(XE.XML_EXCEPTION, `Schema for '${schema.localName}' with flag noRoot must have 'parser' like instance of XmlCollection`);
+                            (col as any).OnLoadXml(element); // protected member
+                            delete col.element; // reset cache status
+
+                            if (col.Count < schema.minOccurs || col.Count > schema.maxOccurs)
+                                throw new XmlError(XE.COLLECTION_LIMIT, (schema.parser as any).localName, localName);
+                            (this as any)[key] = col;
+                            continue;
+                        }
+
+                        // Get element by localName
+                        let foundElement: Element | null = null;
+                        for (let i = 0; i < element.childNodes.length; i++) {
+                            const node = element.childNodes.item(i);
+                            if (node.nodeType !== XmlNodeType.Element)
+                                continue;
+                            const el = node as Element;
+                            if (el.localName === schema.localName &&
+                                // tslint:disable-next-line:triple-equals
+                                el.namespaceURI == schema.namespaceURI) {
+                                foundElement = el;
+                                break;
+                            }
+                        }
+
+                        // required
+                        if (schema.required && !foundElement)
+                            throw new XmlError(XE.ELEMENT_MISSING, schema.parser ? (schema.parser as any).localName : schema.localName, localName);
+
+                        if (!schema.parser) {
+
+                            // simple element
+                            if (!foundElement)
+                                (this as any)[key] = schema.defaultValue;
+                            else {
+                                let value = schema.converter ? schema.converter.set(foundElement.textContent!) : foundElement.textContent;
+                                (this as any)[key] = value;
+                            }
+                        }
+                        else {
+                            // element
+                            if (foundElement) {
+                                const value = new schema.parser() as IXmlSerializable;
+                                (value as any).localName = schema.localName;
+                                (this as any)[key] = value;
+                                value.LoadXml(foundElement);
+                            }
+                        }
+                        break;
                     }
                 }
             }

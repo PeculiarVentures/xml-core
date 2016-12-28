@@ -134,6 +134,30 @@ interface XmlSchemaItemParser {
 interface XmlAttributeType<T> extends XmlSchemaItem<T> {
 }
 
+interface XmlContentType<T> {
+    /**
+     * Default value for item
+     * 
+     * @type {(T |)}
+     * @memberOf XmlContentType
+     */
+    defaultValue?: T | null;
+    /**
+     * Determine where item is required
+     * 
+     * @type {boolean}
+     * @memberOf XmlContentType
+     */
+    required?: boolean;
+    /**
+     * Custom converter for item value
+     * 
+     * @type {IConverter<T>}
+     * @memberOf XmlContentType
+     */
+    converter?: IConverter<T>;
+}
+
 interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
     /**
      * Local name for Xml element

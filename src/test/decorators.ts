@@ -1,4 +1,4 @@
-import { XmlAttribute, XmlElement, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
+import { XmlAttribute, XmlElement, XmlContent, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");
@@ -318,10 +318,8 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test><value id="123"/></test>`);
-
                     let test = new XmlTest();
-                    test.LoadXml(doc.documentElement);
+                    test.LoadXml(`<test><value id="123"/></test>`);
 
                     assert.equal(test.Value.Id, "123");
                 });
@@ -866,6 +864,141 @@ describe("Decorators", () => {
         assert.equal(second.toString(), `<p:second Id="2" xmlns:p="http://some.com"/>`);
         assert.equal((XmlFirst as any).prefix, (XmlSecond as any).prefix);
         assert.equal((XmlFirst as any).namespaceURI, (XmlSecond as any).namespaceURI);
+
+    });
+
+    context("XmlContent", () => {
+
+        it("Content", () => {
+
+            @XmlElement({
+                localName: "test",
+                namespaceURI: "http://some.com",
+                prefix: "p",
+            })
+            class XmlTest extends XmlObject {
+
+                @XmlContent()
+                public Value: string;
+
+            }
+
+            let test = new XmlTest();
+
+            assert.equal(test.Value, undefined);
+
+            test.Value = "Test";
+
+            let xml = test.toString();
+            assert.equal(xml, `<p:test xmlns:p="http://some.com">Test</p:test>`);
+            let test2 = XmlTest.LoadXml(xml);
+
+            assert.equal(test2.Value, test.Value);
+        });
+
+        it("Converter", () => {
+
+            @XmlElement({
+                localName: "test",
+                namespaceURI: "http://some.com",
+                prefix: "p",
+            })
+            class XmlTest extends XmlObject {
+
+                @XmlContent({
+                    converter: XmlNumberConverter
+                })
+                public Value: number;
+
+            }
+
+            let test = new XmlTest();
+
+            assert.equal(test.Value, undefined);
+
+            test.Value = 123;
+
+            let xml = test.toString();
+            assert.equal(xml, `<p:test xmlns:p="http://some.com">123</p:test>`);
+
+            let test2 = XmlTest.LoadXml(xml);
+
+            assert.equal(test2.Value, test.Value);
+        });
+
+        it("Required", () => {
+
+            @XmlElement({
+                localName: "test",
+                namespaceURI: "http://some.com",
+                prefix: "p",
+            })
+            class XmlTest extends XmlObject {
+
+                @XmlAttribute()
+                Id: string;
+
+                @XmlContent({
+                    required: true,
+                })
+                public Value: string;
+
+            }
+
+            let test = new XmlTest();
+
+            assert.equal(test.Value, undefined);
+
+            test.Id = "1";
+
+            assert.throws(() => test.GetXml());
+
+            test.Value = "test";
+
+            let xml = test.toString();
+            assert.equal(xml, `<p:test Id="1" xmlns:p="http://some.com">test</p:test>`);
+
+            assert.throws(() => XmlTest.LoadXml(`<p:test Id="1" xmlns:p="http://some.com"/>`));
+
+            let test2 = XmlTest.LoadXml(xml);
+
+            assert.equal(test2.Value, test.Value);
+        });
+
+        it("Default value", () => {
+            @XmlElement({
+                localName: "test",
+                namespaceURI: "http://some.com",
+                prefix: "p",
+            })
+            class XmlTest extends XmlObject {
+
+                @XmlAttribute()
+                Id: string;
+
+                @XmlContent({
+                    required: true,
+                    defaultValue: "test",
+                })
+                public Value: string;
+
+            }
+
+            let test = new XmlTest();
+
+            assert.equal(test.Value, "test");
+
+            test.Id = "1";
+
+            let xml = test.toString();
+            assert.equal(xml, `<p:test Id="1" xmlns:p="http://some.com">test</p:test>`);
+
+            assert.throws(() => XmlTest.LoadXml(`<p:test Id="1" xmlns:p="http://some.com"/>`));
+
+            let test2 = XmlTest.LoadXml(xml);
+
+            assert.equal(test2.Value, test.Value);
+        });
 
     });
 
