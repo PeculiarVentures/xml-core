@@ -14,15 +14,24 @@
     "xpath.js": "^1.0.6"
   },
   "devDependencies": {
-    "ts-loader": "^1.0.0"
+    "coveralls": "^2",
+    "nyc": "^8",
+    "ts-loader": "^1.0.0",
+    "typescript": "^2"
   },
   "scripts": {
+    "pretest": "npm run build:map",
     "test": "mocha test",
     "build": "npm run build:es5",
     "build:es5": "tsc",
+    "build:map": "tsc --sourceMap",
     "build:es2015": "tsc --module commonjs --target es2015",
     "build:source": "tsc --declaration --declarationDir types",
-    "install": "npm run build"
+    "install": "npm run build",
+    "coverage": "nyc npm test",
+    "precoveragehtml": "npm run coverage",
+    "coveragehtml": "nyc report -r html",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",

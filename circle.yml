@@ -2,15 +2,6 @@ machine:
   node:
     version: 6.9.1
 
-dependencies:
-  pre:
-    - npm install -g typescript 
-
-test:
-  pre:
-    - npm run build
-    - npm run test
-
 general:
   branches:
     ignore:
