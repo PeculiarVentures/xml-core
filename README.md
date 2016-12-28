@@ -3,8 +3,12 @@
 
 `xml-core` is a set of classes that make it easier to work with XML within the browser and node.
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)(https://raw.githubusercontent.com/PeculiarVentures/xmljs/master/LICENSE)
-(https://circleci.com/gh/PeculiarVentures/xml-core.svg?style=svg)](https://circleci.com/gh/PeculiarVentures/xml-core)
+[![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/xml-core/master/LICENSE) [![CircleCI](https://circleci.com/gh/PeculiarVentures/xml-core.svg?style=svg)](https://circleci.com/gh/PeculiarVentures/xml-core)
+[![Coverage Status](https://coveralls.io/repos/github/PeculiarVentures/xml-core/badge.svg?branch=master)](https://coveralls.io/github/PeculiarVentures/xml-core?branch=master)
+[![NPM version](https://badge.fury.io/js/xml-core.png)](http://badge.fury.io/js/xml-core)
+
+[![NPM](https://nodei.co/npm-dl/xml-core.png?months=2&height=2)](https://nodei.co/npm/xml-core/)
+
 
 ## Introduction
 
@@ -15,11 +19,11 @@ This lead us to the creation od [XMLDSIGjs](https://github.com/PeculiarVentures/
 
 We use `xml-core` to make the creation of these libraries easier, we hope you may find it valuable in your own projects also. 
 
-Fundementally `xml-core` provides a way to transform XML to JSON and JSON to XML, this let's you work naturally with XML in Javascript without loosing the original XML.
+Fundementally `xml-core` provides a way to transform XML to JSON and JSON to XML, which enables you to enforce a schema on the associated XML. The goal of this is to let you work naturally with XML in Javascript.
 
 It is similar to [xmljs](https://www.npmjs.com/package/xmljs) but has a few differences -
 - Can convert the JSON back to XML,
-- Uses [decorators](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.61eut6wa9) to make working in Javascript more natural. 
+- Uses [decorators](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.61eut6wa9) to make enforcing schema in Javascript more natural. 
 
 ## Install
 
@@ -32,13 +36,13 @@ npm install xml-core
 ### ES5
 
 ```javascript
-var XmlJsCore = require("xmljs-core");
+var XmlCore = require("xml-core");
 ```
 
 ### ES2015
 
 ```javascript
-import XmlJsCore from "xmljs-core";
+import XmlCore from "xml-core";
 ```
 
 ## Decrators
@@ -52,7 +56,7 @@ Class decorator which allows to describe schema for xml element
 __Paramteres__
 
 | Name | Description |
-|-----------------|---------------------------------------------------------------------------------| 
+|:----------------|:--------------------------------------------------------------------------------| 
 | localName       | Sets a local name for xml element. Default value is name of Class               |
 | namespaceURI    | Sets a namespace URI for xml element. Default value is `null`                   |
 | prefix          | Sets a prefix for xml element. Default value is `null`                          |
@@ -65,7 +69,7 @@ Property decorator which allows to describe schema for attribute of xml element
 __Paramteres__
 
 | Name | Description |
-|-----------------|---------------------------------------------------------------------------------| 
+|:----------------|:--------------------------------------------------------------------------------| 
 | localName       | Sets a local name for xml element. Default value is name of Property            |
 | namespaceURI    | Sets a namespace URI for xml element. Default value is `null`                   |
 | prefix          | Sets a prefix for attribute of xml element. Default value is `null`             |
@@ -81,7 +85,7 @@ Property decorator which allows to describe schema for child element of xml elem
 __Paramteres__
 
 | Name | Description |
-|-----------------|---------------------------------------------------------------------------------| 
+|:----------------|:--------------------------------------------------------------------------------| 
 | localName       | Sets local name for xml element. Default value is name of Class                 |
 | namespaceURI    | Sets namespace URI for xml element. Default value is `null`                     |
 | prefix          | Sets prefix for xml element. Default value is `null`                            |
@@ -105,6 +109,35 @@ __Paramteres__
 | required        | Determines if content of xml element is required. Default value is `false`      |
 | converter       | Sets a specific converter for content of xml element. Default is simple text    |
 
+## XmlObject
+
+Base class for XML elements.
+
+### LoadXml
+
+Reads XML from string
+
+```typescript
+LoadXml(node: Node | string): void;
+static LoadXml(node: Node | string): this;
+```
+
+### GetXml
+
+Writes object to XML node
+
+```typescript
+GetXml(): Node | null;
+```
+
+### toString
+
+Writes object to string
+
+```
+toString(): string;
+```
+
 __Example__
 
 Target XML [schema]()
@@ -125,7 +158,7 @@ Target XML [schema]()
 TypeScript implementation of XML schema
 
 ```typescript
-import { XmlBase64Converter } from "xmljs-core";
+import { XmlObject, XmlBase64Converter } from "xml-core";
 
 @XmlElement({
     localName: "Signature",
@@ -169,3 +202,18 @@ class Signature extends XmlObject {
 
 }
 ```
+
+__Using__
+
+```typescript
+const signature = new Signature();
+
+// Read XML
+signature.LoadXml(Signature.Parse('<ds:Signature Id="sigId">...</ds:signature>'));
+console.log("Id:", signature.Id); // Id: sigId
+
+// Write XML
+signature.Id = "newId";
+console.log(signature.toString()); // <ds:Signature Id="sigId">...</ds:signature>
+```
+

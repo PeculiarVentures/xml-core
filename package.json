@@ -1,7 +1,7 @@
 {
   "name": "xml-core",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.4",
+  "description": "`xml-core` is a set of classes that make it easier to work with XML within the browser and node.",
   "main": "build/lib/index.js",
   "types": "index.d.ts",
   "directories": {
@@ -15,11 +15,13 @@
   },
   "devDependencies": {
     "coveralls": "^2",
+    "mocha": "^3",
     "nyc": "^8",
     "ts-loader": "^1.0.0",
     "typescript": "^2"
   },
   "scripts": {
+    "clean": "rm -rf build/ buildjs/ coverage/ .nyc_output/ npm-debug.log npm-debug.log.*",
     "pretest": "npm run build:map",
     "test": "mocha build/test",
     "build": "npm run build:es5",
@@ -31,20 +33,19 @@
     "pub": "npm version patch && npm publish && git push",
     "coverage": "nyc npm test",
     "precoveragehtml": "npm run coverage",
-    "coveragehtml": "nyc report -r html",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "coveragehtml": "nyc report -r html"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PeculiarVentures/xmljs.git"
+    "url": "git+https://github.com/PeculiarVentures/xml-core.git.git"
   },
   "keywords": [
     "xml"
   ],
   "author": "microshine",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PeculiarVentures/xmljs/issues"
+    "url": "https://github.com/PeculiarVentures/xml-core.git/issues"
   },
-  "homepage": "https://github.com/PeculiarVentures/xmljs#readme"
+  "homepage": "https://github.com/PeculiarVentures/xml-core.git#readme"
 }

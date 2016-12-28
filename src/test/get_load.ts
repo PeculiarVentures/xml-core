@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import { XmlElement, XmlAttribute, XmlChildElement } from "../lib";
 import { XmlObject, XmlCollection } from "../lib";
+import { XmlNumberConverter } from "../lib";
 
 context("GetXml/LoadXml/HasChanged", () => {
 
@@ -181,6 +182,76 @@ context("GetXml/LoadXml/HasChanged", () => {
         assert.equal(p.Childs2.Count, 1);
         assert.equal(p.Childs2.Item(0) !.Id, "test");
         assert.equal(p.HasChanged(), false);
+    });
+
+    it("praser for attributes", () => {
+
+        @XmlElement({
+            localName: "test",
+            namespaceURI: "https://some.com"
+        })
+        class Test extends XmlObject {
+
+            @XmlAttribute({
+                localName: "value"
+            })
+            Value = "test";
+
+            @XmlAttribute({
+                localName: "version",
+                converter: XmlNumberConverter
+            })
+            Version: number;
+
+        }
+
+        let t = new Test();
+
+        let xml = `<test value="test" xmlns="https://some.com"/>`;
+        assert.equal(t.toString(), xml);
+        Test.LoadXml(xml);
+
+        t.Version = 1;
+
+        xml = `<test value="test" version="1" xmlns="https://some.com"/>`;
+        assert.equal(t.toString(), xml);
+        Test.LoadXml(xml);
+    });
+
+    it("praser for child element", () => {
+
+        @XmlElement({
+            localName: "test",
+            namespaceURI: "https://some.com"
+        })
+        class Test extends XmlObject {
+
+            @XmlChildElement({
+                localName: "value",
+                namespaceURI: "https://some.com",
+            })
+            Value = "test";
+
+            @XmlChildElement({
+                localName: "version",
+                namespaceURI: "https://some.com",
+                converter: XmlNumberConverter
+            })
+            Version: number;
+
+        }
+
+        let t = new Test();
+
+        let xml = `<test xmlns="https://some.com"><value>test</value></test>`;
+        assert.equal(t.toString(), xml);
+        Test.LoadXml(xml);
+
+        t.Version = 1;
+
+        xml = `<test xmlns="https://some.com"><value>test</value><version>1</version></test>`;
+        assert.equal(t.toString(), xml);
+        Test.LoadXml(xml);
     });
 
 });

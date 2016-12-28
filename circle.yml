@@ -2,6 +2,11 @@ machine:
   node:
     version: 6.9.1
 
+test:
+  override:
+    - npm run coverage
+    - npm run coveralls
+
 general:
   branches:
     ignore:
