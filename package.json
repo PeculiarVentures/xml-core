@@ -33,7 +33,8 @@
     "pub": "npm version patch && npm publish && git push",
     "coverage": "nyc npm test",
     "precoveragehtml": "npm run coverage",
-    "coveragehtml": "nyc report -r html"
+    "coveragehtml": "nyc report -r html",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",

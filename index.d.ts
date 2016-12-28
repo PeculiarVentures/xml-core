@@ -138,6 +138,30 @@ declare namespace XmlCore {
     interface XmlAttributeType<T> extends XmlSchemaItem<T> {
     }
 
+    interface XmlContentType<T> {
+        /**
+         * Default value for item
+         * 
+         * @type {(T |)}
+         * @memberOf XmlContentType
+         */
+        defaultValue?: T | null;
+        /**
+         * Determine where item is required
+         * 
+         * @type {boolean}
+         * @memberOf XmlContentType
+         */
+        required?: boolean;
+        /**
+         * Custom converter for item value
+         * 
+         * @type {IConverter<T>}
+         * @memberOf XmlContentType
+         */
+        converter?: IConverter<T>;
+    }
+
     interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
         /**
          * Local name for Xml element
@@ -254,6 +278,7 @@ declare namespace XmlCore {
     export function XmlElement(params: XmlElementType): <TFunction extends Function>(target: TFunction) => void;
     export function XmlChildElement<T>(params?: XmlChildElementType<T>): (target: Object, propertyKey: string | symbol) => void;
     export function XmlAttribute<T>(params?: XmlAttributeType<T>): (target: Object, propertyKey: string | symbol) => void;
+    export function XmlContent<T>(params?: XmlContentType<T>): (target: Object, propertyKey: string | symbol) => void;
 
     // error
 
