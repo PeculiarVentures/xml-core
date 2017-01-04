@@ -2,23 +2,28 @@
 
 const path = require("path");
 
-module.exports = {  
+module.exports = {
   entry: "./src/lib/index.ts",
   output: {
-    path: "./lib",
-    filename: "xml.js"
+    libraryTarget: "var",
+    library: "XmlCore",
+    filename: "dist/xml-core.js"
   },
   resolve: {
     extensions: ["", ".webpack.js", ".web.js", ".ts", ".js"]
   },
   module: {
     loaders: [
-      { test: /\.ts$/, loader: "ts-loader", exclude:path.resolve(__dirname, "node_modules") }
+      { test: /\.ts$/, loader: "ts-loader", exclude: path.resolve(__dirname, "node_modules") }
     ]
   },
   node: {
-      Buffer: false,
-      "xmldom-alpha": false,
-      "xpath.js": false,
+    Buffer: false,
+    crypto: false,
+  },
+  externals: {
+    "crypto": "require('crypto');",
+    "xmldom-alpha": "require('xmldom');",
+    "xpath.js": "require('xpath.js');",
   }
 }

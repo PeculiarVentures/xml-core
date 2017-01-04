@@ -15,9 +15,23 @@ export const XmlNumberConverter: IConverter<number> = {
     get: (value: number) => {
         if (value)
             return value.toString();
-        return void 0;
+        return "0";
     },
     set: (value: string) => {
         return Number(value);
+    }
+};
+
+export const XmlBooleanConverter: IConverter<boolean> = {
+    get: (value: boolean) => {
+        if (value)
+            return value.toString();
+        return "false";
+    },
+    set: (value: string) => {
+        if (value && value.toLowerCase() === "true")
+            return true;
+        else
+            return false;
     }
 };
