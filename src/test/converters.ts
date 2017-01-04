@@ -7,6 +7,26 @@ import * as assert from "assert";
 
 describe("Decorators", () => {
 
+    it("String", () => {
+
+        @XmlElement({ localName: "test" })
+        class XmlTest extends XmlObject {
+
+            @XmlAttribute({})
+            Value: string;
+
+        }
+
+        let test = new XmlTest();
+        test.Value = "";
+        let xmlTest = test.toString();
+        let xml = `<test Value=""/>`;
+        assert.equal(xmlTest, xml);
+
+        let test2 = XmlTest.LoadXml(xml);
+        assert.equal(test2.Value, "");
+    });
+
     it("Number", () => {
 
         @XmlElement({ localName: "test" })
