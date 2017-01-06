@@ -5,7 +5,7 @@ import * as assert from "assert";
 // const xmldom = require("xmldom-alpha");
 // const DOMParser = xmldom.DOMParser;
 
-describe("Decorators", () => {
+describe("Convertors", () => {
 
     it("String", () => {
 

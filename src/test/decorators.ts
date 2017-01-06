@@ -184,9 +184,8 @@ describe("Decorators", () => {
 
                     root.ChildRequired = new Child2();
 
-                    assert.equal(root.toString(), `<root><name>MyName</name><child1/><child2 xmlns="http://number.com"><text>AQAB</text></child2></root>`);
+                    assert.equal(root.toString(), `<root><name>MyName</name><child2 xmlns="http://number.com"><text>AQAB</text></child2></root>`);
 
-                    root.ChildOptional = new Child1();
                     root.ChildOptional.Id = "10";
                     root.ChildOptional.Value = 12;
                     root.ChildRequired.Value = new Uint8Array([1, 1, 1]);

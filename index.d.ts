@@ -325,6 +325,7 @@ declare namespace XmlCore {
     export const Select: SelectNodes;
     export function SelectSingleNode(node: Node, path: string): Node | null;
     export function SelectNamespaces(node: Element): AssocArray<string>;
+    export function assign(target: any, ...sources: any[]): any;
 
     // xml
 

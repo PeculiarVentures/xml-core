@@ -29,6 +29,7 @@ export class XmlObject implements IXmlSerializable {
     protected prefix = this.GetStatic().prefix || null;
 
     protected localName = this.GetStatic().localName;
+    protected namespaceURI = this.GetStatic().namespaceURI;
 
     get Element() {
         return this.element;
@@ -45,7 +46,7 @@ export class XmlObject implements IXmlSerializable {
         return this.localName!;
     }
     get NamespaceURI(): string | null {
-        return this.GetStatic().namespaceURI || null;
+        return this.namespaceURI || null;
     }
 
     protected GetStatic(): XmlSchema {
@@ -126,7 +127,7 @@ export class XmlObject implements IXmlSerializable {
                                 throw new XmlError(XE.ELEMENT_MISSING, _parser.localName, localName);
 
                             if (_parser)
-                                node = _parser.GetXml(_parser.element === void 0);
+                                node = _parser.GetXml(_parser.element === void 0 && (schema.required || _parser.Count));
                         }
                         else {
                             let value = (schema.converter) ? schema.converter.get(_parser) : _parser;
@@ -300,6 +301,7 @@ export class XmlObject implements IXmlSerializable {
                             if (foundElement) {
                                 const value = new schema.parser() as IXmlSerializable;
                                 (value as any).localName = schema.localName;
+                                (value as any).namespaceURI = schema.namespaceURI;
                                 (this as any)[key] = value;
                                 value.LoadXml(foundElement);
                             }

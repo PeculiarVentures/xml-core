@@ -49,8 +49,11 @@ function _SelectNamespaces(node: Node, selectedNodes: AssocArray<string> = {}) {
         const el = node as Element;
         if (el.namespaceURI && el.namespaceURI !== "http://www.w3.org/XML/1998/namespace" && !selectedNodes[el.prefix || ""])
             selectedNodes[el.prefix ? el.prefix : ""] = node.namespaceURI!;
-        if (node.nodeType === XmlNodeType.Element)
-            _SelectNamespaces(node.parentElement!, selectedNodes);
+        for (let i = 0; i < node.childNodes.length; i++) {
+            let childNode = node.childNodes.item(i);
+            if (childNode && childNode.nodeType === XmlNodeType.Element)
+                _SelectNamespaces(childNode, selectedNodes);
+        }
     }
 }
 
@@ -58,4 +61,15 @@ export function SelectNamespaces(node: Element) {
     let attrs: AssocArray<string> = {};
     _SelectNamespaces(node, attrs);
     return attrs;
+}
+
+export function assign(target: any, ...sources: any[]) {
+    let res = arguments[0];
+    for (let i = 1; i < arguments.length; i++) {
+        let obj = arguments[i];
+        for (let prop in obj) {
+            res[prop] = obj[prop];
+        }
+    }
+    return res;
 }
