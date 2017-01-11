@@ -22,8 +22,8 @@ module.exports = {
     crypto: false,
   },
   externals: {
-    "crypto": "require('crypto');",
-    "xmldom-alpha": "require('xmldom');",
-    "xpath.js": "require('xpath.js');",
+    "crypto": "require(\"crypto\");",
+    "xmldom-alpha": "require(\"xmldom-alpha\");",
+    "xpath.js": "require(\"xpath.js\");",
   }
 }

@@ -1,20 +1,24 @@
 import { XmlNodeType } from "./xml";
 
+export type SelectNodes = (node: Node, xpath: string) => Node[];
+
+let xpath: SelectNodes = (node: Node, xpath: string) => {
+    throw new Error("Not implemented");
+};
+
 // Fix global
 let _w: any;
 if (typeof self === "undefined") {
-    const xmldom = "xmldom-alpha";
     _w = global;
-    _w.XMLSerializer = require(xmldom).XMLSerializer;
-    _w.DOMParser = require(xmldom).DOMParser;
-    _w.DOMImplementation = require(xmldom).DOMImplementation;
+    const xmldom = require("xmldom-alpha");
+    xpath = require("xpath.js");
+    _w.XMLSerializer = xmldom.XMLSerializer;
+    _w.DOMParser = xmldom.DOMParser;
+    _w.DOMImplementation = xmldom.DOMImplementation;
     _w.document = new DOMImplementation().createDocument("http://www.w3.org/1999/xhtml", "html", null!);
 }
 else
     _w = self;
-
-
-export type SelectNodes = (node: Node, xpath: string) => Node[];
 
 function SelectNodesEx(node: Node, xpath: string): Node[] {
     let doc: Document = node.ownerDocument == null ? node as Document : node.ownerDocument;
@@ -27,7 +31,7 @@ function SelectNodesEx(node: Node, xpath: string): Node[] {
     return ns;
 }
 
-export const Select: SelectNodes = (typeof self !== "undefined") ? SelectNodesEx : require("xpath.js");
+export const Select: SelectNodes = (typeof self !== "undefined") ? SelectNodesEx : xpath;
 
 /**
  * Returns signle Node from given Node
