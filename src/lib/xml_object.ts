@@ -1,7 +1,7 @@
 import * as CONST from "./const";
 import { XmlNodeType } from "./xml";
 import { XmlError, XE } from "./error";
-import { SelectSingleNode } from "./utils";
+import { SelectSingleNode, Parse } from "./utils";
 import { APPLICATION_XML } from "./xml";
 
 const DEFAULT_ROOT_NAME = "xml_root";
@@ -187,7 +187,7 @@ export class XmlObject implements IXmlSerializable {
     LoadXml(param: string | Element) {
         let element: Element;
         if (typeof param === "string") {
-            const doc = XmlObject.Parse(param);
+            const doc = Parse(param);
             element = doc.documentElement;
         }
         else
@@ -326,13 +326,6 @@ export class XmlObject implements IXmlSerializable {
     toString(): string {
         let xml = this.GetXml();
         return xml ? new XMLSerializer().serializeToString(xml) : "";
-    }
-
-    /**
-     * Parse xml from string
-     */
-    static Parse(xmlstring: string) {
-        return new DOMParser().parseFromString(xmlstring, APPLICATION_XML);
     }
 
     static GetElement(element: Element, name: string, required: boolean = true) {
@@ -479,6 +472,10 @@ export class XmlObject implements IXmlSerializable {
         if (!this.element)
             throw new XmlError(XE.NULL_PARAM, this.localName);
         return XmlObject.GetFirstChild(this.element, localName, namespace);
+    }
+
+    IsEmpty() {
+        return this.Element === void 0;
     }
 
 }

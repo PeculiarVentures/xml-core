@@ -323,6 +323,7 @@ declare namespace XmlCore {
 
     type SelectNodes = (node: Node, xpath: string) => Node[];
     export const Select: SelectNodes;
+    export function Parse(xmlstring: string): Document;
     export function SelectSingleNode(node: Node, path: string): Node | null;
     export function SelectNamespaces(node: Element): AssocArray<string>;
     export function assign(target: any, ...sources: any[]): any;
@@ -405,7 +406,6 @@ declare namespace XmlCore {
         }, param: string | Element): T;
         LoadXml(param: string | Element): void;
         toString(): string;
-        static Parse(xmlstring: string): Document;
         static GetElement(element: Element, name: string, required?: boolean): Element;
         GetElement(name: string, required?: boolean): Element;
         static GetAttribute(element: Element, attrName: string, defaultValue: string | null, required?: boolean): string | null;
@@ -421,6 +421,7 @@ declare namespace XmlCore {
         static GetChild(node: Element, localName: string, nameSpace?: string, required?: boolean): Element | null;
         protected GetChild(localName: string, required?: boolean): Element | null;
         GetFirstChild(localName: string, namespace?: string): Element | null;
+        IsEmpty(): boolean;
     }
 
 }

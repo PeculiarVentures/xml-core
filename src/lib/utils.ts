@@ -1,4 +1,4 @@
-import { XmlNodeType } from "./xml";
+import { XmlNodeType, APPLICATION_XML } from "./xml";
 
 export type SelectNodes = (node: Node, xpath: string) => Node[];
 
@@ -32,6 +32,10 @@ function SelectNodesEx(node: Node, xpath: string): Node[] {
 }
 
 export const Select: SelectNodes = (typeof self !== "undefined") ? SelectNodesEx : xpath;
+
+export function Parse(xmlstring: string) {
+    return new DOMParser().parseFromString(xmlstring, APPLICATION_XML);
+}
 
 /**
  * Returns signle Node from given Node

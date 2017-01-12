@@ -1,4 +1,4 @@
-import { XmlAttribute, XmlElement, XmlContent, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
+import { Parse, XmlAttribute, XmlElement, XmlContent, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");
@@ -12,7 +12,7 @@ describe("Decorators", () => {
         class XmlTest extends XmlObject {
         }
 
-        const doc = XmlObject.Parse(`<wronName/>`);
+        const doc = Parse(`<wronName/>`);
 
         let test = new XmlTest();
         assert.throws(() => {
@@ -210,7 +210,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test><value>123</value></test>`);
+                    const doc = Parse(`<test><value>123</value></test>`);
 
                     let test = new XmlTest();
                     test.LoadXml(doc.documentElement);
@@ -229,7 +229,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test/>`);
+                    const doc = Parse(`<test/>`);
 
                     let test = new XmlTest();
 
@@ -249,7 +249,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test><value>123</value></test>`);
+                    const doc = Parse(`<test><value>123</value></test>`);
 
                     let test = new XmlTest();
                     test.LoadXml(doc.documentElement);
@@ -268,7 +268,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test><value>AQAB</value></test>`);
+                    const doc = Parse(`<test><value>AQAB</value></test>`);
 
                     let test = new XmlTest();
                     test.LoadXml(doc.documentElement);
@@ -288,7 +288,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test xmlns:p="http://some.com"><p:value>Text</p:value></test>`);
+                    const doc = Parse(`<test xmlns:p="http://some.com"><p:value>Text</p:value></test>`);
 
                     let test = new XmlTest();
                     test.LoadXml(doc.documentElement);
@@ -340,7 +340,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test></test>`);
+                    const doc = Parse(`<test></test>`);
 
                     let test = new XmlTest();
                     assert.throws(() => {
@@ -366,7 +366,7 @@ describe("Decorators", () => {
 
                     }
 
-                    const doc = XmlObject.Parse(`<test xmlns:p="http://some.com"><p:value id="123"/></test>`);
+                    const doc = Parse(`<test xmlns:p="http://some.com"><p:value id="123"/></test>`);
 
                     let test = new XmlTest();
                     test.LoadXml(doc.documentElement);
@@ -464,7 +464,7 @@ describe("Decorators", () => {
 
                 }
 
-                const doc = XmlObject.Parse(`<test id="123"/>`);
+                const doc = Parse(`<test id="123"/>`);
 
                 let test = new XmlTest();
                 test.LoadXml(doc.documentElement);
@@ -483,7 +483,7 @@ describe("Decorators", () => {
 
                 }
 
-                const doc = XmlObject.Parse(`<test/>`);
+                const doc = Parse(`<test/>`);
 
                 let test = new XmlTest();
 
@@ -503,7 +503,7 @@ describe("Decorators", () => {
 
                 }
 
-                const doc = XmlObject.Parse(`<test id="123"/>`);
+                const doc = Parse(`<test id="123"/>`);
 
                 let test = new XmlTest();
                 test.LoadXml(doc.documentElement);
@@ -523,7 +523,7 @@ describe("Decorators", () => {
 
                 {
                     // correct
-                    const doc = XmlObject.Parse(`<test xmlns:s="http://some.com" s:id="123"/>`);
+                    const doc = Parse(`<test xmlns:s="http://some.com" s:id="123"/>`);
 
                     let test = new XmlTest();
                     test.LoadXml(doc.documentElement);
@@ -533,7 +533,7 @@ describe("Decorators", () => {
 
                 {
                     // error
-                    const doc = XmlObject.Parse(`<test xmlns:s="http://other.com" s:id="123"/>`);
+                    const doc = Parse(`<test xmlns:s="http://other.com" s:id="123"/>`);
 
                     let test = new XmlTest();
                     assert.throws(() => {
@@ -552,7 +552,7 @@ describe("Decorators", () => {
 
                 }
 
-                const doc = XmlObject.Parse(`<test value="AQAB"/>`);
+                const doc = Parse(`<test value="AQAB"/>`);
 
                 let test = new XmlTest();
                 test.LoadXml(doc.documentElement);
@@ -738,7 +738,7 @@ describe("Decorators", () => {
                     Transforms: XmlTransforms;
                 }
 
-                let doc = XmlObject.Parse("<test><transforms><transform><Value>Hello</Value></transform></transforms></test>");
+                let doc = Parse("<test><transforms><transform><Value>Hello</Value></transform></transforms></test>");
                 let test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
@@ -766,7 +766,7 @@ describe("Decorators", () => {
                     Transforms: XmlTransforms;
                 }
 
-                let doc = XmlObject.Parse("<test><transform><Value>Hello</Value></transform></test>");
+                let doc = Parse("<test><transform><Value>Hello</Value></transform></test>");
                 let test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
@@ -794,7 +794,7 @@ describe("Decorators", () => {
                     Transforms: XmlTransforms;
                 }
 
-                let doc = XmlObject.Parse("<test><transform><Value>Hello</Value></transform></test>");
+                let doc = Parse("<test><transform><Value>Hello</Value></transform></test>");
                 let test = new XmlTest();
 
                 assert.throws(() => {
@@ -821,7 +821,7 @@ describe("Decorators", () => {
                     Transforms: XmlTransforms;
                 }
 
-                let doc = XmlObject.Parse("<test><transform><Value>Hello</Value></transform><transform><Value>Hello</Value></transform></test>");
+                let doc = Parse("<test><transform><Value>Hello</Value></transform><transform><Value>Hello</Value></transform></test>");
                 let test = new XmlTest();
 
                 assert.throws(() => {
