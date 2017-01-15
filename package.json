@@ -22,6 +22,7 @@
     "coveralls": "^2",
     "mocha": "^3",
     "nyc": "^10",
+    "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-typescript": "^0.8.1",
     "typescript": "^2"
