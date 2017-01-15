@@ -4,8 +4,9 @@
 /coverage
 /src
 /test/*.ts
-/test/tsconfig.js
-/rollup*.js
-/tsconfig.js
-/tslint.js
+/test/tsconfig.json
+/.babelrc
 /circle.yml
+/rollup*.js
+/tsconfig.json
+/tslint.json
