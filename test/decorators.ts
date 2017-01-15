@@ -1,4 +1,4 @@
-import { Parse, XmlAttribute, XmlElement, XmlContent, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../lib/index";
+import { Parse, XmlAttribute, XmlElement, XmlContent, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");

@@ -1,4 +1,4 @@
-import { XmlError, XE } from "../lib/index";
+import { XmlError, XE } from "../";
 import * as assert from "assert";
 
 describe("Error", () => {

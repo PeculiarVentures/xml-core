@@ -5,6 +5,6 @@ export * from "./convert";
 export * from "./converters";
 export * from "./error";
 export * from "./xml";
-export * from "./xml_object";
 export * from "./xml_collection";
+export * from "./xml_object";
 export * from "./namespace_manager";

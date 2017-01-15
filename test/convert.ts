@@ -1,4 +1,4 @@
-import { Convert } from "../lib/index";
+import { Convert } from "../";
 import * as assert from "assert";
 
 describe("Convert", () => {
@@ -24,7 +24,7 @@ describe("Convert", () => {
                 const str = Convert.ToString(buf, enc);
                 assert.equal(typeof str, "string");
                 const newBuf = Convert.FromString(str, enc);
-                assert.equal(buf.every((c, i) => c === newBuf[i]), true);
+                assert.equal(buf.every((c: number, i: number) => c === newBuf[i]), true);
             });
         });
     });

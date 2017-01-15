@@ -1,5 +1,4 @@
 import { XmlError, XE } from "./error";
-import { XmlObject } from "./xml_object";
 import { Collection } from "./collection";
 import { XmlNodeType } from "./xml";
 
@@ -117,3 +116,5 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
     }
 
 }
+
+import { XmlObject } from "./xml_object";

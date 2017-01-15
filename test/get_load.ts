@@ -1,7 +1,7 @@
 import * as assert from "assert";
-import { XmlElement, XmlAttribute, XmlChildElement } from "../lib";
-import { XmlObject, XmlCollection } from "../lib";
-import { XmlNumberConverter } from "../lib";
+import { XmlElement, XmlAttribute, XmlChildElement } from "../";
+import { XmlObject, XmlCollection } from "../";
+import { XmlNumberConverter } from "../";
 
 context("GetXml/LoadXml/HasChanged", () => {
 

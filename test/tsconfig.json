@@ -1,10 +1,9 @@
 {
     "compilerOptions": {
-        "module": "es2015",
+        "module": "commonjs",
         "target": "es2015",
         "moduleResolution": "node",
         "newLine": "LF",
-        "outDir": "build",
         "noImplicitAny": true,
         "sourceMap": false,
         "noUnusedLocals": true,
@@ -13,11 +12,5 @@
         "noImplicitReturns": true,
         "experimentalDecorators": true,
         "removeComments": true
-    },
-    "exclude": [
-        "test"
-    ],
-    "files": [
-        "src/index.ts"
-    ]
+    }
 }

@@ -272,6 +272,7 @@ declare namespace XmlCore {
 
     export const XmlBase64Converter: IConverter<Uint8Array>;
     export const XmlNumberConverter: IConverter<number>;
+    export const XmlBooleanConverter: IConverter<boolean>;
 
     // decorators
 

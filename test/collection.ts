@@ -1,4 +1,4 @@
-import { Collection } from "../lib/index";
+import { Collection } from "../";
 import * as assert from "assert";
 
 describe("Collection", () => {

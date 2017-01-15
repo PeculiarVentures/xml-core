@@ -4,4 +4,8 @@
 /.nyc_output
 /coverage
 /types
+/lib
+/dist
+/test/*.js
+/test/!tsconfig.js
 debug.log

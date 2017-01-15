@@ -1,5 +1,5 @@
-import { XmlAttribute, XmlElement, XmlObject } from "../lib/index";
-import { XmlNumberConverter, XmlBase64Converter, XmlBooleanConverter } from "../lib/index";
+import { XmlAttribute, XmlElement, XmlObject } from "../";
+import { XmlNumberConverter, XmlBase64Converter, XmlBooleanConverter } from "../";
 import * as assert from "assert";
 
 // const xmldom = require("xmldom-alpha");
@@ -29,13 +29,13 @@ describe("Convertors", () => {
 
     it("Number", () => {
 
-        @XmlElement({ localName: "test" })
-        class XmlTest extends XmlObject {
+@XmlElement({ localName: "test" })
+class XmlTest extends XmlObject {
 
-            @XmlAttribute({ converter: XmlNumberConverter })
-            Value: number;
+    @XmlAttribute({ converter: XmlNumberConverter })
+    Value: number;
 
-        }
+}
 
         let test = new XmlTest();
         test.Value = 15;

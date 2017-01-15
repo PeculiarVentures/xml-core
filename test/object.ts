@@ -1,6 +1,6 @@
 import * as assert from "assert";
-import { XmlElement, XmlAttribute } from "../lib";
-import { XmlObject } from "../lib";
+import { XmlElement, XmlAttribute } from "../";
+import { XmlObject } from "../";
 
 context("XmlObject", () => {
 

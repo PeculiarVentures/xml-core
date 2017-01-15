@@ -6,7 +6,6 @@ import { APPLICATION_XML } from "./xml";
 
 const DEFAULT_ROOT_NAME = "xml_root";
 
-
 export class XmlObject implements IXmlSerializable {
 
     protected static attributes: AssocArray<XmlAttributeType<any>>;
