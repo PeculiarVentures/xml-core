@@ -5,7 +5,6 @@
 /src
 /test/*.ts
 /test/tsconfig.json
-/.babelrc
 /circle.yml
 /rollup*.js
 /tsconfig.json
