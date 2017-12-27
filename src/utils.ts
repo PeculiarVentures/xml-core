@@ -42,7 +42,7 @@ export function Parse(xmlString: string) {
      * the two-character sequence #xD #xA and any #xD that is not followed by #xA to a single #xA character.
      */
     xmlString = xmlString
-        .replace(/\n\r/g, "\n")
+        .replace(/\r\n/g, "\n")
         .replace(/\r/g, "\n");
     return new DOMParser().parseFromString(xmlString, APPLICATION_XML);
 }
