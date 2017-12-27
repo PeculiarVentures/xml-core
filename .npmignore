@@ -9,3 +9,4 @@
 /rollup*.js
 /tsconfig.json
 /tslint.json
+/**/*.js.map
