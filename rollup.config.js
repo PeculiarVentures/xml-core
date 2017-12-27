@@ -1,25 +1,20 @@
 import typescript from "rollup-plugin-typescript";
-import babel from "rollup-plugin-babel";
-import babelrc from "babelrc-rollup";
 
 let pkg = require("./package.json");
 let external = Object.keys(pkg.dependencies);
 
-let sourceMap = process.argv.some(item => item.toLowerCase() === "--dev");
+const sourcemap = process.argv.some(item => item.toLowerCase() === "--dev");
 
 export default {
-    entry: "src/index.ts",
+    input: "src/index.ts",
     plugins: [
-        typescript({ typescript: require("typescript") }),
-        babel(babelrc()),
+        typescript({ typescript: require("typescript"), module: "es2015", target: "es5" }),
     ],
     external: external,
-    targets: [
-        {
-            dest: pkg.main,
-            format: "umd",
-            moduleName: "XmlCore",
-            sourceMap
-        }
-    ]
+    output: {
+        file: pkg.main,
+        format: "umd",
+        name: "XmlCore",
+        sourcemap
+    }
 };
