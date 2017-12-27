@@ -1,5 +1,5 @@
-import { XmlError, XE } from "./error";
 import { Collection } from "./collection";
+import { XE, XmlError } from "./error";
 import { XmlNodeType } from "./xml";
 
 export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
@@ -9,51 +9,23 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
     /**
      * The maximum number of elements
      */
-    MaxOccurs: number;
+    public MaxOccurs: number;
 
     /**
      * The minimum number of elements
      */
-    MinOccurs: number;
+    public MinOccurs: number;
 
-    HasChanged() {
-        let res = super.HasChanged();
+    // Collection
+    protected items: I[] = new Array();
 
-        let changed = this.Some(item => item.HasChanged());
+    public HasChanged() {
+        const res = super.HasChanged();
+
+        const changed = this.Some((item) => item.HasChanged());
 
         return res || changed;
     }
-
-    protected OnGetXml(element: Element) {
-        for (let item of this.GetIterator()) {
-            const el = item.GetXml();
-            if (el)
-                element.appendChild(el);
-        }
-    }
-
-    protected OnLoadXml(element: Element) {
-        const self = this.GetStatic();
-        if (!self.parser)
-            throw new XmlError(XE.XML_EXCEPTION, `${self.localName} doesn't have required 'parser' in @XmlElement`);
-        for (let i = 0; i < element.childNodes.length; i++) {
-            const node = element.childNodes.item(i);
-            if (!(node.nodeType === XmlNodeType.Element &&
-                node.localName === (self.parser as any).localName &&
-                // tslint:disable-next-line:triple-equals
-                node.namespaceURI == self.namespaceURI))
-                // Ignore wrong elements
-                continue;
-            const el = node as Element;
-
-            let item = new self.parser();
-            item.LoadXml(el);
-            this.Add(item as any);
-        }
-    }
-
-    // Collection
-    protected items: Array<I> = new Array();
 
     public get Count() {
         return this.items.length;
@@ -74,7 +46,7 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
     }
 
     public RemoveAt(index: number) {
-        this.items = this.items.filter((item, _index) => _index !== index);
+        this.items = this.items.filter((item, index2) => index2 !== index);
         this.element = null;
     }
 
@@ -87,15 +59,15 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
         return this.items;
     }
 
-    public ForEach(cb: (item: I, index: number, array: Array<I>) => void) {
+    public ForEach(cb: (item: I, index: number, array: I[]) => void) {
         this.GetIterator().forEach(cb);
     }
 
-    public Map<U>(cb: (item: I, index: number, array: Array<I>) => U) {
+    public Map<U>(cb: (item: I, index: number, array: I[]) => U) {
         return new Collection(this.GetIterator().map<U>(cb));
     }
 
-    public Filter(cb: (item: I, index: number, array: Array<I>) => boolean) {
+    public Filter(cb: (item: I, index: number, array: I[]) => boolean) {
         return new Collection(this.GetIterator().filter(cb));
     }
 
@@ -111,8 +83,39 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
         return this.GetIterator().some(cb);
     }
 
-    IsEmpty() {
+    public IsEmpty() {
         return this.Count === 0;
+    }
+
+    protected OnGetXml(element: Element) {
+        for (const item of this.GetIterator()) {
+            const el = item.GetXml();
+            if (el) {
+                element.appendChild(el);
+            }
+        }
+    }
+
+    protected OnLoadXml(element: Element) {
+        const self = this.GetStatic();
+        if (!self.parser) {
+            throw new XmlError(XE.XML_EXCEPTION, `${self.localName} doesn't have required 'parser' in @XmlElement`);
+        }
+        for (let i = 0; i < element.childNodes.length; i++) {
+            const node = element.childNodes.item(i);
+            if (!(node.nodeType === XmlNodeType.Element &&
+                node.localName === (self.parser as any).localName &&
+                // tslint:disable-next-line:triple-equals
+                node.namespaceURI == self.namespaceURI)) {
+                // Ignore wrong elements
+                continue;
+            }
+            const el = node as Element;
+
+            const item = new self.parser();
+            item.LoadXml(el);
+            this.Add(item as any);
+        }
     }
 
 }

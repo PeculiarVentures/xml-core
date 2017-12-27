@@ -1,14 +1,17 @@
-/// <reference path="./types/index.d.ts" />
+/// <reference path="types/index.d.ts" />
 
 import * as CONST from "./const";
 
 const MAX = 1e9;
 
 function assign(target: any, ...sources: any[]) {
-    let res = arguments[0];
+    const res = arguments[0];
     for (let i = 1; i < arguments.length; i++) {
-        let obj = arguments[i];
-        for (let prop in obj) {
+        const obj = arguments[i];
+        for (const prop in obj) {
+            if (!obj.hasOwnProperty(prop)) {
+                continue;
+            }
             res[prop] = obj[prop];
         }
     }
@@ -23,8 +26,9 @@ export function XmlElement(params: XmlElementType) {
         t.namespaceURI = params.namespaceURI || t.namespaceURI || null;
         t.prefix = params.prefix || t.prefix || null;
         t.parser = params.parser || t.parser;
-        if (t.target !== t)
+        if (t.target !== t) {
             t.items = assign({}, t.items);
+        }
         t.target = target;
     };
 }
@@ -34,11 +38,13 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
         const t = target.constructor as XmlSchema;
         const key = propertyKey as string;
 
-        if (!t.items)
+        if (!t.items) {
             t.items = {};
+        }
 
-        if (t.target !== t)
+        if (t.target !== t) {
             t.items = assign({}, t.items);
+        }
         t.target = target;
 
         if (params.parser) {
@@ -49,8 +55,7 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
                 minOccurs: params.minOccurs === void 0 ? 0 : params.minOccurs,
                 noRoot: params.noRoot || false,
             };
-        }
-        else {
+        } else {
             t.items![key] = {
                 namespaceURI: params.namespaceURI || null,
                 required: params.required || false,
@@ -74,14 +79,17 @@ export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false,
         const t = target.constructor as XmlSchema;
         const key = propertyKey as string;
 
-        if (!params.localName)
+        if (!params.localName) {
             params.localName = propertyKey as string;
+        }
 
-        if (!t.items)
+        if (!t.items) {
             t.items = {};
+        }
 
-        if (t.target !== t)
+        if (t.target !== t) {
             t.items = assign({}, t.items);
+        }
         t.target = target;
 
         t.items![propertyKey] = params;
@@ -89,18 +97,20 @@ export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false,
 
         defineProperty(target, key, params);
     };
-};
+}
 
 export function XmlContent<T>(params: XmlContentType<T> = { required: false }) {
     return (target: Object, propertyKey: string | symbol) => {
         const t = target.constructor as XmlSchema;
         const key = propertyKey as string;
 
-        if (!t.items)
+        if (!t.items) {
             t.items = {};
+        }
 
-        if (t.target !== t)
+        if (t.target !== t) {
             t.items = assign({}, t.items);
+        }
         t.target = target;
 
         t.items![propertyKey] = params;
@@ -111,30 +121,30 @@ export function XmlContent<T>(params: XmlContentType<T> = { required: false }) {
 }
 
 function defineProperty(target: any, key: string, params: any) {
-    const _key = `_${key}`;
+    const key2 = `_${key}`;
 
     const opt = {
         set: function (v: any) {
-            if (this[_key] !== v) {
+            if (this[key2] !== v) {
                 this.element = null;
-                this[_key] = v;
+                this[key2] = v;
             }
         },
         get: function () {
-            if (this[_key] === void 0) {
+            if (this[key2] === void 0) {
                 let defaultValue = params.defaultValue;
                 if (params.parser) {
                     defaultValue = new params.parser();
                     defaultValue.localName = params.localName;
                 }
-                this[_key] = defaultValue;
+                this[key2] = defaultValue;
             }
-            return this[_key];
-        }
+            return this[key2];
+        },
     };
 
     // private property
-    Object.defineProperty(target, _key, { writable: true, enumerable: false });
+    Object.defineProperty(target, key2, { writable: true, enumerable: false });
     // public property
     Object.defineProperty(target, key, opt);
 }

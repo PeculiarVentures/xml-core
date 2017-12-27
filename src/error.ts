@@ -1,17 +1,17 @@
 function printf(text: string, ...args: any[]) {
     let msg: string = text;
-    let regFind = /[^%](%\d+)/g;
+    const regFind = /[^%](%\d+)/g;
     let match: RegExpExecArray | null = null;
-    let matches: { arg: string, index: number }[] = [];
+    const matches: Array<{ arg: string, index: number }> = [];
     while (match = regFind.exec(msg)) {
         matches.push({ arg: match[1], index: match.index });
     }
 
     // replace matches
     for (let i = matches.length - 1; i >= 0; i--) {
-        let item = matches[i];
-        let arg = item.arg.substring(1);
-        let index = item.index + 1;
+        const item = matches[i];
+        const arg = item.arg.substring(1);
+        const index = item.index + 1;
         msg = msg.substring(0, index) + arguments[+arg] + msg.substring(index + 1 + arg.length);
     }
 
@@ -23,21 +23,23 @@ function printf(text: string, ...args: any[]) {
 
 function padNum(num: number, size: number): string {
     let s = num + "";
-    while (s.length < size) s = "0" + s;
+    while (s.length < size) {
+        s = "0" + s;
+    }
     return s;
 }
 
 export class XmlError implements Error {
-    stack: any;
-    code: number;
-    name: string;
-    message: string;
+    public stack: any;
+    public code: number;
+    public name: string;
+    public message: string;
     protected readonly prefix = "XMLJS";
     constructor(code: XE, ...args: any[]) {
         this.code = code;
         this.name = (this.constructor as any).name;
         arguments[0] = xes[code];
-        let message = printf.apply(this, arguments);
+        const message = printf.apply(this, arguments);
         this.message = `${this.prefix}${padNum(code, 4)}: ${message}`;
         this.stack = (new Error(this.message) as any).stack;
     }

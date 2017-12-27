@@ -1,10 +1,11 @@
 export class Collection<I> implements ICollection<I> {
 
-    protected items: Array<I> = new Array();
+    protected items: I[] = new Array();
 
-    constructor(items?: Array<I>) {
-        if (items)
+    constructor(items?: I[]) {
+        if (items) {
             this.items = items;
+        }
     }
 
     public get Count() {
@@ -24,7 +25,7 @@ export class Collection<I> implements ICollection<I> {
     }
 
     public RemoveAt(index: number) {
-        this.items = this.items.filter((item, _index) => _index !== index);
+        this.items = this.items.filter((item, index2) => index2 !== index);
     }
 
     public Clear() {
@@ -35,15 +36,15 @@ export class Collection<I> implements ICollection<I> {
         return this.items;
     }
 
-    public ForEach(cb: (item: I, index: number, array: Array<I>) => void) {
+    public ForEach(cb: (item: I, index: number, array: I[]) => void) {
         this.GetIterator().forEach(cb);
     }
 
-    public Map<U>(cb: (item: I, index: number, array: Array<I>) => U) {
+    public Map<U>(cb: (item: I, index: number, array: I[]) => U) {
         return new Collection(this.GetIterator().map<U>(cb));
     }
 
-    public Filter(cb: (item: I, index: number, array: Array<I>) => boolean) {
+    public Filter(cb: (item: I, index: number, array: I[]) => boolean) {
         return new Collection(this.GetIterator().filter(cb));
     }
 
@@ -59,7 +60,7 @@ export class Collection<I> implements ICollection<I> {
         return this.GetIterator().some(cb);
     }
 
-    IsEmpty() {
+    public IsEmpty() {
         return this.Count === 0;
     }
 
