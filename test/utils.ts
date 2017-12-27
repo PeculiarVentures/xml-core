@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { assign, Parse, SelectSingleNode, SelectNamespaces } from "../";
+import { assign, Parse, SelectNamespaces, SelectSingleNode } from "../";
 
 context("utils", () => {
 
