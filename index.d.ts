@@ -417,12 +417,12 @@ declare namespace XmlCore {
         public GetChildren(localName: string, nameSpace?: string): Element[];
         public GetChild(localName: string, required?: boolean): Element | null;
         public GetFirstChild(localName: string, namespace?: string): Element | null;
+        public GetAttribute(name: string, defaultValue: string | null, required?: boolean): string | null;
         public IsEmpty(): boolean;
         protected GetStatic(): XmlSchema;
         protected GetPrefix(): string;
         protected OnGetXml(element: Element): void;
         protected OnLoadXml(element: Element): void;
-        protected GetAttribute(name: string, defaultValue: string | null, required?: boolean): string | null;
         protected CreateElement(document?: Document, localName?: string, namespaceUri?: string | null, prefix?: string | null): Element;
         protected CreateDocument(): Document;
     }

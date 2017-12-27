@@ -468,6 +468,13 @@ export class XmlObject implements IXmlSerializable {
         return XmlObject.GetFirstChild(this.element, localName, namespace);
     }
 
+    public GetAttribute(name: string, defaultValue: string | null, required: boolean = true) {
+        if (!this.element) {
+            throw new XmlError(XE.NULL_PARAM, this.localName);
+        }
+        return XmlObject.GetAttribute(this.element, name, defaultValue, required);
+    }
+
     public IsEmpty() {
         return this.Element === void 0;
     }
@@ -485,13 +492,6 @@ export class XmlObject implements IXmlSerializable {
 
     protected OnGetXml(element: Element) {
         // Empty
-    }
-
-    protected GetAttribute(name: string, defaultValue: string | null, required: boolean = true) {
-        if (!this.element) {
-            throw new XmlError(XE.NULL_PARAM, this.localName);
-        }
-        return XmlObject.GetAttribute(this.element, name, defaultValue, required);
     }
 
     protected CreateElement(document?: Document, localName?: string, namespaceUri: string | null = null, prefix: string | null = null) {
