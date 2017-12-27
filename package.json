@@ -27,10 +27,10 @@
   "scripts": {
     "clean": "rm -rf build/ buildjs/ coverage/ .nyc_output/ npm-debug.log npm-debug.log.*",
     "pretest": "npm run build:test && npm run build:map",
-    "test": "mocha test",
+    "test": "mocha ./test",
     "build": "npm run build:lib && npm run build:es5 && npm run build:test",
     "build:es5": "rollup -c",
-    "build:map": "rollup -c --dev",
+    "build:map": "rollup -c -m",
     "build:test": "tsc -p test",
     "build:source": "tsc -p src --declaration --declarationDir types",
     "build:lib": "rollup -c rollup.config.lib.js",

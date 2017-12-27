@@ -15,6 +15,5 @@ export default {
         file: pkg.main,
         format: "umd",
         name: "XmlCore",
-        sourcemap
     }
 };
