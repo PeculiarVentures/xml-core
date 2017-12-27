@@ -1,5 +1,5 @@
-import { Convert } from "../";
 import * as assert from "assert";
+import { Convert } from "../";
 
 describe("Convert", () => {
 
@@ -11,7 +11,7 @@ describe("Convert", () => {
         assert.equal(newDate.getTime(), date.getTime());
     });
 
-    ["utf8", "binary", "hex", "base64", "base64url"].forEach(enc => {
+    ["utf8", "binary", "hex", "base64", "base64url"].forEach((enc) => {
         [
             new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
             Convert.FromString("Привет", "utf8"),

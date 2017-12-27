@@ -1,11 +1,13 @@
-import { XmlError, XE } from "./error";
+/// <reference path="./types/index.d.ts" />
+
+import { XE, XmlError } from "./error";
 
 declare let unescape: any;
 declare let escape: any;
 
 export class Convert {
 
-    static ToString(buffer: BufferSource, enc: XmlBufferEncoding = "utf8") {
+    public static ToString(buffer: BufferSource, enc: XmlBufferEncoding = "utf8") {
         const buf = new Uint8Array(buffer as ArrayBuffer);
         switch (enc.toLowerCase()) {
             case "utf8":
@@ -22,7 +24,8 @@ export class Convert {
                 throw new XmlError(XE.CONVERTER_UNSUPPORTED);
         }
     }
-    static FromString(str: string, enc: XmlBufferEncoding = "utf8"): Uint8Array {
+
+    public static FromString(str: string, enc: XmlBufferEncoding = "utf8"): Uint8Array {
         switch (enc.toLowerCase()) {
             case "utf8":
                 return this.FromUtf8String(str);
@@ -39,74 +42,65 @@ export class Convert {
         }
     }
 
-    static ToBase64(buf: Uint8Array): string {
+    public static ToBase64(buf: Uint8Array): string {
         if (typeof btoa !== "undefined") {
-            let binary = this.ToString(buf, "binary");
+            const binary = this.ToString(buf, "binary");
             return btoa(binary);
-        }
-        else if (typeof Buffer !== "undefined") {
+        } else if (typeof Buffer !== "undefined") {
             return new Buffer(buf).toString("base64");
-        }
-        else {
+        } else {
             throw new XmlError(XE.CONVERTER_UNSUPPORTED);
         }
     }
-    static FromBase64(base64Text: string): Uint8Array {
+
+    public static FromBase64(base64Text: string): Uint8Array {
         // Prepare string
         base64Text = base64Text.replace(/\n/g, "").replace(/\r/g, "").replace(/\t/g, "").replace(/\s/g, "");
         if (typeof atob !== "undefined") {
             return this.FromBinary(atob(base64Text));
-        }
-        else if (typeof Buffer !== "undefined") {
+        } else if (typeof Buffer !== "undefined") {
             return new Buffer(base64Text, "base64");
-        }
-        else {
+        } else {
             throw new XmlError(XE.CONVERTER_UNSUPPORTED);
         }
     }
 
-    protected static Base64Padding(base64: string): string {
-        let padCount = 4 - (base64.length % 4);
-        if (padCount < 4)
-            for (let i = 0; i < padCount; i++)
-                base64 += "=";
-        return base64;
-    }
-
-    static FromBase64Url(base64url: string): Uint8Array {
+    public static FromBase64Url(base64url: string): Uint8Array {
         return this.FromBase64(this.Base64Padding(base64url.replace(/\-/g, "+").replace(/\_/g, "/")));
     }
 
-    static ToBase64Url(data: Uint8Array): string {
+    public static ToBase64Url(data: Uint8Array): string {
         return this.ToBase64(data).replace(/\+/g, "-").replace(/\//g, "_").replace(/\=/g, "");
     }
 
-    static FromUtf8String(text: string): Uint8Array {
-        let s = unescape(encodeURIComponent(text)),
-            uintArray = new Uint8Array(s.length);
+    public static FromUtf8String(text: string): Uint8Array {
+        const s = unescape(encodeURIComponent(text));
+        const uintArray = new Uint8Array(s.length);
         for (let i = 0; i < s.length; i++) {
             uintArray[i] = s.charCodeAt(i);
         }
         return uintArray;
     }
-    static ToUtf8String(buffer: Uint8Array): string {
-        let encodedString = String.fromCharCode.apply(null, buffer),
-            decodedString = decodeURIComponent(escape(encodedString));
+    public static ToUtf8String(buffer: Uint8Array): string {
+        const encodedString = String.fromCharCode.apply(null, buffer);
+        const decodedString = decodeURIComponent(escape(encodedString));
         return decodedString;
     }
 
-    static FromBinary(text: string): Uint8Array {
-        let stringLength = text.length;
-        let resultView = new Uint8Array(stringLength);
-        for (let i = 0; i < stringLength; i++)
+    public static FromBinary(text: string): Uint8Array {
+        const stringLength = text.length;
+        const resultView = new Uint8Array(stringLength);
+        for (let i = 0; i < stringLength; i++) {
             resultView[i] = text.charCodeAt(i);
+        }
         return resultView;
     }
-    static ToBinary(buffer: Uint8Array): string {
-        let result_string = "";
-        for (let i = 0; i < buffer.length; i++)
-            result_string = result_string + String.fromCharCode(buffer[i]);
-        return result_string;
+    public static ToBinary(buffer: Uint8Array): string {
+        let resultString = "";
+        for (let i = 0; i < buffer.length; i++) {
+            resultString = resultString + String.fromCharCode(buffer[i]);
+        }
+        return resultString;
     }
 
     /**
@@ -114,11 +108,11 @@ export class Convert {
      * @param  {BufferSource} buffer Incoming buffer
      * @returns string
      */
-    static ToHex(buffer: Uint8Array): string {
+    public static ToHex(buffer: Uint8Array): string {
         const splitter = "";
-        let res: string[] = [];
+        const res: string[] = [];
         for (let i = 0; i < buffer.length; i++) {
-            let char = buffer[i].toString(16);
+            const char = buffer[i].toString(16);
             res.push(char.length === 1 ? "0" + char : char);
         }
         return res.join(splitter);
@@ -126,17 +120,17 @@ export class Convert {
 
     /**
      * Converts HEX string to buffer
-     * 
+     *
      * @static
      * @param {string} hexString
      * @returns {Uint8Array}
-     * 
+     *
      * @memberOf Convert
      */
-    static FromHex(hexString: string): Uint8Array {
+    public static FromHex(hexString: string): Uint8Array {
         const res = new Uint8Array(hexString.length / 2);
         for (let i = 0; i < hexString.length; i = i + 2) {
-            let c = hexString.slice(i, i + 2);
+            const c = hexString.slice(i, i + 2);
             res[i / 2] = parseInt(c, 16);
         }
         return res;
@@ -144,28 +138,39 @@ export class Convert {
 
     /**
      * Converts string to Date
-     * 
+     *
      * @static
      * @param {string} dateTime
      * @returns {Date}
-     * 
+     *
      * @memberOf Convert
      */
-    static ToDateTime(dateTime: string): Date {
+    public static ToDateTime(dateTime: string): Date {
         return new Date(dateTime);
     }
 
     /**
      * Converts Date to string
-     * 
+     *
      * @static
      * @param {Date} dateTime
      * @returns {string}
-     * 
+     *
      * @memberOf Convert
      */
-    static FromDateTime(dateTime: Date): string {
-        let str = dateTime.toISOString();
+    public static FromDateTime(dateTime: Date): string {
+        const str = dateTime.toISOString();
         return str;
     }
+
+    protected static Base64Padding(base64: string): string {
+        const padCount = 4 - (base64.length % 4);
+        if (padCount < 4) {
+            for (let i = 0; i < padCount; i++) {
+                base64 += "=";
+            }
+        }
+        return base64;
+    }
+
 }

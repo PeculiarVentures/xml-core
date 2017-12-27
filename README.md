@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/PeculiarVentures/xml-core/badge.svg?branch=master)](https://coveralls.io/github/PeculiarVentures/xml-core?branch=master)
 [![NPM version](https://badge.fury.io/js/xml-core.png)](http://badge.fury.io/js/xml-core)
 
-[![NPM](https://nodei.co/npm-dl/xml-core.png?months=2&height=2)](https://nodei.co/npm/xml-core/)
+[![NPM](https://nodei.co/npm/xml-core.png)](https://nodei.co/npm/xml-core/)
 
 
 ## Introduction

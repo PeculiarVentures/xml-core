@@ -42,7 +42,7 @@ declare namespace XmlCore {
     }
 
     interface IXmlSerializableConstructor {
-        new (): IXmlSerializable
+        new(): IXmlSerializable
     }
 
     /**
@@ -231,21 +231,21 @@ declare namespace XmlCore {
 
     export class Collection<I> implements ICollection<I> {
         protected items: Array<I>;
+        public readonly Count: number;
         constructor(items?: Array<I>);
-        readonly Count: number;
-        Item(index: number): I | null;
-        Add(item: I): void;
-        Pop(): I | undefined;
-        RemoveAt(index: number): void;
-        Clear(): void;
-        GetIterator(): I[];
-        ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
-        Map<U>(cb: (item: I, index: number, array: Array<I>) => U): Collection<U>;
-        Filter(cb: (item: I, index: number, array: Array<I>) => boolean): Collection<I>;
-        Sort(cb: (a: I, b: I) => number): Collection<I>;
-        Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
-        Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
-        IsEmpty(): boolean;
+        public Item(index: number): I | null;
+        public Add(item: I): void;
+        public Pop(): I | undefined;
+        public RemoveAt(index: number): void;
+        public Clear(): void;
+        public GetIterator(): I[];
+        public ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
+        public Map<U>(cb: (item: I, index: number, array: Array<I>) => U): Collection<U>;
+        public Filter(cb: (item: I, index: number, array: Array<I>) => boolean): Collection<I>;
+        public Sort(cb: (a: I, b: I) => number): Collection<I>;
+        public Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
+        public Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
+        public IsEmpty(): boolean;
     }
 
     // convert
@@ -284,10 +284,10 @@ declare namespace XmlCore {
     // error
 
     export class XmlError implements Error {
-        stack: any;
-        code: number;
-        name: string;
-        message: string;
+        public stack: any;
+        public code: number;
+        public name: string;
+        public message: string;
         protected readonly prefix: string;
         constructor(code: XE, ...args: any[]);
     }
@@ -315,9 +315,9 @@ declare namespace XmlCore {
     // namespace_manager
 
     export class NamespaceManager extends Collection<XmlNamespace> {
-        Add(item: XmlNamespace): void;
-        GetPrefix(prefix: string, start?: number): XmlNamespace | null;
-        GetNamespace(namespaceUrl: string, start?: number): XmlNamespace | null;
+        public Add(item: XmlNamespace): void;
+        public GetPrefix(prefix: string, start?: number): XmlNamespace | null;
+        public GetNamespace(namespaceUrl: string, start?: number): XmlNamespace | null;
     }
 
     // utils
@@ -359,70 +359,72 @@ declare namespace XmlCore {
 
     export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
         static parser: any;
-        MaxOccurs: number;
-        MinOccurs: number;
-        HasChanged(): boolean;
+        public MaxOccurs: number;
+        public MinOccurs: number;
+        public readonly Count: number;
+        protected items: Array<I>;
+        public HasChanged(): boolean;
+        public Item(index: number): I | null;
+        public Add(item: I): void;
+        public Pop(): I | undefined;
+        public RemoveAt(index: number): void;
+        public Clear(): void;
+        public GetIterator(): I[];
+        public ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
+        public Map<U>(cb: (item: I, index: number, array: Array<I>) => U): Collection<U>;
+        public Filter(cb: (item: I, index: number, array: Array<I>) => boolean): Collection<I>;
+        public Sort(cb: (a: I, b: I) => number): Collection<I>;
+        public Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
+        public Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
+        public IsEmpty(): boolean;
         protected OnGetXml(element: Element): void;
         protected OnLoadXml(element: Element): void;
-        protected items: Array<I>;
-        readonly Count: number;
-        Item(index: number): I | null;
-        Add(item: I): void;
-        Pop(): I | undefined;
-        RemoveAt(index: number): void;
-        Clear(): void;
-        GetIterator(): I[];
-        ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
-        Map<U>(cb: (item: I, index: number, array: Array<I>) => U): Collection<U>;
-        Filter(cb: (item: I, index: number, array: Array<I>) => boolean): Collection<I>;
-        Sort(cb: (a: I, b: I) => number): Collection<I>;
-        Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
-        Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
-        IsEmpty(): boolean;
     }
 
     // xml_object
 
     export class XmlObject implements IXmlSerializable {
+        public static GetElement(element: Element, name: string, required?: boolean): Element;
+        public static GetAttribute(element: Element, attrName: string, defaultValue: string | null, required?: boolean): string | null;
+        public static GetElementById(document: Document, idValue: string): Element | null;
+        public static GetElementById(element: Element, idValue: string): Element | null;
+        public static CreateDocument(root?: string, namespaceUri?: string | null, prefix?: string | null): Document;
+        public static GetChildren(node: Node, localName: string, nameSpace?: string): Element[];
+        public static GetChild(node: Element, localName: string, nameSpace?: string, required?: boolean): Element | null;
+        public static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null;
+        static LoadXml<T extends XmlObject>(this: {
+            new(): T;
+        }, param: string | Element): T;
         protected static attributes: AssocArray<XmlAttributeType<any>>;
         protected static elements: AssocArray<XmlChildElementType<any>>;
         protected static prefix: string | null;
         protected static namespaceURI: string | null;
         protected static localName: string;
+
+        public readonly Element: Element | null | undefined;
+        public Prefix: string | null;
+        public readonly LocalName: string;
+        public readonly NamespaceURI: string | null;
         protected element?: Element | null;
         protected prefix: string | null;
         protected localName: string | undefined;
-        readonly Element: Element | null | undefined;
-        Prefix: string | null;
-        readonly LocalName: string;
-        readonly NamespaceURI: string | null;
+
+        public HasChanged(): boolean;
+        public GetXml(hard?: boolean): Element | null;
+        public LoadXml(param: string | Element): void;
+        public toString(): string;
+        public GetElement(name: string, required?: boolean): Element;
+        public GetChildren(localName: string, nameSpace?: string): Element[];
+        public GetChild(localName: string, required?: boolean): Element | null;
+        public GetFirstChild(localName: string, namespace?: string): Element | null;
+        public GetAttribute(name: string, defaultValue: string | null, required?: boolean): string | null;
+        public IsEmpty(): boolean;
         protected GetStatic(): XmlSchema;
         protected GetPrefix(): string;
-        HasChanged(): boolean;
         protected OnGetXml(element: Element): void;
-        GetXml(hard?: boolean): Element | null;
         protected OnLoadXml(element: Element): void;
-        static LoadXml<T extends XmlObject>(this: {
-            new (): T;
-        }, param: string | Element): T;
-        LoadXml(param: string | Element): void;
-        toString(): string;
-        static GetElement(element: Element, name: string, required?: boolean): Element;
-        GetElement(name: string, required?: boolean): Element;
-        static GetAttribute(element: Element, attrName: string, defaultValue: string | null, required?: boolean): string | null;
-        protected GetAttribute(name: string, defaultValue: string | null, required?: boolean): string | null;
-        static GetElementById(document: Document, idValue: string): Element | null;
-        static GetElementById(element: Element, idValue: string): Element | null;
         protected CreateElement(document?: Document, localName?: string, namespaceUri?: string | null, prefix?: string | null): Element;
         protected CreateDocument(): Document;
-        static CreateDocument(root?: string, namespaceUri?: string | null, prefix?: string | null): Document;
-        static GetChildren(node: Node, localName: string, nameSpace?: string): Element[];
-        GetChildren(localName: string, nameSpace?: string): Element[];
-        static GetFirstChild(node: Node, localName: string, nameSpace?: string): Element | null;
-        static GetChild(node: Element, localName: string, nameSpace?: string, required?: boolean): Element | null;
-        protected GetChild(localName: string, required?: boolean): Element | null;
-        GetFirstChild(localName: string, namespace?: string): Element | null;
-        IsEmpty(): boolean;
     }
 
 }

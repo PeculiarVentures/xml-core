@@ -1,5 +1,5 @@
-import { Parse, XmlAttribute, XmlElement, XmlContent, XmlChildElement, XmlObject, XmlCollection, XmlNumberConverter, XmlBase64Converter } from "../";
 import * as assert from "assert";
+import { Parse, XmlAttribute, XmlBase64Converter, XmlChildElement, XmlCollection, XmlContent, XmlElement, XmlNumberConverter, XmlObject } from "../";
 
 // const xmldom = require("xmldom-alpha");
 // const DOMParser = xmldom.DOMParser;
@@ -12,9 +12,9 @@ describe("Decorators", () => {
         class XmlTest extends XmlObject {
         }
 
-        const doc = Parse(`<wronName/>`);
+        const doc = Parse(`<wrongName/>`);
 
-        let test = new XmlTest();
+        const test = new XmlTest();
         assert.throws(() => {
             test.LoadXml(doc.documentElement);
         });
@@ -25,12 +25,12 @@ describe("Decorators", () => {
         context("GetXml", () => {
 
             it("simple", () => {
-                // Need some changes for changing element to null, otherwise empty answer 
+                // Need some changes for changing element to null, otherwise empty answer
                 @XmlElement({ localName: "test" })
                 class Test extends XmlObject {
 
                     @XmlAttribute({ localName: "id" })
-                    Id: string;
+                    public Id: string;
 
                 }
 
@@ -46,7 +46,7 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test", namespaceURI: "http://some.com" })
                 class Test extends XmlObject {
                     @XmlAttribute({ localName: "id", defaultValue: "1" })
-                    Id: string = "test";
+                    public Id: string = "test";
                 }
 
                 const test = new Test();
@@ -60,7 +60,7 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test", prefix: "sm", namespaceURI: "http://some.com" })
                 class Test extends XmlObject {
                     @XmlAttribute({ localName: "id" })
-                    Id: string = "test";
+                    public Id: string = "test";
                 }
 
                 const test = new Test();
@@ -72,7 +72,7 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test", prefix: "sm" })
                 class Test extends XmlObject {
                     @XmlAttribute({ localName: "id", defaultValue: "" })
-                    Id: string = "test";
+                    public Id: string = "test";
                 }
 
                 const test = new Test();
@@ -87,7 +87,7 @@ describe("Decorators", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
                         @XmlChildElement({ defaultValue: "" })
-                        Child: string;
+                        public Child: string;
                     }
 
                     const test = new Test();
@@ -100,7 +100,7 @@ describe("Decorators", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
                         @XmlChildElement({ required: true })
-                        Child: string = "1";
+                        public Child: string = "1";
                     }
 
                     const test = new Test();
@@ -112,7 +112,7 @@ describe("Decorators", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
                         @XmlChildElement({ localName: "ch", defaultValue: "1" })
-                        Child: string;
+                        public Child: string;
                     }
 
                     const test = new Test();
@@ -125,7 +125,7 @@ describe("Decorators", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
                         @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceURI: "http://some.com" })
-                        Child: string;
+                        public Child: string;
                     }
 
                     const test = new Test();
@@ -138,7 +138,7 @@ describe("Decorators", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
                         @XmlChildElement({ localName: "ch", defaultValue: "1", namespaceURI: "http://some.com", prefix: "px" })
-                        Child: string;
+                        public Child: string;
                     }
 
                     const test = new Test();
@@ -153,7 +153,7 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "base" })
                 class XmlBase extends XmlObject {
                     @XmlAttribute({ localName: "id", defaultValue: "" })
-                    Id: string;
+                    public Id: string;
                 }
 
                 @XmlElement({ localName: "child1" })
@@ -179,7 +179,7 @@ describe("Decorators", () => {
                 }
 
                 it("default", () => {
-                    let root = new Root();
+                    const root = new Root();
                     root.Name = "MyName";
 
                     root.ChildRequired = new Child2();
@@ -212,7 +212,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test><value>123</value></test>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(doc.documentElement);
 
                     assert.equal(test.Value, "123");
@@ -231,7 +231,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test/>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
 
                     assert.throws(() => {
                         test.LoadXml(doc.documentElement);
@@ -251,7 +251,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test><value>123</value></test>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(doc.documentElement);
 
                     assert.equal(test.Value, "123");
@@ -270,7 +270,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test><value>AQAB</value></test>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(doc.documentElement);
 
                     assert.equal(test.Value instanceof Uint8Array, true);
@@ -290,7 +290,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test xmlns:p="http://some.com"><p:value>Text</p:value></test>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(doc.documentElement);
 
                     assert.equal(test.Value, "Text");
@@ -317,7 +317,7 @@ describe("Decorators", () => {
 
                     }
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(`<test><value id="123"/></test>`);
 
                     assert.equal(test.Value.Id, "123");
@@ -342,7 +342,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test></test>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     assert.throws(() => {
                         test.LoadXml(doc.documentElement);
                     });
@@ -368,7 +368,7 @@ describe("Decorators", () => {
 
                     const doc = Parse(`<test xmlns:p="http://some.com"><p:value id="123"/></test>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(doc.documentElement);
 
                     assert.equal(test.Value.Id, "123");
@@ -389,7 +389,6 @@ describe("Decorators", () => {
 
             @XmlElement({ localName: "test" })
             class Test extends XmlObject {
-                protected name = "test";
 
                 @XmlAttribute()
                 public Id?: string;
@@ -405,9 +404,11 @@ describe("Decorators", () => {
 
                 @XmlAttribute({ required: true, localName: "required" })
                 public Required: string;
+
+                protected name = "test";
             }
 
-            let test = new Test();
+            const test = new Test();
 
             it("with required empty attribute", () => {
 
@@ -466,7 +467,7 @@ describe("Decorators", () => {
 
                 const doc = Parse(`<test id="123"/>`);
 
-                let test = new XmlTest();
+                const test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
                 assert.equal(test.Id, "123");
@@ -485,7 +486,7 @@ describe("Decorators", () => {
 
                 const doc = Parse(`<test/>`);
 
-                let test = new XmlTest();
+                const test = new XmlTest();
 
                 assert.throws(() => {
                     test.LoadXml(doc.documentElement);
@@ -505,7 +506,7 @@ describe("Decorators", () => {
 
                 const doc = Parse(`<test id="123"/>`);
 
-                let test = new XmlTest();
+                const test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
                 assert.equal(test.Id, "123");
@@ -525,7 +526,7 @@ describe("Decorators", () => {
                     // correct
                     const doc = Parse(`<test xmlns:s="http://some.com" s:id="123"/>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     test.LoadXml(doc.documentElement);
 
                     assert.equal(test.Id, "123");
@@ -535,7 +536,7 @@ describe("Decorators", () => {
                     // error
                     const doc = Parse(`<test xmlns:s="http://other.com" s:id="123"/>`);
 
-                    let test = new XmlTest();
+                    const test = new XmlTest();
                     assert.throws(() => {
                         test.LoadXml(doc.documentElement);
                     });
@@ -554,7 +555,7 @@ describe("Decorators", () => {
 
                 const doc = Parse(`<test value="AQAB"/>`);
 
-                let test = new XmlTest();
+                const test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
                 assert.equal(test.Value instanceof Uint8Array, true);
@@ -585,13 +586,13 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 1, parser: XmlTransforms })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let test = new XmlTest();
+                const test = new XmlTest();
 
                 test.Transforms = new XmlTransforms();
-                let t = new XmlTransform();
+                const t = new XmlTransform();
                 t.Value = "Hello";
                 test.Transforms.Add(t);
 
@@ -615,13 +616,13 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 1, parser: XmlTransforms, noRoot: true })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let test = new XmlTest();
+                const test = new XmlTest();
 
                 test.Transforms = new XmlTransforms();
-                let t = new XmlTransform();
+                const t = new XmlTransform();
                 t.Value = "Hello";
                 test.Transforms.Add(t);
 
@@ -637,8 +638,9 @@ describe("Decorators", () => {
                     public Value: string;
                     constructor(value?: string) {
                         super();
-                        if (value)
+                        if (value) {
                             this.Value = value;
+                        }
                     }
                 }
 
@@ -649,10 +651,10 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 1, maxOccurs: 4, parser: XmlTransforms, noRoot: true })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let test = new XmlTest();
+                const test = new XmlTest();
 
                 test.Transforms = new XmlTransforms();
 
@@ -680,8 +682,9 @@ describe("Decorators", () => {
                     public Value: string;
                     constructor(value?: string) {
                         super();
-                        if (value)
+                        if (value) {
                             this.Value = value;
+                        }
                     }
                 }
 
@@ -692,10 +695,10 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 1, maxOccurs: 4, parser: XmlTransforms })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let test = new XmlTest();
+                const test = new XmlTest();
 
                 test.Transforms = new XmlTransforms();
 
@@ -735,15 +738,15 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 1, parser: XmlTransforms })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let doc = Parse("<test><transforms><transform><Value>Hello</Value></transform></transforms></test>");
-                let test = new XmlTest();
+                const doc = Parse("<test><transforms><transform><Value>Hello</Value></transform></transforms></test>");
+                const test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
                 assert.equal(test.Transforms.Count, 1);
-                assert.equal(test.Transforms.Item(0) !.Value, "Hello");
+                assert.equal(test.Transforms.Item(0)!.Value, "Hello");
 
             });
 
@@ -763,15 +766,15 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 1, parser: XmlTransforms, noRoot: true })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let doc = Parse("<test><transform><Value>Hello</Value></transform></test>");
-                let test = new XmlTest();
+                const doc = Parse("<test><transform><Value>Hello</Value></transform></test>");
+                const test = new XmlTest();
                 test.LoadXml(doc.documentElement);
 
                 assert.equal(test.Transforms.Count, 1);
-                assert.equal(test.Transforms.Item(0) !.Value, "Hello");
+                assert.equal(test.Transforms.Item(0)!.Value, "Hello");
 
             });
 
@@ -791,11 +794,11 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ minOccurs: 2, parser: XmlTransforms, noRoot: true })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let doc = Parse("<test><transform><Value>Hello</Value></transform></test>");
-                let test = new XmlTest();
+                const doc = Parse("<test><transform><Value>Hello</Value></transform></test>");
+                const test = new XmlTest();
 
                 assert.throws(() => {
                     test.LoadXml(doc.documentElement);
@@ -818,11 +821,11 @@ describe("Decorators", () => {
                 @XmlElement({ localName: "test" })
                 class XmlTest extends XmlObject {
                     @XmlChildElement({ maxOccurs: 1, parser: XmlTransforms, noRoot: true })
-                    Transforms: XmlTransforms;
+                    public Transforms: XmlTransforms;
                 }
 
-                let doc = Parse("<test><transform><Value>Hello</Value></transform><transform><Value>Hello</Value></transform></test>");
-                let test = new XmlTest();
+                const doc = Parse("<test><transform><Value>Hello</Value></transform><transform><Value>Hello</Value></transform></test>");
+                const test = new XmlTest();
 
                 assert.throws(() => {
                     test.LoadXml(doc.documentElement);
@@ -854,11 +857,11 @@ describe("Decorators", () => {
         class XmlSecond extends XmlFirst {
         }
 
-        let first = new XmlFirst();
+        const first = new XmlFirst();
         first.Id = "1";
         assert.equal(first.toString(), `<p:first Id="1" xmlns:p="http://some.com"/>`);
 
-        let second = new XmlSecond();
+        const second = new XmlSecond();
         second.Id = "2";
         assert.equal(second.toString(), `<p:second Id="2" xmlns:p="http://some.com"/>`);
         assert.equal((XmlFirst as any).prefix, (XmlSecond as any).prefix);
@@ -882,15 +885,15 @@ describe("Decorators", () => {
 
             }
 
-            let test = new XmlTest();
+            const test = new XmlTest();
 
             assert.equal(test.Value, undefined);
 
             test.Value = "Test";
 
-            let xml = test.toString();
+            const xml = test.toString();
             assert.equal(xml, `<p:test xmlns:p="http://some.com">Test</p:test>`);
-            let test2 = XmlTest.LoadXml(xml);
+            const test2 = XmlTest.LoadXml(xml);
 
             assert.equal(test2.Value, test.Value);
         });
@@ -905,22 +908,22 @@ describe("Decorators", () => {
             class XmlTest extends XmlObject {
 
                 @XmlContent({
-                    converter: XmlNumberConverter
+                    converter: XmlNumberConverter,
                 })
                 public Value: number;
 
             }
 
-            let test = new XmlTest();
+            const test = new XmlTest();
 
             assert.equal(test.Value, undefined);
 
             test.Value = 123;
 
-            let xml = test.toString();
+            const xml = test.toString();
             assert.equal(xml, `<p:test xmlns:p="http://some.com">123</p:test>`);
 
-            let test2 = XmlTest.LoadXml(xml);
+            const test2 = XmlTest.LoadXml(xml);
 
             assert.equal(test2.Value, test.Value);
         });
@@ -935,7 +938,7 @@ describe("Decorators", () => {
             class XmlTest extends XmlObject {
 
                 @XmlAttribute()
-                Id: string;
+                public Id: string;
 
                 @XmlContent({
                     required: true,
@@ -944,7 +947,7 @@ describe("Decorators", () => {
 
             }
 
-            let test = new XmlTest();
+            const test = new XmlTest();
 
             assert.equal(test.Value, undefined);
 
@@ -954,12 +957,12 @@ describe("Decorators", () => {
 
             test.Value = "test";
 
-            let xml = test.toString();
+            const xml = test.toString();
             assert.equal(xml, `<p:test Id="1" xmlns:p="http://some.com">test</p:test>`);
 
             assert.throws(() => XmlTest.LoadXml(`<p:test Id="1" xmlns:p="http://some.com"/>`));
 
-            let test2 = XmlTest.LoadXml(xml);
+            const test2 = XmlTest.LoadXml(xml);
 
             assert.equal(test2.Value, test.Value);
         });
@@ -973,7 +976,7 @@ describe("Decorators", () => {
             class XmlTest extends XmlObject {
 
                 @XmlAttribute()
-                Id: string;
+                public Id: string;
 
                 @XmlContent({
                     required: true,
@@ -983,18 +986,18 @@ describe("Decorators", () => {
 
             }
 
-            let test = new XmlTest();
+            const test = new XmlTest();
 
             assert.equal(test.Value, "test");
 
             test.Id = "1";
 
-            let xml = test.toString();
+            const xml = test.toString();
             assert.equal(xml, `<p:test Id="1" xmlns:p="http://some.com">test</p:test>`);
 
             assert.throws(() => XmlTest.LoadXml(`<p:test Id="1" xmlns:p="http://some.com"/>`));
 
-            let test2 = XmlTest.LoadXml(xml);
+            const test2 = XmlTest.LoadXml(xml);
 
             assert.equal(test2.Value, test.Value);
         });
