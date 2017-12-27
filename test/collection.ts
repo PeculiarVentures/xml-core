@@ -1,5 +1,5 @@
-import { Collection } from "../";
 import * as assert from "assert";
+import { Collection } from "../";
 
 describe("Collection", () => {
 
@@ -31,19 +31,45 @@ describe("Collection", () => {
         assert.equal(col.Item(1), 2);
     });
 
-    it("Remove Item at index", () => {
-        const col = new Collection([1, 2, 3, 4, 5]);
-        assert.equal(col.Count, 5);
-        assert.equal(col.Item(2), 3);
-        col.RemoveAt(2);
-        assert.equal(col.Item(2), 4);
+    it("Pop", () => {
+        const col = new Collection();
+        col.Add(1);
+        col.Add(2);
+        col.Add(3);
+        assert.equal(col.Count, 3);
+        col.Pop();
+        assert.equal(col.Count, 2);
+        assert.equal(col.Item(0), 1);
+        assert.equal(col.Item(1), 2);
+    });
+
+    it("RemoveAt", () => {
+        const col = new Collection();
+        col.Add(1);
+        col.Add(2);
+        col.Add(3);
+        assert.equal(col.Count, 3);
+        col.RemoveAt(0);
+        assert.equal(col.Count, 2);
+        assert.equal(col.Item(0), 2);
+        assert.equal(col.Item(1), 3);
     });
 
     it("Clear", () => {
-        const col = new Collection([1, 2, 3, 4, 5]);
-        assert.equal(col.Count, 5);
+        const col = new Collection();
+        col.Add(1);
+        col.Add(2);
+        col.Add(3);
+        assert.equal(col.Count, 3);
         col.Clear();
         assert.equal(col.Count, 0);
+    });
+
+    it("IsEmpty", () => {
+        const col = new Collection();
+        assert.equal(col.IsEmpty(), true);
+        col.Add(1);
+        assert.equal(col.IsEmpty(), false);
     });
 
     it("Get Iterator", () => {
@@ -64,14 +90,14 @@ describe("Collection", () => {
         const col = new Collection([1, 2, 3, 4, 5]);
         assert.equal(col.Count, 5);
         const array = col.Map((item, index) => item === index + 1).GetIterator();
-        assert.equal(array.every(item => item === true), true);
+        assert.equal(array.every((item) => item === true), true);
     });
 
     it("Filter", () => {
         const col = new Collection([1, 2, 1, 2, 1, 2, 1, 2]);
         assert.equal(col.Count, 8);
         const array = col.Filter((item, index) => item === 1).GetIterator();
-        assert.equal(array.every(item => item === 1), true);
+        assert.equal(array.every((item) => item === 1), true);
         assert.equal(array.length, 4);
     });
 
@@ -86,16 +112,16 @@ describe("Collection", () => {
     it("Every", () => {
         const col = new Collection([1, 2, 3, 4, 5]);
         assert.equal(col.Count, 5);
-        assert.equal(col.Every(item => item < 6), true);
-        assert.equal(col.Every(item => item < 5), false);
+        assert.equal(col.Every((item) => item < 6), true);
+        assert.equal(col.Every((item) => item < 5), false);
     });
 
     it("Some", () => {
         const col = new Collection([1, 2, 3, 4, 5]);
         assert.equal(col.Count, 5);
-        assert.equal(col.Some(item => item < 6), true);
-        assert.equal(col.Some(item => item < 5), true);
-        assert.equal(col.Some(item => item > 5), false);
+        assert.equal(col.Some((item) => item < 6), true);
+        assert.equal(col.Some((item) => item < 5), true);
+        assert.equal(col.Some((item) => item > 5), false);
     });
 
     it("IsEmpty", () => {
@@ -103,14 +129,6 @@ describe("Collection", () => {
         assert.equal(col.IsEmpty(), true);
         col.Add(1);
         assert.equal(col.IsEmpty(), false);
-    });
-
-    it("Pop", () => {
-        const col = new Collection([1, 2]);
-        assert.equal(col.Count, 2);
-        assert.equal(col.Pop(), 2);
-        assert.equal(col.Count, 1);
-        assert.equal(col.Item(0), 1);
     });
 
 });

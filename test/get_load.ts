@@ -1,6 +1,6 @@
 import * as assert from "assert";
-import { XmlElement, XmlAttribute, XmlChildElement } from "../";
-import { XmlObject, XmlCollection } from "../";
+import { XmlAttribute, XmlChildElement, XmlElement } from "../";
+import { XmlCollection, XmlObject } from "../";
 import { XmlNumberConverter } from "../";
 
 context("GetXml/LoadXml/HasChanged", () => {
@@ -23,7 +23,7 @@ context("GetXml/LoadXml/HasChanged", () => {
             public Method: string;
         }
 
-        let t = new Test();
+        const t = new Test();
 
         assert.equal(t.toString(), "", "initialized class should be empty");
 
@@ -63,7 +63,7 @@ context("GetXml/LoadXml/HasChanged", () => {
             public Child: Child;
         }
 
-        let t = new Test();
+        const t = new Test();
 
         assert.equal(t.toString(), "", "initialized class should be empty");
         assert.equal(t.HasChanged(), false);
@@ -113,7 +113,7 @@ context("GetXml/LoadXml/HasChanged", () => {
             public Childs: Childs;
         }
 
-        let t = new Test();
+        const t = new Test();
 
         assert.equal(t.toString(), "", "initialized class should be empty");
 
@@ -160,7 +160,7 @@ context("GetXml/LoadXml/HasChanged", () => {
             public Childs2: Childs;
         }
 
-        let t = new Test();
+        const t = new Test();
 
         assert.equal(t.toString(), "");
         // assert.throws(() => t.toString());
@@ -188,24 +188,24 @@ context("GetXml/LoadXml/HasChanged", () => {
 
         @XmlElement({
             localName: "test",
-            namespaceURI: "https://some.com"
+            namespaceURI: "https://some.com",
         })
         class Test extends XmlObject {
 
             @XmlAttribute({
-                localName: "value"
+                localName: "value",
             })
-            Value = "test";
+            public Value = "test";
 
             @XmlAttribute({
                 localName: "version",
-                converter: XmlNumberConverter
+                converter: XmlNumberConverter,
             })
-            Version: number;
+            public Version: number;
 
         }
 
-        let t = new Test();
+        const t = new Test();
 
         let xml = `<test value="test" xmlns="https://some.com"/>`;
         assert.equal(t.toString(), xml);
@@ -222,7 +222,7 @@ context("GetXml/LoadXml/HasChanged", () => {
 
         @XmlElement({
             localName: "test",
-            namespaceURI: "https://some.com"
+            namespaceURI: "https://some.com",
         })
         class Test extends XmlObject {
 
@@ -230,18 +230,18 @@ context("GetXml/LoadXml/HasChanged", () => {
                 localName: "value",
                 namespaceURI: "https://some.com",
             })
-            Value = "test";
+            public Value = "test";
 
             @XmlChildElement({
                 localName: "version",
                 namespaceURI: "https://some.com",
-                converter: XmlNumberConverter
+                converter: XmlNumberConverter,
             })
-            Version: number;
+            public Version: number;
 
         }
 
-        let t = new Test();
+        const t = new Test();
 
         let xml = `<test xmlns="https://some.com"><value>test</value></test>`;
         assert.equal(t.toString(), xml);

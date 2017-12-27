@@ -13,7 +13,8 @@
         "no-var-requires": false,
         "object-literal-sort-keys": false,
         "object-literal-shorthand": false,
-        "space-before-function-paren": false
+        "space-before-function-paren": false,
+        "max-classes-per-file": false
     },
     "rulesDirectory": []
 }
