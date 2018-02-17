@@ -47,6 +47,10 @@ export function Parse(xmlString: string) {
     return new DOMParser().parseFromString(xmlString, APPLICATION_XML);
 }
 
+export function Stringify(target: Node) {
+    return new XMLSerializer().serializeToString(target);
+}
+
 /**
  * Returns single Node from given Node
  *

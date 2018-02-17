@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { assign, Parse, SelectNamespaces, SelectSingleNode } from "../";
+import { assign, Parse, SelectNamespaces, SelectSingleNode, Stringify } from "../";
 
 context("utils", () => {
 
@@ -33,6 +33,13 @@ context("utils", () => {
         assert.equal(namespaces[""], "html://namespace1");
         assert.equal(namespaces.n1, "html://namespace2");
         assert.equal(namespaces.n2, "html://namespace3");
+    });
+
+    it("Parse/Stringify", () => {
+        const xmlString = `<root xmlns="html://namespace1"><n1:child xmlns:n1="html://namespace2"/><n2:child xmlns:n2="html://namespace3"/></root>`;
+        const xml = Parse(xmlString);
+        const text = Stringify(xml);
+        assert.equal(xmlString, text);
     });
 
 });
