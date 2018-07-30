@@ -9,3 +9,6 @@
 /test/*.js
 /test/!tsconfig.js
 debug.log
+
+# Mac
+.DS_Store

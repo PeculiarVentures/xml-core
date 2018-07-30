@@ -14,6 +14,9 @@ export default {
     output: {
         file: pkg.module,
         format: "es",
-        sourcemap
-    }
+        sourcemap,
+        globals: {
+            tslib: "tslib",
+        },
+    },
 };

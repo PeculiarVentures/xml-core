@@ -19,7 +19,7 @@ context("utils", () => {
         });
         it("First element", () => {
             const xml = Parse(`<root><child attr="1"/><child attr="2"/><child attr="3"/></root>`);
-            const node = SelectSingleNode(xml, ".//child");
+            const node = SelectSingleNode(xml, ".//child") as Element;
             assert.equal(!!node, true);
             assert.equal(node!.attributes.length, 1);
             assert.equal(node!.attributes[0].value, "1");

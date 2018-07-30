@@ -10,25 +10,27 @@
     "test": "test"
   },
   "dependencies": {
-    "@types/node": "^8.9.4",
+    "@types/node": "^10.5.4",
+    "tslib": "^1.9.3",
     "xmldom-alpha": "^0.1.28",
     "xpath.js": "^1.1.0"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.48",
-    "coveralls": "^3.0.0",
-    "mocha": "^4.1.0",
-    "nyc": "^11.5.0",
-    "rollup": "^0.53.4",
-    "rollup-plugin-babel": "^3.0.3",
+    "@types/mocha": "^5.2.5",
+    "coveralls": "^3.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
+    "rollup": "^0.63.4",
+    "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-typescript": "^0.8.1",
-    "typescript": "^2.7.2"
+    "ts-node": "^7.0.0",
+    "typescript": "^2.9.2"
   },
   "scripts": {
     "clean": "rm -rf build/ buildjs/ coverage/ .nyc_output/ npm-debug.log npm-debug.log.*",
     "pretest": "npm run build:test && npm run build:map",
     "test": "mocha ./test",
-    "build": "npm run build:lib && npm run build:es5 && npm run build:test",
+    "build": "npm run build:lib && npm run build:es5",
     "build:es5": "rollup -c",
     "build:map": "rollup -c -m",
     "build:test": "tsc -p test",
@@ -54,5 +56,21 @@
   "bugs": {
     "url": "https://github.com/PeculiarVentures/xml-core.git/issues"
   },
-  "homepage": "https://github.com/PeculiarVentures/xml-core.git#readme"
+  "homepage": "https://github.com/PeculiarVentures/xml-core.git#readme",
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ]
+  }
 }
