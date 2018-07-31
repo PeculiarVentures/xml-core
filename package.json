@@ -3,6 +3,8 @@
   "version": "1.0.14",
   "description": "`xml-core` is a set of classes that make it easier to work with XML within the browser and node.",
   "main": "dist/index.js",
+  "module": "lib/index.js",
+  "jsnext:main": "lib/index.js",
   "types": "index.d.ts",
   "directories": {
     "test": "test"
@@ -19,10 +21,9 @@
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
     "rollup": "^0.63.4",
-    "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-typescript": "^0.8.1",
     "ts-node": "^7.0.0",
-    "typescript": "^2.9.2"
+    "typescript": "^3.0.1"
   },
   "scripts": {
     "clean": "rm -rf build/ buildjs/ coverage/ .nyc_output/ npm-debug.log npm-debug.log.*",

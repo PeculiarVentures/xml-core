@@ -13,8 +13,7 @@ export default {
     external: external,
     output: {
         file: pkg.main,
-        format: "es",
-        name: "XmlCore",
+        format: "cjs",
         sourcemap,
         globals: {
             tslib: "tslib",
