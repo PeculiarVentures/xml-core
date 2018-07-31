@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { Parse, XmlAttribute, XmlBase64Converter, XmlChildElement, XmlCollection, XmlContent, XmlElement, XmlNumberConverter, XmlObject } from "../";
+import { Parse, XmlAttribute, XmlBase64Converter, XmlChildElement, XmlCollection, XmlContent, XmlElement, XmlNumberConverter, XmlObject } from "../src";
 
 // const xmldom = require("xmldom-alpha");
 // const DOMParser = xmldom.DOMParser;

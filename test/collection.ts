@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { Collection } from "../";
+import { Collection } from "../src";
 
 describe("Collection", () => {
 

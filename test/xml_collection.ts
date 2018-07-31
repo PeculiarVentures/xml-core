@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { XmlAttribute, XmlCollection, XmlElement, XmlObject } from "../";
+import { XmlAttribute, XmlCollection, XmlElement, XmlObject } from "../src";
 
 context("XmlCollection", () => {
     @XmlElement({
@@ -22,6 +22,7 @@ context("XmlCollection", () => {
     @XmlElement({
         localName: "children",
         namespaceURI: "http://some.com",
+        parser: Child,
     })
     class Children extends XmlCollection<Child> {
     }
@@ -143,5 +144,37 @@ context("XmlCollection", () => {
         assert.equal(col.Every((item) => {
             return item.Id === 1;
         }), false);
+    });
+
+    context("HasChanged", () => {
+
+        it("Initialized empty collection is not changed", () => {
+            const col = new Children();
+            assert.equal(col.HasChanged(), false);
+        });
+
+        it("Update state on item adding", () => {
+            const col = new Children();
+            col.Add(new Child());
+            assert.equal(col.HasChanged(), true);
+        });
+
+        it("Update state on item removing", () => {
+            const col = new Children();
+            col.Add(new Child());
+            col.GetXml();
+            assert.equal(col.HasChanged(), false);
+            col.RemoveAt(0);
+            assert.equal(col.HasChanged(), true);
+        });
+
+        it("Set unchanged state for loaded XML", () => {
+            const xml = `<children xmlns="http://some.com"><child id="0"/><child id="1"/></children>`;
+            const col = new Children();
+            col.LoadXml(xml);
+            assert.equal(col.HasChanged(), false);
+            assert.equal(col.Item(0)!.HasChanged(), false);
+        });
+
     });
 });

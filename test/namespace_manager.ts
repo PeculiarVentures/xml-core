@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { NamespaceManager } from "../";
+import { NamespaceManager } from "../src";
 
 context("NamespaceManager", () => {
 

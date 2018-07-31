@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { assign, Parse, SelectNamespaces, SelectSingleNode, Stringify } from "../";
+import { assign, Parse, SelectNamespaces, SelectSingleNode, Stringify } from "../src";
 
 context("utils", () => {
 
