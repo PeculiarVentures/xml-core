@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { XE, XmlError } from "../";
+import { XE, XmlError } from "../src";
 
 describe("Error", () => {
 

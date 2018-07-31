@@ -1,6 +1,6 @@
 import * as assert from "assert";
-import { XmlAttribute, XmlElement, XmlObject } from "../";
-import { XmlBase64Converter, XmlBooleanConverter, XmlNumberConverter } from "../";
+import { XmlAttribute, XmlElement, XmlObject } from "../src";
+import { XmlBase64Converter, XmlBooleanConverter, XmlNumberConverter } from "../src";
 
 // const xmldom = require("xmldom-alpha");
 // const DOMParser = xmldom.DOMParser;

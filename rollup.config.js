@@ -8,12 +8,16 @@ const sourcemap = process.argv.some(item => item.toLowerCase() === "--dev");
 export default {
     input: "src/index.ts",
     plugins: [
-        typescript({ typescript: require("typescript"), module: "es2015", target: "es5" }),
+        typescript({ typescript: require("typescript") }),
     ],
     external: external,
     output: {
         file: pkg.main,
-        format: "umd",
+        format: "es",
         name: "XmlCore",
-    }
+        sourcemap,
+        globals: {
+            tslib: "tslib",
+        },
+    },
 };

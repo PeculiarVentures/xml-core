@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { Convert } from "../";
+import { Convert } from "../src";
 
 describe("Convert", () => {
 

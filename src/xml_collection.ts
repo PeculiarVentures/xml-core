@@ -1,6 +1,9 @@
+/// <reference path="types/index.d.ts" />
+
 import { Collection } from "./collection";
 import { XE, XmlError } from "./error";
 import { XmlNodeType } from "./xml";
+import { XmlObject } from "./xml_object";
 
 export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
 
@@ -120,4 +123,4 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
 
 }
 
-import { XmlObject } from "./xml_object";
+// import { XmlObject } from "./xml_object";
