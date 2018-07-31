@@ -3,8 +3,6 @@
   "version": "1.0.13",
   "description": "`xml-core` is a set of classes that make it easier to work with XML within the browser and node.",
   "main": "dist/index.js",
-  "module": "lib/index.js",
-  "jsnext:main": "lib/index.js",
   "types": "index.d.ts",
   "directories": {
     "test": "test"
@@ -28,20 +26,17 @@
   },
   "scripts": {
     "clean": "rm -rf build/ buildjs/ coverage/ .nyc_output/ npm-debug.log npm-debug.log.*",
-    "pretest": "npm run build:test && npm run build:map",
-    "test": "mocha ./test",
+    "test": "mocha",
+    "prepare": "npm run build",
     "build": "npm run build:lib && npm run build:es5",
     "build:es5": "rollup -c",
     "build:map": "rollup -c -m",
-    "build:test": "tsc -p test",
     "build:source": "tsc -p src --declaration --declarationDir types",
     "build:lib": "rollup -c rollup.config.lib.js",
-    "prepublish": "npm run build",
-    "prepub": "npm run build",
+    "lint": "tslint 'src/**/*.ts'",
+    "prepub": "npm run lint && npm run test && npm run build",
     "pub": "npm version patch && npm publish && git push",
     "coverage": "nyc npm test",
-    "precoveragehtml": "npm run coverage",
-    "coveragehtml": "nyc report -r html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
