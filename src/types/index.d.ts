@@ -1,6 +1,6 @@
 /**
  * Base interface for collections
- * 
+ *
  * @interface ICollection
  * @template I
  */
@@ -12,9 +12,9 @@ interface ICollection<I> {
     RemoveAt(index: number): void;
     Clear(): void;
     GetIterator(): I[];
-    ForEach(cb: (item: I, index: number, array: Array<I>) => void): void;
-    Map<U>(cb: (item: I, index: number, array: Array<I>) => U): ICollection<U>;
-    Filter(cb: (item: I, index: number, array: Array<I>) => boolean): ICollection<I>;
+    ForEach(cb: (item: I, index: number, array: I[]) => void): void;
+    Map<U>(cb: (item: I, index: number, array: I[]) => U): ICollection<U>;
+    Filter(cb: (item: I, index: number, array: I[]) => boolean): ICollection<I>;
     Sort(cb: (a: I, b: I) => number): ICollection<I>;
     Every(cb: (value: I, index: number, array: I[]) => boolean): boolean;
     Some(cb: (value: I, index: number, array: I[]) => boolean): boolean;
@@ -38,12 +38,12 @@ interface IXmlSerializable {
 }
 
 interface IXmlSerializableConstructor {
-    new (): IXmlSerializable
+    new (): IXmlSerializable;
 }
 
 /**
  * Base type for associated arrays
- * 
+ *
  * @interface AssocArray
  * @template T
  */
@@ -53,19 +53,19 @@ interface AssocArray<T> {
 
 declare type XmlBufferEncoding = string | "utf8" | "binary" | "hex" | "base64" | "base64url";
 
-declare type ISelectResult = Array<Node> | Node | boolean | number | string;
+declare type ISelectResult = Node[] | Node | boolean | number | string;
 
 interface XmlNamespace {
     /**
      * Prefix
-     * 
+     *
      * @type {(string |)}
      * @memberOf XmlNamespace
      */
     prefix: string | null;
     /**
      * Namespace URI
-     * 
+     *
      * @type {(string |)}
      * @memberOf XmlNamespace
      */
@@ -75,22 +75,22 @@ interface XmlNamespace {
 interface XmlSchemaItemBase {
     /**
      * Local name of item
-     * 
+     *
      * @type {string}
      * @memberOf XmlSchemaItemBase
      */
     localName?: string;
     /**
      * Namespace URI of attribute
-     * 
+     *
      * @type {(string |)}
      * @memberOf XmlSchemaItemBase
      */
     namespaceURI?: string | null;
 
     /**
-     * Default prefix for Xml element 
-     * 
+     * Default prefix for Xml element
+     *
      * @type {(string |)}
      * @memberOf XmlSchemaItemBase
      */
@@ -100,21 +100,21 @@ interface XmlSchemaItemBase {
 interface XmlSchemaItem<T> extends XmlSchemaItemBase {
     /**
      * Default value for item
-     * 
+     *
      * @type {(T |)}
      * @memberOf XmlSchemaItem
      */
     defaultValue?: T | null;
     /**
      * Determine where item is required
-     * 
+     *
      * @type {boolean}
      * @memberOf XmlSchemaItem
      */
     required?: boolean;
     /**
      * Custom converter for item value
-     * 
+     *
      * @type {IConverter<T>}
      * @memberOf XmlAttributeType
      */
@@ -124,7 +124,7 @@ interface XmlSchemaItem<T> extends XmlSchemaItemBase {
 interface XmlSchemaItemParser {
     /**
      * Xml parser for item
-     * 
+     *
      * @type {*}
      * @memberOf XmlSchemaItemParser
      */
@@ -137,21 +137,21 @@ interface XmlAttributeType<T> extends XmlSchemaItem<T> {
 interface XmlContentType<T> {
     /**
      * Default value for item
-     * 
+     *
      * @type {(T |)}
      * @memberOf XmlContentType
      */
     defaultValue?: T | null;
     /**
      * Determine where item is required
-     * 
+     *
      * @type {boolean}
      * @memberOf XmlContentType
      */
     required?: boolean;
     /**
      * Custom converter for item value
-     * 
+     *
      * @type {IConverter<T>}
      * @memberOf XmlContentType
      */
@@ -161,14 +161,14 @@ interface XmlContentType<T> {
 interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
     /**
      * Local name for Xml element
-     * 
+     *
      * @type {string}
      * @memberOf XmlElementType
      */
     localName: string;
     /**
      * Namespace URI fro Xml element
-     * 
+     *
      * @type {(string |)}
      * @memberOf XmlElementType
      */
@@ -178,46 +178,46 @@ interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
 interface XmlChildElementType<T> extends XmlSchemaItem<T>, XmlSchemaItemParser {
     /**
      * max occurs of items in collection
-     * 
+     *
      * @type {number}
      * @memberOf XmlChildElementType
      */
     maxOccurs?: number;
     /**
      * min occurs of items in collection
-     * 
+     *
      * @type {number}
      * @memberOf XmlChildElementType
      */
     minOccurs?: number;
     /**
      * Don't add root element of XmlCollection to compiled element
-     * 
+     *
      * @type {boolean}
      * @memberOf XmlChildElementType
      */
     noRoot?: boolean;
 }
 
-type XmlSchema = {
+interface XmlSchema {
     localName?: string;
     namespaceURI?: string | null;
     prefix?: string | null;
     parser?: IXmlSerializableConstructor;
     items?: { [key: string]: (XmlChildElementType<any> | XmlAttributeType<any>) & { type?: string } };
-    target?: any; 
-};
+    target?: any;
+}
 
 interface IConverter<T> {
     /**
      * Converts value from Xml element to Object
-     * 
+     *
      * @memberOf IConverter
      */
     set: (value: string) => T;
     /**
      * Converts value from Object to Xmml element
-     * 
+     *
      * @memberOf IConverter
      */
     get: (value: T) => string | undefined;

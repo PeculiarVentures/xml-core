@@ -75,7 +75,7 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
 }
 
 export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false, namespaceURI: null }) {
-    return (target: Object, propertyKey: string | symbol) => {
+    return (target: Object, propertyKey: string) => {
         const t = target.constructor as XmlSchema;
         const key = propertyKey as string;
 
@@ -100,7 +100,7 @@ export function XmlAttribute<T>(params: XmlAttributeType<T> = { required: false,
 }
 
 export function XmlContent<T>(params: XmlContentType<T> = { required: false }) {
-    return (target: Object, propertyKey: string | symbol) => {
+    return (target: Object, propertyKey: string) => {
         const t = target.constructor as XmlSchema;
         const key = propertyKey as string;
 
@@ -124,13 +124,13 @@ function defineProperty(target: any, key: string, params: any) {
     const key2 = `_${key}`;
 
     const opt = {
-        set: function (v: any) {
+        set: function (this: any, v: any) {
             if (this[key2] !== v) {
                 this.element = null;
                 this[key2] = v;
             }
         },
-        get: function () {
+        get: function (this: any) {
             if (this[key2] === void 0) {
                 let defaultValue = params.defaultValue;
                 if (params.parser) {
