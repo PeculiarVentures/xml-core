@@ -502,7 +502,8 @@ export class XmlObject implements IXmlSerializable {
         namespaceUri = namespaceUri || this.NamespaceURI;
         prefix = prefix || this.prefix;
 
-        const xn = document!.createElementNS(this.NamespaceURI, (prefix ? `${prefix}:` : "") + localName);
+        const tagName = (prefix ? `${prefix}:` : "") + localName;
+        const xn = namespaceUri ? document!.createElementNS(namespaceUri, tagName) : document!.createElement(tagName);
         document!.importNode(xn, true);
 
         return xn;
