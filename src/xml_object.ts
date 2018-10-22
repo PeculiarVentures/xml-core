@@ -249,7 +249,18 @@ export class XmlObject implements IXmlSerializable {
                                 } else {
                                     node = doc.createElementNS(schema.namespaceURI, `${schema.prefix ? schema.prefix + ":" : ""}${schema.localName}`);
                                 }
-                                node!.textContent = value;
+                                if (Array.isArray(value)) {
+                                    for (let child of value) {
+                                        let val = child instanceof XmlObject ?
+                                        child.GetXml(true) :
+                                        child;
+                                        if (val !== null) {
+                                            node!.appendChild(val);
+                                        }
+                                    }
+                                } else {
+                                    node!.textContent = value;
+                                }
                             }
                         }
 
@@ -515,7 +526,6 @@ export class XmlObject implements IXmlSerializable {
             this.NamespaceURI,
             this.Prefix);
     }
-
 }
 
 import { XmlCollection } from "./xml_collection";
