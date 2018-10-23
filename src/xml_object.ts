@@ -258,6 +258,8 @@ export class XmlObject implements IXmlSerializable {
                                             node!.appendChild(val);
                                         }
                                     }
+                                } else if (value instanceof XmlObject) {
+                                    node!.appendChild(value.GetXml(true));
                                 } else {
                                     node!.textContent = value;
                                 }
