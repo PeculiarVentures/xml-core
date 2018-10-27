@@ -62,6 +62,7 @@ export function XmlChildElement<T>(params: XmlChildElementType<T> = {}) {
                 prefix: params.prefix || null,
                 defaultValue: params.defaultValue,
                 converter: params.converter,
+                noRoot: params.noRoot || false,
             };
         }
         params.localName = params.localName || (params.parser && (params.parser as any).localName) || key;
