@@ -1,6 +1,5 @@
-/// <reference path="./types/index.d.ts" />
-
 import { XE, XmlError } from "./error";
+import { XmlBufferEncoding } from "./types";
 
 declare let unescape: any;
 declare let escape: any;
@@ -82,7 +81,7 @@ export class Convert {
         return uintArray;
     }
     public static ToUtf8String(buffer: Uint8Array): string {
-        const encodedString = String.fromCharCode.apply(null, buffer);
+        const encodedString = String.fromCharCode.apply(null, buffer as any);
         const decodedString = decodeURIComponent(escape(encodedString));
         return decodedString;
     }

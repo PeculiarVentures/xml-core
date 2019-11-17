@@ -1,3 +1,5 @@
+import { ICollection } from "./types";
+
 export class Collection<I> implements ICollection<I> {
 
     protected items: I[] = new Array();
