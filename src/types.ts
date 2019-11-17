@@ -4,7 +4,7 @@
  * @interface ICollection
  * @template I
  */
-interface ICollection<I> {
+export interface ICollection<I> {
     readonly Count: number;
     Item(index: number): I | null;
     Add(item: I): void;
@@ -21,7 +21,7 @@ interface ICollection<I> {
     IsEmpty(): boolean;
 }
 
-interface IXmlSerializable {
+export interface IXmlSerializable {
 
     /**
      * Writes object to XML node
@@ -37,9 +37,7 @@ interface IXmlSerializable {
     LoadXml(node: Node | string): void;
 }
 
-interface IXmlSerializableConstructor {
-    new (): IXmlSerializable;
-}
+export type IXmlSerializableConstructor = new () => IXmlSerializable;
 
 /**
  * Base type for associated arrays
@@ -47,15 +45,15 @@ interface IXmlSerializableConstructor {
  * @interface AssocArray
  * @template T
  */
-interface AssocArray<T> {
+export interface AssocArray<T> {
     [index: string]: T;
 }
 
-declare type XmlBufferEncoding = string | "utf8" | "binary" | "hex" | "base64" | "base64url";
+export declare type XmlBufferEncoding = string | "utf8" | "binary" | "hex" | "base64" | "base64url";
 
-declare type ISelectResult = Node[] | Node | boolean | number | string;
+export declare type ISelectResult = Node[] | Node | boolean | number | string;
 
-interface XmlNamespace {
+export interface XmlNamespace {
     /**
      * Prefix
      *
@@ -72,7 +70,7 @@ interface XmlNamespace {
     namespace: string | null;
 }
 
-interface XmlSchemaItemBase {
+export interface XmlSchemaItemBase {
     /**
      * Local name of item
      *
@@ -97,7 +95,7 @@ interface XmlSchemaItemBase {
     prefix?: string | null;
 }
 
-interface XmlSchemaItem<T> extends XmlSchemaItemBase {
+export interface XmlSchemaItem<T> extends XmlSchemaItemBase {
     /**
      * Default value for item
      *
@@ -121,7 +119,7 @@ interface XmlSchemaItem<T> extends XmlSchemaItemBase {
     converter?: IConverter<T>;
 }
 
-interface XmlSchemaItemParser {
+export interface XmlSchemaItemParser {
     /**
      * Xml parser for item
      *
@@ -131,10 +129,10 @@ interface XmlSchemaItemParser {
     parser?: IXmlSerializableConstructor;
 }
 
-interface XmlAttributeType<T> extends XmlSchemaItem<T> {
+export interface XmlAttributeType<T> extends XmlSchemaItem<T> {
 }
 
-interface XmlContentType<T> {
+export interface XmlContentType<T> {
     /**
      * Default value for item
      *
@@ -158,7 +156,7 @@ interface XmlContentType<T> {
     converter?: IConverter<T>;
 }
 
-interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
+export interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
     /**
      * Local name for Xml element
      *
@@ -175,7 +173,7 @@ interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
     namespaceURI?: string | null;
 }
 
-interface XmlChildElementType<T> extends XmlSchemaItem<T>, XmlSchemaItemParser {
+export interface XmlChildElementType<T> extends XmlSchemaItem<T>, XmlSchemaItemParser {
     /**
      * max occurs of items in collection
      *
@@ -199,7 +197,7 @@ interface XmlChildElementType<T> extends XmlSchemaItem<T>, XmlSchemaItemParser {
     noRoot?: boolean;
 }
 
-interface XmlSchema {
+export interface XmlSchema {
     localName?: string;
     namespaceURI?: string | null;
     prefix?: string | null;
@@ -208,7 +206,7 @@ interface XmlSchema {
     target?: any;
 }
 
-interface IConverter<T> {
+export interface IConverter<T> {
     /**
      * Converts value from Xml element to Object
      *
@@ -216,7 +214,7 @@ interface IConverter<T> {
      */
     set: (value: string) => T;
     /**
-     * Converts value from Object to Xmml element
+     * Converts value from Object to Xml element
      *
      * @memberOf IConverter
      */

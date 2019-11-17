@@ -1,6 +1,5 @@
-/// <reference path="types/index.d.ts" />
-
 import * as CONST from "./const";
+import { XmlAttributeType, XmlChildElementType, XmlContentType, XmlElementType, XmlSchema } from "./types";
 
 const MAX = 1e9;
 

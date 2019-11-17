@@ -1,4 +1,5 @@
 import { Convert } from "./convert";
+import { IConverter } from "./types";
 
 export const XmlBase64Converter: IConverter<Uint8Array> = {
     get: (value: Uint8Array) => {
