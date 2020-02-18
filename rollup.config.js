@@ -1,22 +1,57 @@
-import typescript from "rollup-plugin-typescript";
+import ts from "rollup-plugin-ts";
 
-let pkg = require("./package.json");
-let external = Object.keys(pkg.dependencies);
+const pkg = require("./package.json");
 
-const sourcemap = process.argv.some(item => item.toLowerCase() === "--dev");
+const banner = [].join("\n");
+const input = "src/index.ts";
+const external = Object.keys(pkg.dependencies);
 
-export default {
-    input: "src/index.ts",
+export default [
+  // types
+  {
+    input,
     plugins: [
-        typescript({ typescript: require("typescript") }),
+      ts({
+        tsconfig: resolvedConfig => ({
+          ...resolvedConfig,
+          removeComments: false,
+          declaration: true,
+        })
+      }),
     ],
-    external: external,
-    output: {
+    external,
+    output: [
+      {
+        banner,
         file: pkg.main,
         format: "cjs",
-        sourcemap,
-        globals: {
-            tslib: "tslib",
-        },
-    },
-};
+      },
+    ]
+  },
+  // bundles
+  {
+    input,
+    plugins: [
+      ts({
+        tsconfig: resolvedConfig => ({
+          ...resolvedConfig,
+          removeComments: true,
+          declaration: false,
+        })
+      }),
+    ],
+    external,
+    output: [
+      {
+        banner,
+        file: pkg.main,
+        format: "cjs",
+      },
+      {
+        banner,
+        file: pkg.module,
+        format: "es",
+      }
+    ]
+  },
+];

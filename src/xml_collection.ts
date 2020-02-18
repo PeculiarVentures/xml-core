@@ -1,8 +1,7 @@
-/// <reference path="types/index.d.ts" />
-
 import { Collection } from "./collection";
 import { XE, XmlError } from "./error";
-import { XmlNodeType } from "./xml";
+import { ICollection } from "./types";
+import { isElement } from "./utils";
 import { XmlObject } from "./xml_object";
 
 export class XmlCollection<I extends XmlObject> extends XmlObject implements ICollection<I> {
@@ -12,15 +11,15 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
     /**
      * The maximum number of elements
      */
-    public MaxOccurs: number;
+    public MaxOccurs = Number.MAX_VALUE;
 
     /**
      * The minimum number of elements
      */
-    public MinOccurs: number;
+    public MinOccurs = 0;
 
     // Collection
-    protected items: I[] = new Array();
+    protected items: I[] = [];
 
     public HasChanged() {
         const res = super.HasChanged();
@@ -106,7 +105,7 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
         }
         for (let i = 0; i < element.childNodes.length; i++) {
             const node = element.childNodes.item(i);
-            if (!(node.nodeType === XmlNodeType.Element &&
+            if (!(isElement(node) &&
                 node.localName === (self.parser as any).localName &&
                 // tslint:disable-next-line:triple-equals
                 node.namespaceURI == self.namespaceURI)) {
@@ -122,5 +121,3 @@ export class XmlCollection<I extends XmlObject> extends XmlObject implements ICo
     }
 
 }
-
-// import { XmlObject } from "./xml_object";

@@ -39,7 +39,7 @@ export class XmlError implements Error {
         this.code = code;
         this.name = (this.constructor as any).name;
         arguments[0] = xes[code];
-        const message = printf.apply(this, arguments);
+        const message = printf.apply(this, arguments as any);
         this.message = `${this.prefix}${padNum(code, 4)}: ${message}`;
         this.stack = (new Error(this.message) as any).stack;
     }
@@ -72,7 +72,7 @@ interface IXmlError {
 }
 
 const xes: IXmlError = {};
-xes[XE.NONE] = "No decription";
+xes[XE.NONE] = "No description";
 xes[XE.NULL_REFERENCE] = "Null reference";
 xes[XE.NULL_PARAM] = "'%1' has empty '%2' object";
 xes[XE.DECORATOR_NULL_PARAM] = "Decorator '%1' has empty '%2' parameter";

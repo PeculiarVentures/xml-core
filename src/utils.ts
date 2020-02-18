@@ -1,3 +1,4 @@
+import { AssocArray } from "./types";
 import { APPLICATION_XML, XmlNodeType } from "./xml";
 
 export type SelectNodes = (node: Node, xPath: string) => Node[];
@@ -25,7 +26,7 @@ function SelectNodesEx(node: Node, xPath: string): Node[] {
     const nsResolver = document.createNSResolver(node.ownerDocument == null ? (node as Document).documentElement : node.ownerDocument.documentElement);
     const personIterator = doc.evaluate(xPath, node, nsResolver, XPathResult.ANY_TYPE, null!);
     const ns: Node[] = [];
-    let n: Node;
+    let n: Node | null;
     while (n = personIterator.iterateNext()) {
         ns.push(n);
     }
@@ -100,4 +101,29 @@ export function assign(target: any, ...sources: any[]) {
         }
     }
     return res;
+}
+
+/**
+ * Returns true if object is a XML of specified type
+ * @param obj Object to test
+ * @param type XML Node type
+ */
+function isNodeType(obj: any, type: XmlNodeType) {
+    return obj && obj.nodeType === type;
+}
+
+/**
+ * Returns true if object is a XML Element
+ * @param obj Object to test
+ */
+export function isElement(obj: any): obj is Element {
+    return isNodeType(obj, XmlNodeType.Element);
+}
+
+/**
+ * Returns true if object is a XML Document
+ * @param obj Object to test
+ */
+export function isDocument(obj: any): obj is Document {
+    return isNodeType(obj, XmlNodeType.Document);
 }

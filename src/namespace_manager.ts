@@ -1,4 +1,5 @@
 import { Collection } from "./collection";
+import { XmlNamespace } from "./types";
 
 export class NamespaceManager extends Collection<XmlNamespace> {
 
