@@ -1,34 +1,38 @@
 {
   "name": "xml-core",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "`xml-core` is a set of classes that make it easier to work with XML within the browser and node.",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "module": "dist/index.es.js",
+  "types": "dist/types/index.d.ts",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "tslib": "^1.10.0",
+    "tslib": "^1.11.1",
     "xmldom-alpha": "^0.1.28",
     "xpath.js": "^1.1.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.21",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.12.30",
     "coveralls": "^3.0.9",
-    "mocha": "^6.2.2",
-    "nyc": "^14.1.1",
-    "rollup": "^1.27.13",
-    "rollup-plugin-ts": "^0.2.0",
-    "ts-node": "^8.5.4",
-    "typescript": "^3.7.3"
+    "mocha": "^7.1.0",
+    "nyc": "^15.0.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.0.6",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
   },
   "scripts": {
-    "clean": "rm -rf build/ buildjs/ coverage/ .nyc_output/ npm-debug.log npm-debug.log.*",
     "test": "mocha",
     "prepare": "npm run build",
-    "build": "rollup -c",
+    "clear": "rimraf dist/",
+    "build": "npm run build:module && npm run build:types",
+    "build:module": "rollup -c",
+    "build:types": "tsc -p tsconfig.types.json",
+    "rebuild": "npm run clear && npm run build",
     "lint": "tslint 'src/**/*.ts'",
     "prepub": "npm run lint && npm run test && npm run build",
     "pub": "npm version patch && git push --follow-tags",
@@ -62,6 +66,15 @@
     "reporter": [
       "text-summary",
       "html"
+    ]
+  },
+  "mocha": {
+    "require": "ts-node/register",
+    "extension": [
+      "ts"
+    ],
+    "watch-files": [
+      "test/**/*.ts"
     ]
   }
 }
