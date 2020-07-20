@@ -74,12 +74,10 @@ describe("Decorators", () => {
 
                 const test = new Test();
 
-                test.Id = "";
-                assert.equal(test.toString(), `<sm:test xmlns:sm=""/>`);
+                assert.equal(test.toString(), `<sm:test id="test"/>`);
             });
 
             context("simple child", () => {
-
                 it("default value", () => {
                     @XmlElement({ localName: "test" })
                     class Test extends XmlObject {
@@ -175,6 +173,13 @@ describe("Decorators", () => {
                     public ChildRequired: Child2;
                 }
 
+                @XmlElement({ localName: "Item" })
+                class Item extends XmlObject {
+                    @XmlChildElement({ localName: "Id"})
+                    public id: number;
+                    @XmlChildElement({ localName: "Name"})
+                    public name: string;
+                }
                 it("default", () => {
                     const root = new Root();
                     root.Name = "MyName";
@@ -190,6 +195,22 @@ describe("Decorators", () => {
                     assert.equal(root.toString(), `<root><name>MyName</name><child1 id="10"><text>12</text></child1><child2 xmlns="http://number.com"><text>AQEB</text></child2></root>`);
                 });
 
+                it("handle collection as simple array", () => {
+                    @XmlElement({ localName: "test" })
+                    class Test extends XmlObject {
+                        @XmlChildElement({ defaultValue: [] })
+                        public Items: Array<Item>;
+                    }
+
+                    const test = new Test();
+
+                    test.Items = [
+                        new Item({id: 1, name: 'Item 1'}),
+                        new Item({id: 2, name: 'Item 2'}),
+                        new Item({id: 3, name: 'Item 3'})
+                    ];
+                    assert.equal(test.toString(), `<test><Items><Item><Id>1</Id><Name>Item 1</Name></Item><Item><Id>2</Id><Name>Item 2</Name></Item><Item><Id>3</Id><Name>Item 3</Name></Item></Items></test>`);
+                });
             });
         });
 
