@@ -9,16 +9,6 @@ const DEFAULT_ROOT_NAME = "xml_root";
 
 export class XmlObject implements IXmlSerializable {
 
-    constructor (properties: Object = {}) {
-        if (properties) {
-            for (let [key, value] of Object.entries(properties)) {
-                if (value !== undefined) {
-                    (this as any)[key] = value;
-                }
-            }
-        }
-    }
-
     public static LoadXml<T extends XmlObject>(this: new () => T, param: string | Element) {
         const xml = new this();
         xml.LoadXml(param);
@@ -147,6 +137,16 @@ export class XmlObject implements IXmlSerializable {
 
     protected localName = this.GetStatic().localName;
     protected namespaceURI = this.GetStatic().namespaceURI;
+
+    constructor (properties: Object = {}) {
+        if (properties) {
+            for (const [key, value] of Object.entries(properties)) {
+                if (value !== undefined) {
+                    (this as any)[key] = value;
+                }
+            }
+        }
+    }
 
     public get Element() {
         return this.element;
@@ -513,6 +513,7 @@ export class XmlObject implements IXmlSerializable {
     protected OnLoadXml(element: Element) {
         // Empty
     }
+
     protected GetStatic(): XmlSchema {
         return this.constructor as XmlSchema;
     }
