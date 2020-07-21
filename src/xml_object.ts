@@ -3,6 +3,7 @@ import { XE, XmlError } from "./error";
 import { AssocArray, IXmlSerializable, XmlAttributeType, XmlChildElementType, XmlContentType, XmlSchema } from "./types";
 import { isDocument, isElement, Parse, SelectSingleNode } from "./utils";
 import { APPLICATION_XML } from "./xml";
+import { XmlCollection } from "./xml_collection";
 
 const DEFAULT_ROOT_NAME = "xml_root";
 
@@ -137,6 +138,16 @@ export class XmlObject implements IXmlSerializable {
     protected localName = this.GetStatic().localName;
     protected namespaceURI = this.GetStatic().namespaceURI;
 
+    constructor (properties: Object = {}) {
+        if (properties) {
+            for (const [key, value] of Object.entries(properties)) {
+                if (value !== undefined) {
+                    (this as any)[key] = value;
+                }
+            }
+        }
+    }
+
     public get Element() {
         return this.element;
     }
@@ -250,7 +261,20 @@ export class XmlObject implements IXmlSerializable {
                                 } else {
                                     node = doc.createElementNS(schema.namespaceURI, `${schema.prefix ? schema.prefix + ":" : ""}${schema.localName}`);
                                 }
-                                node!.textContent = value;
+                                if (Array.isArray(value)) {
+                                    for (const child of value) {
+                                        const val = child instanceof XmlObject ?
+                                        child.GetXml(true) :
+                                        child;
+                                        if (val !== null) {
+                                            node!.appendChild(val);
+                                        }
+                                    }
+                                } else if (value instanceof XmlObject) {
+                                    node!.appendChild(value.GetXml(true) as Element);
+                                } else {
+                                    node!.textContent = value;
+                                }
                             }
                         }
 
@@ -489,6 +513,7 @@ export class XmlObject implements IXmlSerializable {
     protected OnLoadXml(element: Element) {
         // Empty
     }
+
     protected GetStatic(): XmlSchema {
         return this.constructor as XmlSchema;
     }
@@ -509,7 +534,8 @@ export class XmlObject implements IXmlSerializable {
         namespaceUri = namespaceUri || this.NamespaceURI;
         prefix = prefix || this.prefix;
 
-        const xn = document!.createElementNS(this.NamespaceURI, (prefix ? `${prefix}:` : "") + localName);
+        const tagName = (prefix ? `${prefix}:` : "") + localName;
+        const xn = namespaceUri ? document!.createElementNS(namespaceUri, tagName) : document!.createElement(tagName);
         document!.importNode(xn, true);
 
         return xn;
@@ -521,7 +547,4 @@ export class XmlObject implements IXmlSerializable {
             this.NamespaceURI,
             this.Prefix);
     }
-
 }
-
-import { XmlCollection } from "./xml_collection";
