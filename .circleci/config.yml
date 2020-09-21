@@ -3,31 +3,25 @@ version: 2.1
 commands:
   test-nodejs:
     steps:
-      - run:
-          name: Versions
-          command: npm version
       - checkout
       - restore_cache:
+          name: Restore Yarn Package Cache
           keys:
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-{{ arch }}-npm-cache-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-{{ arch }}-npm-cache-master-{{ .Environment.CIRCLE_JOB }}
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Install dependencies
-          command: npm ci
-      - save-npm-cache
+          name: Install Dependencies
+          command: yarn install --immutable
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: Test with code coverage
-          command: npm run coverage
+          command: yarn run coverage
       - run:
           name: Report to coveralls
-          command: npm run coveralls
-
-  save-npm-cache:
-    steps:
-      - save_cache:
-          key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-{{ arch }}-npm-cache-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm/_cacache
+          command: yarn run coveralls
 
 jobs:
   node-v10:
@@ -46,17 +40,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
-      - restore_cache: # special step to restore the dependency cache 
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-deps
-          command: npm install
-      - save_cache: # special step to save the dependency cache
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
           name: Publish to NPM
           command: | 
