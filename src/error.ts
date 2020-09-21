@@ -1,8 +1,13 @@
+interface PrintfArgs {
+    arg: string;
+    index: number;
+}
+
 function printf(text: string, ...args: any[]) {
     let msg: string = text;
     const regFind = /[^%](%\d+)/g;
     let match: RegExpExecArray | null = null;
-    const matches: Array<{ arg: string, index: number }> = [];
+    const matches: PrintfArgs[] = [];
     while (match = regFind.exec(msg)) {
         matches.push({ arg: match[1], index: match.index });
     }

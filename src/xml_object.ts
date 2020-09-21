@@ -3,7 +3,6 @@ import { XE, XmlError } from "./error";
 import { AssocArray, IXmlSerializable, XmlAttributeType, XmlChildElementType, XmlContentType, XmlSchema } from "./types";
 import { isDocument, isElement, Parse, SelectSingleNode } from "./utils";
 import { APPLICATION_XML } from "./xml";
-import { XmlCollection } from "./xml_collection";
 
 const DEFAULT_ROOT_NAME = "xml_root";
 
@@ -548,3 +547,5 @@ export class XmlObject implements IXmlSerializable {
             this.Prefix);
     }
 }
+
+import { XmlCollection } from "./xml_collection";

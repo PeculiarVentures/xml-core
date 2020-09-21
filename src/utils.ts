@@ -11,7 +11,7 @@ let xpath: SelectNodes = (node: Node, xPath: string) => {
 let sWindow: any;
 if (typeof self === "undefined") {
     sWindow = global;
-    const xmldom = require("xmldom-alpha");
+    const xmldom = require("xmldom");
     xpath = require("xpath.js");
     sWindow.XMLSerializer = xmldom.XMLSerializer;
     sWindow.DOMParser = xmldom.DOMParser;
