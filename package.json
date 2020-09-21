@@ -1,6 +1,6 @@
 {
   "name": "xml-core",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "`xml-core` is a set of classes that make it easier to work with XML within the browser and node.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
