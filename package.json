@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "tslib": "^2.0.1",
-    "xmldom": "^0.3.0",
+    "xmldom": "^0.4.0",
     "xpath.js": "^1.1.0"
   },
   "devDependencies": {
