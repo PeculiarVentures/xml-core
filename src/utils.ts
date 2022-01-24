@@ -11,7 +11,7 @@ let xpath: SelectNodes = (node: Node, xPath: string) => {
 let sWindow: any;
 if (typeof self === "undefined") {
     sWindow = global;
-    const xmldom = require("xmldom");
+    const xmldom = require("@xmldom/xmldom");
     xpath = require("xpath.js");
     sWindow.XMLSerializer = xmldom.XMLSerializer;
     sWindow.DOMParser = xmldom.DOMParser;
@@ -69,10 +69,9 @@ export function SelectSingleNode(node: Node, path: string) {
 }
 
 function _SelectNamespaces(node: Node, selectedNodes: AssocArray<string> = {}) {
-    if (node && node.nodeType === XmlNodeType.Element) {
-        const el = node as Element;
-        if (el.namespaceURI && el.namespaceURI !== "http://www.w3.org/XML/1998/namespace" && !selectedNodes[el.prefix || ""]) {
-            selectedNodes[el.prefix ? el.prefix : ""] = node.namespaceURI!;
+    if (isElement(node)) {
+        if (node.namespaceURI && node.namespaceURI !== "http://www.w3.org/XML/1998/namespace" && !selectedNodes[node.prefix || ""]) {
+            selectedNodes[node.prefix ? node.prefix : ""] = node.namespaceURI!;
         }
         for (let i = 0; i < node.childNodes.length; i++) {
             const childNode = node.childNodes.item(i);
