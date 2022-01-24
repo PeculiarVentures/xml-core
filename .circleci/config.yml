@@ -24,14 +24,19 @@ commands:
           command: yarn run coveralls
 
 jobs:
-  node-v10:
-    docker:
-      - image: node:10
-    steps:
-      - test-nodejs
   node-v12:
     docker:
       - image: node:12
+    steps:
+      - test-nodejs
+  node-v14:
+    docker:
+      - image: node:14
+    steps:
+      - test-nodejs
+  node-v16:
+    docker:
+      - image: node:16
     steps:
       - test-nodejs
   publish:
