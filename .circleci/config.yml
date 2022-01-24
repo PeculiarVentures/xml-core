@@ -57,8 +57,9 @@ workflows:
   version: 2
   tagged-build:
     jobs:
-      - node-v10
       - node-v12
+      - node-v14
+      - node-v16
       - publish:
           filters:
             tags:
