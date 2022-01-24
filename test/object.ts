@@ -25,7 +25,7 @@ context("XmlObject", () => {
     });
 
     context("Get xml Element", () => {
-        const xml = `<root id="0"><first id="1"/><second Id="2"/><third ID="3"/><child/><n:child xmlns:n="html://n"></root>`;
+        const xml = `<root id="0"><first id="1"/><second Id="2"/><third ID="3"/><child/><n:child xmlns:n="html://n"/></root>`;
         let obj: Test;
 
         @XmlElement({
