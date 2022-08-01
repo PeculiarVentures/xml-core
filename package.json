@@ -36,8 +36,11 @@
     "build:types": "tsc -p tsconfig.types.json",
     "rebuild": "npm run clear && npm run build",
     "lint": "tslint 'src/**/*.ts'",
-    "prepub": "npm run lint && npm run test && npm run build",
-    "pub": "npm version patch && git push --follow-tags",
+    "pub": "npm run pub:patch",
+    "pub:major": "npm version major",
+    "pub:minor": "npm version minor",
+    "pub:patch": "npm version patch",
+    "pubafter": "git push --follow-tags",
     "coverage": "nyc npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
