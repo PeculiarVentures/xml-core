@@ -40,7 +40,7 @@
     "pub:major": "npm version major",
     "pub:minor": "npm version minor",
     "pub:patch": "npm version patch",
-    "pubafter": "git push --follow-tags",
+    "postpub": "git push --follow-tags",
     "coverage": "nyc npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
