@@ -46,11 +46,11 @@ export class XmlObject implements IXmlSerializable {
         }
         if (xel == null) {
             // search an "undefined" ID
-            xel = SelectSingleNode(node, `//*[@Id='${idValue}']`);
+            xel = SelectSingleNode(node, `//*[@*[local-name()='Id']='${idValue}']`);
             if (xel == null) {
-                xel = SelectSingleNode(node, `//*[@ID='${idValue}']`);
+                xel = SelectSingleNode(node, `//*[@*[local-name()='ID']='${idValue}']`);
                 if (xel == null) {
-                    xel = SelectSingleNode(node, `//*[@id='${idValue}']`);
+                    xel = SelectSingleNode(node, `//*[@*[local-name()='id']='${idValue}']`);
                 }
             }
         }
