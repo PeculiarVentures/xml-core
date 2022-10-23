@@ -9,7 +9,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.8.2",
+    "@xmldom/xmldom": "^0.8.3",
     "tslib": "^2.4.0",
     "xpath.js": "^1.1.0"
   },
