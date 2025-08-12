@@ -10,6 +10,11 @@
 
 [![NPM](https://nodei.co/npm/xml-core.png)](https://nodei.co/npm/xml-core/)
 
+## Notice: Repository Archived
+
+This repository is no longer maintained. Its functionality has been merged into the [xmldsigjs](https://github.com/PeculiarVentures/xmldsigjs) monorepo, and is now part of it.
+
+For future development and updates, please use [xmldsigjs](https://github.com/PeculiarVentures/xmldsigjs).
 
 ## Introduction
 
