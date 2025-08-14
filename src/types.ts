@@ -163,7 +163,7 @@ export interface XmlElementType extends XmlSchemaItemBase, XmlSchemaItemParser {
      * @type {string}
      * @memberOf XmlElementType
      */
-    localName: string;
+    localName?: string;
     /**
      * Namespace URI fro Xml element
      *
